@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const WithdrawalAmount = () => {
   const { toast } = useToast();
@@ -12,10 +13,21 @@ const WithdrawalAmount = () => {
   const [balance, setBalance] = useState(5000);
 
   useEffect(() => {
-    const currentBalance = localStorage.getItem('dashboardBalance');
-    if (currentBalance) {
-      setBalance(parseInt(currentBalance));
-    }
+    const loadBalance = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('balance')
+          .eq('user_id', session.user.id)
+          .single();
+          
+        if (profile) {
+          setBalance(profile.balance || 5000);
+        }
+      }
+    };
+    loadBalance();
   }, []);
 
   const handleContinue = () => {
@@ -39,7 +51,7 @@ const WithdrawalAmount = () => {
       return;
     }
 
-    if (withdrawalAmount < 10000) {
+    if (withdrawalAmount < 100000) {
       // Show referral requirement notification
       navigate('/referral-requirement', {
         state: { requestedAmount: withdrawalAmount }
@@ -92,14 +104,14 @@ const WithdrawalAmount = () => {
           <AlertCircle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
           <div className="text-sm text-orange-800">
             <p className="font-medium mb-1">Withdrawal Requirements:</p>
-            <p>• Minimum ₦10,000 for direct withdrawal</p>
-            <p>• Below ₦10,000 requires 5 referrals to qualify</p>
+            <p>• Minimum ₦100,000 for direct withdrawal</p>
+            <p>• Below ₦100,000 requires 5 referrals to qualify</p>
           </div>
         </div>
 
         {/* Quick Amount Buttons */}
-        <div className="grid grid-cols-3 gap-3">
-          {[10000, 25000, 50000].map((quickAmount) => (
+        <div className="grid grid-cols-2 gap-3">
+          {[100000, 250000].map((quickAmount) => (
             <Button
               key={quickAmount}
               variant="outline"

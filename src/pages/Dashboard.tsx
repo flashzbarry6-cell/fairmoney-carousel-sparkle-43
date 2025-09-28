@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { User, Eye, EyeOff, Shield, Users, Calculator, Wifi, Target, CreditCard, Banknote, UserPlus, MoreHorizontal, MessageCircle } from "lucide-react";
+import { User, Eye, EyeOff, Shield, Users, Calculator, Wifi, Target, CreditCard, Banknote, UserPlus, MoreHorizontal, MessageCircle, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { WelcomeNotification } from "@/components/WelcomeNotification";
@@ -10,11 +10,14 @@ import { TransactionHistory } from "@/components/TransactionHistory";
 import { BottomCarousel } from "@/components/BottomCarousel";
 import { WithdrawalNotification } from "@/components/WithdrawalNotification";
 import { ProfileUpload } from "@/components/ProfileUpload";
-// Remove useAuth import as we'll use localStorage
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
   const [showWelcomeNotification, setShowWelcomeNotification] = useState(false);
   const [showJoinGroupNotification, setShowJoinGroupNotification] = useState(false);
   const [showPaymentNotification, setShowPaymentNotification] = useState(false);
@@ -25,31 +28,66 @@ const Dashboard = () => {
   const [bonusClaimed, setBonusClaimed] = useState(false);
   const [isClaiming, setIsClaiming] = useState(false);
   const [bonuses, setBonuses] = useState<any[]>([]);
-  const [countdown, setCountdown] = useState(60);
-  const [timerActive, setTimerActive] = useState(true);
+  const [countdown, setCountdown] = useState(59 * 60); // 59 minutes in seconds
+  const [timerActive, setTimerActive] = useState(false);
+  const [claimingStarted, setClaimingStarted] = useState(false);
 
-  // Check if user is logged in
+  // Check auth and load profile
   useEffect(() => {
-    const userData = localStorage.getItem('user');
-    if (!userData) {
-      navigate("/login");
-    } else {
-      setUser(JSON.parse(userData));
-      // Check if bonus was claimed in this session
-      const bonusClaimedStatus = localStorage.getItem('bonusClaimed');
-      const currentBalance = localStorage.getItem('dashboardBalance');
-      if (bonusClaimedStatus === 'true' && currentBalance) {
-        setBonusClaimed(true);
-        setBalance(parseInt(currentBalance));
-        setTimerActive(false);
-        setCountdown(0);
-      } else {
-        setBalance(5000);
-        // Start countdown timer
-        setTimerActive(true);
-        setCountdown(60);
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate("/login");
+        return;
       }
-    }
+
+      setUser(session.user);
+      
+      // Load user profile
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .single();
+        
+      if (profileData) {
+        setProfile(profileData);
+        setBalance(profileData.balance || 5000);
+        
+        // Check claiming state
+        const claimState = localStorage.getItem('claimingState');
+        const lastClaimTime = localStorage.getItem('lastClaimTime');
+        
+        if (claimState === 'active' && lastClaimTime) {
+          const elapsed = Math.floor((Date.now() - parseInt(lastClaimTime)) / 1000);
+          const remaining = (59 * 60) - elapsed;
+          
+          if (remaining > 0) {
+            setCountdown(remaining);
+            setTimerActive(true);
+            setClaimingStarted(true);
+          } else {
+            // Time to claim bonus
+            setCountdown(0);
+            setTimerActive(false);
+            setClaimingStarted(true);
+          }
+        }
+      }
+    };
+
+    checkAuth();
+
+    // Auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === 'SIGNED_OUT' || !session) {
+          navigate("/login");
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
   }, [navigate]);
 
   useEffect(() => {
@@ -77,16 +115,85 @@ const Dashboard = () => {
     if (timerActive && countdown > 0) {
       timer = setInterval(() => {
         setCountdown(prev => {
-          if (prev <= 1) {
+          const newCount = prev - 1;
+          if (newCount <= 0) {
             setTimerActive(false);
+            // Auto-claim bonus when timer reaches 0
+            if (claimingStarted && user) {
+              handleClaimBonus();
+            }
             return 0;
           }
-          return prev - 1;
+          return newCount;
         });
       }, 1000);
     }
     return () => clearInterval(timer);
-  }, [timerActive, countdown]);
+  }, [timerActive, countdown, claimingStarted, user]);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const handleClaimBonus = async () => {
+    if (!user || !profile) return;
+    
+    setIsClaiming(true);
+    
+    try {
+      // Update balance in Supabase
+      const newBalance = balance + 1000;
+      const { error } = await supabase
+        .from('profiles')
+        .update({ balance: newBalance })
+        .eq('user_id', user.id);
+        
+      if (error) throw error;
+      
+      setBalance(newBalance);
+      setProfile(prev => ({ ...prev, balance: newBalance }));
+      
+      toast({
+        title: "Bonus Claimed!",
+        description: "₦1,000 added to your balance",
+      });
+      
+      // Restart timer for next claim
+      setCountdown(59 * 60);
+      setTimerActive(true);
+      localStorage.setItem('lastClaimTime', Date.now().toString());
+      
+    } catch (error) {
+      console.error('Error claiming bonus:', error);
+      toast({
+        title: "Error",
+        description: "Failed to claim bonus. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsClaiming(false);
+    }
+  };
+
+  const handleStartClaiming = () => {
+    setClaimingStarted(true);
+    setTimerActive(true);
+    setCountdown(59 * 60);
+    localStorage.setItem('claimingState', 'active');
+    localStorage.setItem('lastClaimTime', Date.now().toString());
+  };
+
+  const copyReferralCode = () => {
+    if (profile?.referral_code) {
+      const referralUrl = `https://fairmoney-carousel-sparkle-43.lovable.app/login?ref=${profile.referral_code}&tab=signup`;
+      navigator.clipboard.writeText(referralUrl);
+      toast({
+        description: "Referral link copied to clipboard!",
+      });
+    }
+  };
 
   const services = [
     { icon: Users, label: "Support", bgClass: "bg-primary/10", route: "/support" },
@@ -114,10 +221,10 @@ const Dashboard = () => {
           <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
             <User className="w-5 h-5 text-primary" />
           </div>
-          <div>
-            <h1 className="text-lg font-semibold text-foreground">{user.fullName}</h1>
-            <p className="text-sm text-muted-foreground">How are you doing today?</p>
-          </div>
+      <div>
+        <h1 className="text-lg font-semibold text-foreground">{profile?.full_name || user?.email}</h1>
+        <p className="text-sm text-muted-foreground">How are you doing today?</p>
+      </div>
         </div>
         <div className="flex items-center space-x-4">
           {/* Headphones Icon */}
@@ -170,11 +277,6 @@ const Dashboard = () => {
                 1
               </div>
             </div>
-            {timerActive && countdown > 0 && (
-              <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">
-                {countdown}s
-              </div>
-            )}
             <button
               onClick={() => setShowBalance(!showBalance)}
               className="hover:bg-white/20 rounded-full p-1 transition-colors"
@@ -188,64 +290,64 @@ const Dashboard = () => {
           </div>
         </div>
         
+        {/* Timer under eye */}
+        <div className="flex justify-center mb-2">
+          {claimingStarted && (
+            <div className="bg-red-500 text-white text-xs px-3 py-1 rounded-full font-bold">
+              {timerActive && countdown > 0 ? formatTime(countdown) : "Ready to claim!"}
+            </div>
+          )}
+        </div>
+        
         <div className="text-3xl font-bold mb-4 text-center">
           {showBalance ? `₦${balance.toLocaleString()}.00` : "₦****"}
         </div>
         
         <Button 
           onClick={() => {
-            if (!bonusClaimed && !isClaiming && !timerActive && countdown === 0) {
-              setIsClaiming(true);
-              // Play bonus claim sound
-              const audio = new Audio('data:audio/wav;base64,UklGRvIBAABXQVZFZm10IAAAAAAQAAABAAAAQB8AAEAfAAABAAgAZGF0YQoAAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJYfH8N2QQAoUXrTp3aFQEQ1Mp+DyvmEcBzuP1vLNeSsFJofF8N2QQAoUXrTp3aFQEQ1Mp+DyvmEcBzuP1vLNeSsFJofF8N2QQAoUXrTp3aFQEQ1Mp+DyvmEcBzuP1vLNeSsFJofF8N2QQAoUXrTp3aFQEQ1Mp+DyvmEcBzuP1vLNeSsFJofF8N2QQAoUXrTp3aFQEQ1Mp+DyvmEcBzuP1vLNeSsFJofF8N2QQAoUXrTp3aFQEQ1Mp+DyvmEcBzuP1vLNeSsFJofF8N2QQAoUXrTp3aFQEQ1Mp+DyvmEcBzuP1vLNeSsFJofF8N2QQAoUXrTp3aFQEQ1Mp+DyvmEcBzuP1vLNeSsFJofF8N2QQAoUXrTp3aFQEQ1Mp+DyvmEcBzuP1vLNeSsFJofF8N2QQAoUXrTp3aFQEQ1Mp+DyvmEcBzuP1vLNeSsFJofF8N2QQAoUXrTp3aFQEQ1Mp+DyvmEcBzuP1vLNeSsFJofF8N2QQAoUXrTp3aFQEQ==');
-              audio.play().catch(() => {}); // Ignore errors if audio can't play
-              
-              setTimeout(() => {
-                setBalance(prev => prev + 1000);
-                setBonusClaimed(true);
-                setIsClaiming(false);
-                // Store in localStorage so TransactionHistory can see it and persist until logout
-                localStorage.setItem('dashboardBalance', (balance + 1000).toString());
-                localStorage.setItem('bonusClaimed', 'true');
-                // Add bonus to state for red dot notification
-                setBonuses([{
-                  id: 1,
-                  description: "Welcome Bonus",
-                  amount: 1000,
-                  status: "Completed",
-                  time: new Date().toLocaleString()
-                }]);
-                
-                // Restart countdown after 3 seconds
-                setTimeout(() => {
-                  setBonusClaimed(false);
-                  setCountdown(60);
-                  setTimerActive(true);
-                }, 3000);
-              }, 2000);
+            if (!claimingStarted) {
+              handleStartClaiming();
+            } else if (!timerActive && countdown === 0) {
+              handleClaimBonus();
             }
           }}
-          disabled={bonusClaimed || isClaiming || timerActive || countdown > 0}
+          disabled={isClaiming || (claimingStarted && timerActive && countdown > 0)}
           className={`w-full font-semibold py-3 rounded-full ${
-            bonusClaimed 
-              ? "bg-gray-400 text-gray-600 cursor-not-allowed" 
-              : isClaiming
+            isClaiming
               ? "bg-yellow-500 text-white cursor-not-allowed"
-              : (timerActive || countdown > 0)
+              : (claimingStarted && timerActive && countdown > 0)
               ? "bg-gray-400 text-gray-600 cursor-not-allowed"
               : "bg-white text-primary hover:bg-white/90"
           }`}
         >
-          {bonusClaimed 
-            ? "✅ Bonus Claimed" 
-            : isClaiming 
+          {isClaiming 
             ? "⏳ Claiming..." 
-            : (timerActive || countdown > 0)
-            ? `⏰ Wait ${countdown}s`
-            : "🎁 Claim Bonus 🎁"
+            : !claimingStarted
+            ? "🎁 Start Claiming"
+            : (timerActive && countdown > 0)
+            ? `⏰ Wait ${formatTime(countdown)}`
+            : "🎁 Claim ₦1,000"
           }
         </Button>
       </div>
+
+      {/* Referral Code Section */}
+      {profile?.referral_code && (
+        <div className="bg-card rounded-2xl p-4 mb-6">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-muted-foreground">Your Referral Code</span>
+            <span className="text-sm text-muted-foreground">Referrals: {profile.total_referrals || 0}</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="flex-1 bg-muted/50 rounded-lg p-3">
+              <span className="font-bold text-primary text-lg">{profile.referral_code}</span>
+            </div>
+            <Button onClick={copyReferralCode} size="icon" variant="outline">
+              <Copy className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Services Grid */}
       <div className="grid grid-cols-4 gap-3 mb-6">

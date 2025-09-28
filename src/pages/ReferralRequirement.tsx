@@ -1,22 +1,55 @@
 import { ArrowLeft, Users, Share2 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const ReferralRequirement = () => {
   const location = useLocation();
   const requestedAmount = location.state?.requestedAmount || 0;
+  const [totalReferrals, setTotalReferrals] = useState(0);
 
-  const handleRefer = () => {
-    const message = `🎉 Join me on FairMoney Pay and start earning! Get your bonus when you sign up: https://fairmoney-pay2025ltds.netlify.app/`;
-    
-    if (navigator.share) {
-      navigator.share({
-        title: 'Join FairMoney Pay!',
-        text: message,
-      });
-    } else {
-      navigator.clipboard.writeText(message);
-      alert('Referral link copied to clipboard!');
+  useEffect(() => {
+    const loadReferrals = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('total_referrals')
+          .eq('user_id', session.user.id)
+          .single();
+          
+        if (profile) {
+          setTotalReferrals(profile.total_referrals || 0);
+        }
+      }
+    };
+    loadReferrals();
+  }, []);
+
+  const handleRefer = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('referral_code')
+        .eq('user_id', session.user.id)
+        .single();
+        
+      if (profile) {
+        const referralUrl = `https://fairmoney-carousel-sparkle-43.lovable.app/login?ref=${profile.referral_code}&tab=signup`;
+        const message = `🎉 Join me on FairMoney Pay and start earning! Get your bonus when you sign up: ${referralUrl}`;
+        
+        if (navigator.share) {
+          navigator.share({
+            title: 'Join FairMoney Pay!',
+            text: message,
+          });
+        } else {
+          navigator.clipboard.writeText(message);
+          alert('Referral link copied to clipboard!');
+        }
+      }
     }
   };
 
@@ -43,7 +76,7 @@ const ReferralRequirement = () => {
           <h2 className="text-xl font-bold text-foreground">Almost There!</h2>
           <p className="text-muted-foreground">
             To withdraw <span className="font-bold text-primary">₦{requestedAmount.toLocaleString()}</span>, 
-            you need to refer 5 people to FairMoney Pay.
+            you need to refer 5 people to FairMoney Pay. Minimum withdrawal amount is ₦100,000.
           </p>
         </div>
 
@@ -61,7 +94,7 @@ const ReferralRequirement = () => {
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-orange-600 rounded-full"></div>
-              <span>Unlock withdrawal of any amount below ₦10,000</span>
+              <span>Unlock withdrawal of any amount below ₦100,000</span>
             </div>
           </div>
         </div>
@@ -70,10 +103,10 @@ const ReferralRequirement = () => {
         <div className="bg-muted/50 rounded-lg p-4">
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm text-muted-foreground">Referrals Progress</span>
-            <span className="text-sm font-semibold text-foreground">0/5</span>
+            <span className="text-sm font-semibold text-foreground">{totalReferrals}/5</span>
           </div>
           <div className="w-full bg-muted rounded-full h-2">
-            <div className="bg-primary h-2 rounded-full" style={{ width: "0%" }}></div>
+            <div className="bg-primary h-2 rounded-full" style={{ width: `${Math.min((totalReferrals / 5) * 100, 100)}%` }}></div>
           </div>
         </div>
 

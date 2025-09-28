@@ -8,11 +8,13 @@ import { ArrowLeft } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { LoginCarousel } from "@/components/LoginCarousel";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [referralCode, setReferralCode] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -21,72 +23,118 @@ const Login = () => {
 
   // Check if user is already logged in and set initial tab
   useEffect(() => {
-    const userData = localStorage.getItem('user');
-    if (userData) {
-      navigate("/dashboard");
-    }
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate("/dashboard");
+      }
+    };
+    checkAuth();
     
     // Set initial tab based on URL parameter
     const tab = searchParams.get('tab');
+    const ref = searchParams.get('ref');
     if (tab === 'signup') {
       setIsSignUp(true);
     } else {
       setIsSignUp(false);
     }
+    
+    // Set referral code from URL
+    if (ref) {
+      setReferralCode(ref);
+      setIsSignUp(true); // Default to signup if referral code present
+    }
   }, [navigate, searchParams]);
 
-  const extractNameFromEmail = (email: string) => {
-    if (!email) return "User";
+  const generateDeviceId = () => {
+    const stored = localStorage.getItem('deviceId');
+    if (stored) return stored;
     
-    // Get the part before @ symbol
-    const username = email.split('@')[0];
-    
-    // Remove numbers and special characters, keep only letters
-    const nameOnly = username.replace(/[^a-zA-Z]/g, '');
-    
-    // Split into words and capitalize first letter of each word
-    const words = nameOnly.split(/(?=[A-Z])/).filter(word => word.length > 0);
-    const capitalizedWords = words.map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-    );
-    
-    return capitalizedWords.join(' ');
+    const deviceId = 'device_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('deviceId', deviceId);
+    return deviceId;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    // Simple delay to simulate processing
-    setTimeout(() => {
-      const extractedName = extractNameFromEmail(email);
-      
+    try {
       if (isSignUp) {
-        // Store user data locally for create account
-        const userData = {
+        // Sign up with Supabase
+        const { data, error } = await supabase.auth.signUp({
           email,
-          fullName: fullName || extractedName, // Use provided name or extracted name
-          id: Date.now().toString()
-        };
-        localStorage.setItem('user', JSON.stringify(userData));
-        
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/`,
+            data: {
+              full_name: fullName
+            }
+          }
+        });
+
+        if (error) throw error;
+
+        // Process referral if code provided
+        if (referralCode && data.user) {
+          const deviceId = generateDeviceId();
+          
+          // Wait for user to be fully created then process referral
+          setTimeout(async () => {
+            try {
+              const { data: referralResult, error: refError } = await supabase
+                .rpc('process_referral', {
+                  referral_code_input: referralCode,
+                  device_id_input: deviceId
+                });
+              
+              if (refError) {
+                console.error('Referral processing error:', refError);
+              } else if (referralResult && typeof referralResult === 'object' && 'success' in referralResult && referralResult.success) {
+                toast({
+                  title: "Referral Applied!",
+                  description: "You've been successfully referred!"
+                });
+              }
+            } catch (err) {
+              console.error('Error processing referral:', err);
+            }
+          }, 2000);
+        }
+
         toast({
           title: "Account created successfully",
-          description: `Welcome to FairMoney Pay, ${fullName || extractedName}!`
+          description: `Welcome to FairMoney Pay! Please check your email to verify your account.`
         });
+        
+        navigate("/dashboard");
       } else {
-        // Store user data locally for login - use extracted name from email
-        const userData = {
+        // Sign in with Supabase
+        const { data, error } = await supabase.auth.signInWithPassword({
           email,
-          fullName: extractedName, // Use extracted name from email
-          id: Date.now().toString()
-        };
-        localStorage.setItem('user', JSON.stringify(userData));
+          password
+        });
+
+        if (error) throw error;
+
+        toast({
+          title: "Login successful",
+          description: "Welcome back!"
+        });
+        
+        navigate("/dashboard");
       }
-      
+    } catch (error: any) {
+      console.error('Auth error:', error);
+      toast({
+        title: "Authentication Error",
+        description: error.message || "An error occurred during authentication",
+        variant: "destructive"
+      });
+    } finally {
       setLoading(false);
-      navigate("/dashboard");
-    }, 1000);
+    }
   };
 
   return (
@@ -128,17 +176,29 @@ const Login = () => {
             <div className="p-6 pt-8">
               <form onSubmit={handleSubmit} className="space-y-6">
                 {isSignUp && (
-                  <div className="space-y-2">
-                    <Input
-                      id="fullName"
-                      type="text"
-                      placeholder="Full Name"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      required
-                      className="h-14 text-base border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-emerald-500"
-                    />
-                  </div>
+                  <>
+                    <div className="space-y-2">
+                      <Input
+                        id="fullName"
+                        type="text"
+                        placeholder="Full Name"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        required
+                        className="h-14 text-base border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-emerald-500"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Input
+                        id="referralCode"
+                        type="text"
+                        placeholder="Referral Code (Optional)"
+                        value={referralCode}
+                        onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                        className="h-14 text-base border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-emerald-500"
+                      />
+                    </div>
+                  </>
                 )}
                 <div className="space-y-2">
                   <Input
