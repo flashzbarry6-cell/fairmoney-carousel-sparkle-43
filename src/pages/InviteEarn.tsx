@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const InviteEarn = () => {
   const { toast } = useToast();
-  const referralLink = "https://fairmoney-pay2025ltds.netlify.app/";
+  const referralLink = "https://earnbuzzzz.netlify.app/login?tab=signup";
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(referralLink);
