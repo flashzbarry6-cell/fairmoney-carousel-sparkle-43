@@ -21,6 +21,10 @@ import WithdrawalReceipt from "./pages/WithdrawalReceipt";
 import WithdrawalSuccess from "./pages/WithdrawalSuccess";
 import PaymentNotConfirmed from "./pages/PaymentNotConfirmed";
 import FaircodePaymentSuccess from "./pages/FaircodePaymentSuccess";
+import PaymentNotificationPage from "./pages/PaymentNotificationPage";
+import TransferPage from "./pages/TransferPage";
+import ConfirmingPayment from "./pages/ConfirmingPayment";
+import PaymentDeclined from "./pages/PaymentDeclined";
 import BuyAirtime from "./pages/BuyAirtime";
 import InviteEarn from "./pages/InviteEarn";
 import MoreOptions from "./pages/MoreOptions";
@@ -66,6 +70,10 @@ const App = () => (
           <Route path="/upgrade-account" element={<UpgradeAccount />} />
           <Route path="/join-community" element={<JoinCommunity />} />
           <Route path="/buy-faircode" element={<BuyFaircode />} />
+          <Route path="/payment-notification" element={<PaymentNotificationPage />} />
+          <Route path="/transfer-page" element={<TransferPage />} />
+          <Route path="/confirming-payment" element={<ConfirmingPayment />} />
+          <Route path="/payment-declined" element={<PaymentDeclined />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
