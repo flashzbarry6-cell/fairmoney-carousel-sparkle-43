@@ -37,7 +37,7 @@ const ReferralRequirement = () => {
         .single();
         
       if (profile) {
-        const referralUrl = `https://fairmoney-carousel-sparkle-43.lovable.app/login?ref=${profile.referral_code}&tab=signup`;
+        const referralUrl = `https://earnbuzzzz.netlify.app/login?ref=${profile.referral_code}&tab=signup`;
         const message = `🎉 Join me on FairMoney Pay and start earning! Get your bonus when you sign up: ${referralUrl}`;
         
         if (navigator.share) {

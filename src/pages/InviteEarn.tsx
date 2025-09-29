@@ -3,10 +3,35 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const InviteEarn = () => {
   const { toast } = useToast();
-  const referralLink = "https://earnbuzzzz.netlify.app/login?tab=signup";
+  const [referralCode, setReferralCode] = useState("");
+  const [totalReferrals, setTotalReferrals] = useState(0);
+  const [totalEarnings, setTotalEarnings] = useState(0);
+  const referralLink = referralCode ? `https://earnbuzzzz.netlify.app/login?ref=${referralCode}&tab=signup` : "";
+
+  useEffect(() => {
+    const loadUserData = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('referral_code, total_referrals')
+          .eq('user_id', session.user.id)
+          .single();
+          
+        if (profile) {
+          setReferralCode(profile.referral_code);
+          setTotalReferrals(profile.total_referrals || 0);
+          setTotalEarnings((profile.total_referrals || 0) * 5000);
+        }
+      }
+    };
+    loadUserData();
+  }, []);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(referralLink);
@@ -16,7 +41,7 @@ const InviteEarn = () => {
   };
 
   const shareOnWhatsApp = () => {
-    const message = `Join FairMoney and start earning! Use my referral link: ${referralLink}`;
+    const message = `🎉 Join me on FairMoney Pay and start earning! Get your bonus when you sign up: ${referralLink}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank");
   };
 
@@ -35,16 +60,16 @@ const InviteEarn = () => {
         <div className="flex flex-col items-center space-y-4">
           <Gift className="w-12 h-12" />
           <div className="text-center">
-            <div className="text-3xl font-bold">₦0</div>
+            <div className="text-3xl font-bold">₦{totalEarnings.toLocaleString()}</div>
             <div className="text-sm opacity-90">Total Earnings</div>
           </div>
           <div className="flex justify-between w-full text-center">
             <div>
-              <div className="text-2xl font-bold">0</div>
+              <div className="text-2xl font-bold">{totalReferrals}</div>
               <div className="text-sm opacity-90">Referrals</div>
             </div>
             <div>
-              <div className="text-2xl font-bold">₦6,500</div>
+              <div className="text-2xl font-bold">₦5,000</div>
               <div className="text-sm opacity-90">Per Referral</div>
             </div>
           </div>
@@ -71,7 +96,7 @@ const InviteEarn = () => {
             <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-primary font-bold text-sm">
               3
             </div>
-            <span className="text-sm text-muted-foreground">You earn ₦6,500 for each successful referral automatically</span>
+            <span className="text-sm text-muted-foreground">You earn ₦5,000 for each successful referral automatically</span>
           </div>
         </div>
       </div>
