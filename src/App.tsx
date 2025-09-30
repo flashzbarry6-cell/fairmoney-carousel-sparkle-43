@@ -20,6 +20,7 @@ import WithdrawalConfirmation from "./pages/WithdrawalConfirmation";
 import WithdrawalReceipt from "./pages/WithdrawalReceipt";
 import WithdrawalSuccess from "./pages/WithdrawalSuccess";
 import PaymentNotConfirmed from "./pages/PaymentNotConfirmed";
+import TransferPage from "./pages/TransferPage";
 import FaircodePaymentSuccess from "./pages/FaircodePaymentSuccess";
 import BuyAirtime from "./pages/BuyAirtime";
 import InviteEarn from "./pages/InviteEarn";
@@ -57,6 +58,7 @@ const App = () => (
           <Route path="/withdrawal-receipt" element={<WithdrawalReceipt />} />
           <Route path="/withdrawal-success" element={<WithdrawalSuccess />} />
           <Route path="/payment-not-confirmed" element={<PaymentNotConfirmed />} />
+          <Route path="/transfer-page" element={<TransferPage />} />
           <Route path="/faircode-payment-success" element={<FaircodePaymentSuccess />} />
           <Route path="/buy-airtime" element={<BuyAirtime />} />
           <Route path="/invite-earn" element={<InviteEarn />} />

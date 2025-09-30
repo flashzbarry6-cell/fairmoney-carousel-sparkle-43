@@ -79,8 +79,8 @@ const WithdrawBankSelection = () => {
       return;
     }
 
-    // Navigate to confirmation page
-    navigate('/withdrawal-confirmation', {
+    // Navigate directly to withdrawal receipt
+    navigate('/withdrawal-receipt', {
       state: {
         withdrawalData: {
           ...formData,

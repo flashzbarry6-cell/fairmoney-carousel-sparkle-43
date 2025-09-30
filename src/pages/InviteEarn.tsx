@@ -19,14 +19,25 @@ const InviteEarn = () => {
       if (session) {
         const { data: profile } = await supabase
           .from('profiles')
-          .select('referral_code, total_referrals')
+          .select('referral_code, total_referrals, balance')
           .eq('user_id', session.user.id)
           .single();
           
         if (profile) {
           setReferralCode(profile.referral_code);
           setTotalReferrals(profile.total_referrals || 0);
-          setTotalEarnings((profile.total_referrals || 0) * 5000);
+          const earnings = (profile.total_referrals || 0) * 5000;
+          setTotalEarnings(earnings);
+          
+          // Sync balance with referral earnings + initial 5000
+          const expectedBalance = 5000 + earnings;
+          if (profile.balance !== expectedBalance) {
+            // Update balance in Supabase to sync
+            await supabase
+              .from('profiles')
+              .update({ balance: expectedBalance })
+              .eq('user_id', session.user.id);
+          }
         }
       }
     };
