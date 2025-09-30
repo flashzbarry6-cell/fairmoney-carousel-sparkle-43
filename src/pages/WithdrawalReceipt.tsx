@@ -1,110 +1,162 @@
-import { ArrowLeft } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { ArrowLeft, Clock, Share2 } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 
 const WithdrawalReceipt = () => {
-  const navigate = useNavigate();
-  const [userEmail, setUserEmail] = useState("");
-  const [balance, setBalance] = useState(0);
-
-  useEffect(() => {
-    const loadUserData = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        setUserEmail(session.user.email || "");
-        
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('balance')
-          .eq('user_id', session.user.id)
-          .single();
-          
-        if (profile) {
-          setBalance(profile.balance || 0);
-        }
-      }
-    };
-    loadUserData();
-  }, []);
-
-  const handleFixIssue = () => {
-    navigate("/payment-notification");
-  };
-
-  const currentDate = new Date().toLocaleString('en-GB', {
-    day: '2-digit',
+  const location = useLocation();
+  const withdrawalData = location.state?.withdrawalData;
+  
+  // Get current date and time
+  const currentDate = new Date();
+  const formatDate = currentDate.toLocaleDateString('en-US', {
     month: '2-digit',
-    year: 'numeric',
+    day: '2-digit',
+    year: 'numeric'
+  });
+  const formatTime = currentDate.toLocaleTimeString('en-US', {
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
+    hour12: true
   });
 
+  // Generate transaction reference
+  const transactionRef = `FMP${Date.now().toString().slice(-8)}`;
+
+  const handleShare = () => {
+    const message = `💰 Withdrawal In Progress!\n\nAmount: ₦${withdrawalData?.amount?.toLocaleString()}\nBank: ${withdrawalData?.bankName}\nStatus: Pending\nRef: ${transactionRef}\n\nFairMoney Pay - Fast & Secure! 🚀`;
+    
+    if (navigator.share) {
+      navigator.share({
+        title: 'Withdrawal Receipt',
+        text: message,
+      });
+    } else {
+      navigator.clipboard.writeText(message);
+      alert('Receipt details copied to clipboard!');
+    }
+  };
+
+  if (!withdrawalData) {
+    return (
+      <div className="min-h-screen bg-muted/30 p-3 max-w-md mx-auto flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-muted-foreground">No withdrawal data found</p>
+          <Link to="/dashboard">
+            <Button className="mt-4">Back to Dashboard</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-muted/30 p-4 max-w-md mx-auto">
+    <div className="min-h-screen bg-muted/30 p-3 max-w-md mx-auto">
       {/* Header */}
       <div className="flex items-center mb-6 pt-2">
-        <Link to="/referral-requirement" className="mr-4">
+        <Link to="/dashboard" className="mr-3">
           <ArrowLeft className="w-6 h-6 text-foreground" />
         </Link>
-        <h1 className="text-xl font-semibold text-foreground">Withdrawal Receipt</h1>
+        <h1 className="text-lg font-semibold text-foreground">Withdrawal Receipt</h1>
       </div>
 
-      {/* Receipt */}
-      <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-dashed border-muted mb-6">
-        {/* Receipt Title */}
+      <div className="bg-card rounded-2xl p-6 space-y-6">
+        {/* Status Icon */}
+        <div className="flex justify-center mb-6">
+          <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center relative">
+            <Clock className="w-10 h-10 text-orange-600" />
+            <div className="absolute -top-1 -right-1 w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
+              <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Status Message */}
         <div className="text-center mb-6">
-          <div className="text-2xl mb-2">🧾</div>
-          <h2 className="text-xl font-bold text-foreground">Withdrawal Receipt</h2>
+          <h2 className="text-xl font-bold text-orange-600 mb-3">Withdrawal In Progress</h2>
+          <p className="text-muted-foreground text-sm">
+            Your withdrawal request has been received and is being processed. You will receive your money shortly.
+          </p>
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-dashed border-muted mb-4"></div>
-
-        {/* Details Section */}
-        <div className="space-y-3 mb-4">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">User:</span>
-            <span className="font-medium text-foreground">{userEmail}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Amount:</span>
-            <span className="font-bold text-foreground">₦{balance.toLocaleString()}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Date:</span>
-            <span className="font-medium text-foreground">{currentDate}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Status:</span>
-            <span className="font-bold text-red-600 flex items-center">
-              🔴 Withdrawal Pending
-            </span>
+        {/* Transaction Receipt */}
+        <div className="bg-gradient-to-br from-muted/30 to-muted/50 rounded-xl p-4 space-y-4 border border-muted-foreground/10">
+          <h3 className="text-lg font-semibold text-center text-foreground mb-4">Transaction Receipt</h3>
+          
+          <div className="space-y-3">
+            <div className="flex justify-between items-center py-2 border-b border-muted-foreground/10">
+              <span className="text-muted-foreground">Amount:</span>
+              <span className="font-bold text-xl text-primary">₦{withdrawalData.amount?.toLocaleString()}.00</span>
+            </div>
+            
+            <div className="flex justify-between items-center py-2 border-b border-muted-foreground/10">
+              <span className="text-muted-foreground">Bank:</span>
+              <span className="font-semibold text-foreground">{withdrawalData.bankName}</span>
+            </div>
+            
+            <div className="flex justify-between items-center py-2 border-b border-muted-foreground/10">
+              <span className="text-muted-foreground">Account Number:</span>
+              <span className="font-semibold text-foreground">{withdrawalData.accountNumber}</span>
+            </div>
+            
+            <div className="flex justify-between items-center py-2 border-b border-muted-foreground/10">
+              <span className="text-muted-foreground">Account Name:</span>
+              <span className="font-semibold text-foreground">{withdrawalData.accountName}</span>
+            </div>
+            
+            <div className="flex justify-between items-center py-2 border-b border-muted-foreground/10">
+              <span className="text-muted-foreground">Status:</span>
+              <span className="font-semibold text-orange-600 flex items-center">
+                <Clock className="w-4 h-4 mr-1" />
+                Pending
+              </span>
+            </div>
+            
+            <div className="flex justify-between items-center py-2 border-b border-muted-foreground/10">
+              <span className="text-muted-foreground">Reference:</span>
+              <span className="font-semibold text-foreground text-sm">{transactionRef}</span>
+            </div>
+            
+            <div className="flex justify-between items-center py-2 border-b border-muted-foreground/10">
+              <span className="text-muted-foreground">Date:</span>
+              <span className="font-semibold text-foreground">{formatDate}</span>
+            </div>
+            
+            <div className="flex justify-between items-center py-2">
+              <span className="text-muted-foreground">Time:</span>
+              <span className="font-semibold text-foreground">{formatTime}</span>
+            </div>
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-dashed border-muted mb-4"></div>
+        {/* Processing Note */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <p className="text-sm text-blue-800 text-center">
+            <strong>Processing Time:</strong> Your withdrawal will be processed within 24 hours. 
+            You will receive an SMS notification once completed.
+          </p>
+        </div>
 
-        {/* Reason Section */}
-        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
-          <div className="flex items-start">
-            <span className="text-yellow-600 mr-2">⚠️</span>
-            <span className="text-sm text-yellow-800">
-              Withdrawals are manually verified to prevent fraud and ensure referral authenticity.
-            </span>
-          </div>
+        {/* Action Buttons */}
+        <div className="space-y-3 pt-4">
+          <Button 
+            onClick={handleShare}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-full"
+          >
+            <Share2 className="w-5 h-5 mr-2" />
+            Share Receipt
+          </Button>
+          
+          <Link to="/dashboard">
+            <Button 
+              variant="outline"
+              className="w-full border-2 border-muted-foreground/20 text-foreground font-semibold py-3 rounded-full hover:bg-muted/50"
+            >
+              Back to Dashboard
+            </Button>
+          </Link>
         </div>
       </div>
-
-      {/* Fix Issue Button */}
-      <Button 
-        onClick={handleFixIssue}
-        className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 rounded-full"
-      >
-        Fix Issue
-      </Button>
     </div>
   );
 };

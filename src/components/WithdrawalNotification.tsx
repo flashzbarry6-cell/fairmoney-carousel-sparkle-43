@@ -12,14 +12,14 @@ export const WithdrawalNotification = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   const withdrawals: WithdrawalData[] = [
-    { name: "John Adebayo", amount: "₦86,000", time: "2 mins ago" },
-    { name: "Sarah Okafor", amount: "₦75,000", time: "5 mins ago" },
-    { name: "David Emeka", amount: "₦82,000", time: "8 mins ago" },
-    { name: "Grace Amina", amount: "₦68,000", time: "12 mins ago" },
-    { name: "Michael Tunde", amount: "₦79,000", time: "15 mins ago" },
-    { name: "Blessing Kemi", amount: "₦71,000", time: "18 mins ago" },
-    { name: "Ibrahim Hassan", amount: "₦85,000", time: "22 mins ago" },
-    { name: "Chioma Nkem", amount: "₦73,000", time: "25 mins ago" },
+    { name: "John Adebayo", amount: "₦150,000", time: "2 mins ago" },
+    { name: "Sarah Okafor", amount: "₦200,000", time: "5 mins ago" },
+    { name: "David Emeka", amount: "₦100,000", time: "8 mins ago" },
+    { name: "Grace Amina", amount: "₦250,000", time: "12 mins ago" },
+    { name: "Michael Tunde", amount: "₦180,000", time: "15 mins ago" },
+    { name: "Blessing Kemi", amount: "₦220,000", time: "18 mins ago" },
+    { name: "Ibrahim Hassan", amount: "₦130,000", time: "22 mins ago" },
+    { name: "Chioma Nkem", amount: "₦190,000", time: "25 mins ago" },
   ];
 
   useEffect(() => {

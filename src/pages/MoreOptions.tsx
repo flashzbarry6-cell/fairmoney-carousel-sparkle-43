@@ -1,13 +1,10 @@
 import { ArrowLeft, User, Info, Download, Play, CreditCard, Crown, LogOut } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 
 const MoreOptions = () => {
   const navigate = useNavigate();
   
   const handleLogout = async () => {
-    // Sign out from Supabase
-    await supabase.auth.signOut();
     // Clear all user data from localStorage including bonus status
     localStorage.removeItem('user');
     localStorage.removeItem('bonusClaimed');

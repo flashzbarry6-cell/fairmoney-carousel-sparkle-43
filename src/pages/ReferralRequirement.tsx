@@ -120,16 +120,12 @@ const ReferralRequirement = () => {
             Start Referring Friends
           </Button>
           
-          <Link to={totalReferrals >= 5 ? "/withdrawal-receipt" : "#"}>
+          <Link to="/dashboard">
             <Button 
-              disabled={totalReferrals < 5}
-              className={`w-full font-semibold py-3 rounded-full ${
-                totalReferrals >= 5 
-                  ? "bg-green-600 hover:bg-green-700 text-white" 
-                  : "bg-muted/50 text-muted-foreground cursor-not-allowed"
-              }`}
+              variant="outline"
+              className="w-full border-2 border-muted-foreground/20 text-foreground font-semibold py-3 rounded-full hover:bg-muted/50"
             >
-              {totalReferrals >= 5 ? "Cashout Now" : "Cashout (5 Referrals Required)"}
+              Back to Dashboard
             </Button>
           </Link>
         </div>
