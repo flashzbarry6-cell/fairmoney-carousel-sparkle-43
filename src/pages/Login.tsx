@@ -105,7 +105,7 @@ const Login = () => {
 
         toast({
           title: "Account created successfully",
-          description: `Welcome to FairMoney Pay! Please check your email to verify your account.`
+          description: `Welcome to LUMEXZZ WIN! Please check your email to verify your account.`
         });
         
         navigate("/dashboard");
@@ -138,7 +138,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-600 via-emerald-500 to-emerald-400 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-black via-purple-900 to-black flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Top Carousel Section */}
         <div className="mb-6">
@@ -146,7 +146,7 @@ const Login = () => {
         </div>
 
         {/* Login Form Card */}
-        <Card className="bg-white/95 backdrop-blur-sm shadow-2xl border-0 rounded-2xl overflow-hidden">
+        <Card className="bg-black/90 backdrop-blur-sm shadow-2xl border border-purple-500/30 rounded-2xl overflow-hidden">
           <CardContent className="p-0">
             {/* Tab Navigation */}
             <div className="flex">
@@ -154,8 +154,8 @@ const Login = () => {
                 onClick={() => setIsSignUp(false)}
                 className={`flex-1 py-4 px-6 text-sm font-medium transition-all duration-200 ${
                   !isSignUp 
-                    ? 'bg-emerald-500 text-white' 
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    ? 'bg-purple-600 text-white' 
+                    : 'bg-purple-900/50 text-purple-300 hover:bg-purple-800/50'
                 }`}
               >
                 LOGIN
@@ -164,8 +164,8 @@ const Login = () => {
                 onClick={() => setIsSignUp(true)}
                 className={`flex-1 py-4 px-6 text-sm font-medium transition-all duration-200 ${
                   isSignUp 
-                    ? 'bg-emerald-500 text-white' 
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    ? 'bg-purple-600 text-white' 
+                    : 'bg-purple-900/50 text-purple-300 hover:bg-purple-800/50'
                 }`}
               >
                 CREATE ACCOUNT
@@ -185,7 +185,7 @@ const Login = () => {
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
                         required
-                        className="h-14 text-base border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-emerald-500"
+                        className="h-14 text-base bg-purple-900/30 border-purple-500/30 text-white placeholder:text-purple-300/50 rounded-xl focus:border-purple-500 focus:ring-purple-500"
                       />
                     </div>
                     <div className="space-y-2">
@@ -195,7 +195,7 @@ const Login = () => {
                         placeholder="Referral Code (Optional)"
                         value={referralCode}
                         onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
-                        className="h-14 text-base border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-emerald-500"
+                        className="h-14 text-base bg-purple-900/30 border-purple-500/30 text-white placeholder:text-purple-300/50 rounded-xl focus:border-purple-500 focus:ring-purple-500"
                       />
                     </div>
                   </>
@@ -208,7 +208,7 @@ const Login = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="h-14 text-base border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-emerald-500"
+                    className="h-14 text-base bg-purple-900/30 border-purple-500/30 text-white placeholder:text-purple-300/50 rounded-xl focus:border-purple-500 focus:ring-purple-500"
                   />
                 </div>
                 <div className="space-y-2">
@@ -219,13 +219,13 @@ const Login = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="h-14 text-base border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-emerald-500"
+                    className="h-14 text-base bg-purple-900/30 border-purple-500/30 text-white placeholder:text-purple-300/50 rounded-xl focus:border-purple-500 focus:ring-purple-500"
                   />
                 </div>
                 
                 <Button 
                   type="submit" 
-                  className="w-full h-14 bg-emerald-500 hover:bg-emerald-600 text-white text-base font-medium rounded-xl transition-colors duration-200 shadow-lg" 
+                  className="w-full h-14 bg-purple-600 hover:bg-purple-700 text-white text-base font-medium rounded-xl transition-colors duration-200 shadow-lg" 
                   disabled={loading}
                 >
                   {loading ? "Processing..." : isSignUp ? "CREATE ACCOUNT" : "LOGIN"}
@@ -234,7 +234,7 @@ const Login = () => {
               
               {!isSignUp && (
                 <div className="text-center mt-6">
-                  <button className="text-emerald-600 hover:text-emerald-700 text-sm font-medium transition-colors duration-200">
+                  <button className="text-purple-400 hover:text-purple-300 text-sm font-medium transition-colors duration-200">
                     Forgot password?
                   </button>
                 </div>

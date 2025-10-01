@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { User, Eye, EyeOff, Shield, Users, Calculator, Wifi, Target, CreditCard, Banknote, UserPlus, MoreHorizontal, MessageCircle, Copy } from "lucide-react";
+import { User, Eye, EyeOff, Shield, Users, Calculator, Wifi, CreditCard, Banknote, UserPlus, MoreHorizontal, MessageCircle, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { WelcomeNotification } from "@/components/WelcomeNotification";
@@ -28,7 +28,7 @@ const Dashboard = () => {
   const [bonusClaimed, setBonusClaimed] = useState(false);
   const [isClaiming, setIsClaiming] = useState(false);
   const [bonuses, setBonuses] = useState<any[]>([]);
-  const [countdown, setCountdown] = useState(59 * 60); // 59 minutes in seconds
+  const [countdown, setCountdown] = useState(5 * 60); // 5 minutes in seconds
   const [timerActive, setTimerActive] = useState(false);
   const [claimingStarted, setClaimingStarted] = useState(false);
 
@@ -60,7 +60,7 @@ const Dashboard = () => {
         
         if (claimState === 'active' && lastClaimTime) {
           const elapsed = Math.floor((Date.now() - parseInt(lastClaimTime)) / 1000);
-          const remaining = (59 * 60) - elapsed;
+          const remaining = (5 * 60) - elapsed;
           
           if (remaining > 0) {
             setCountdown(remaining);
@@ -161,7 +161,7 @@ const Dashboard = () => {
       });
       
       // Restart timer for next claim
-      setCountdown(59 * 60);
+      setCountdown(5 * 60);
       setTimerActive(true);
       localStorage.setItem('lastClaimTime', Date.now().toString());
       
@@ -180,7 +180,7 @@ const Dashboard = () => {
   const handleStartClaiming = () => {
     setClaimingStarted(true);
     setTimerActive(true);
-    setCountdown(59 * 60);
+    setCountdown(5 * 60);
     localStorage.setItem('claimingState', 'active');
     localStorage.setItem('lastClaimTime', Date.now().toString());
   };
@@ -201,8 +201,6 @@ const Dashboard = () => {
     { icon: Banknote, label: "Withdraw", bgClass: "bg-primary/10", route: "/withdrawal-amount" },
     { icon: CreditCard, label: "Airtime", bgClass: "bg-primary/10", route: "/buy-airtime" },
     { icon: Wifi, label: "Data", bgClass: "bg-primary/10", route: "/buy-data" },
-    { icon: Target, label: "Betting", bgClass: "bg-primary/10", route: "/betting" },
-    { icon: CreditCard, label: "TV", bgClass: "bg-primary/10", route: "/tv-recharge" },
     { icon: CreditCard, label: "Buy Faircode", bgClass: "bg-primary/10", route: "/buy-faircode" },
     { icon: Banknote, label: "Loan", bgClass: "bg-primary/10", route: "/loan" },
     { icon: UserPlus, label: "Invitation", bgClass: "bg-primary/10", route: "/invite-earn" },
@@ -214,7 +212,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-muted/30 p-3 max-w-md mx-auto">
+    <div className="min-h-screen bg-gradient-to-b from-black via-primary/10 to-black p-3 max-w-md mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-4 pt-2">
         <div className="flex items-center space-x-3">
@@ -323,7 +321,7 @@ const Dashboard = () => {
           {isClaiming 
             ? "⏳ Claiming..." 
             : !claimingStarted
-            ? "🎁 Start Claiming"
+            ? "🎁 Start Claim"
             : (timerActive && countdown > 0)
             ? `⏰ Wait ${formatTime(countdown)}`
             : "🎁 Claim ₦1,000"
@@ -350,8 +348,8 @@ const Dashboard = () => {
       )}
 
       {/* Services Grid */}
-      <div className="grid grid-cols-4 gap-3 mb-6">
-        {services.slice(0, 8).map((service, index) => (
+      <div className="grid grid-cols-3 gap-3 mb-6">
+        {services.map((service, index) => (
           service.route === "groups" ? (
             <div key={index} className="flex flex-col items-center space-y-2">
               <div 
@@ -374,20 +372,6 @@ const Dashboard = () => {
               </span>
             </Link>
           )
-        ))}
-      </div>
-      
-      {/* Second Row Services */}
-      <div className="grid grid-cols-3 gap-3 mb-6">
-        {services.slice(8).map((service, index) => (
-          <Link key={index + 8} to={service.route} className="flex flex-col items-center space-y-2">
-            <div className={`w-12 h-12 rounded-full ${service.bgClass} flex items-center justify-center`}>
-              <service.icon className="w-5 h-5 text-primary" />
-            </div>
-            <span className="text-xs text-center text-muted-foreground font-medium">
-              {service.label}
-            </span>
-          </Link>
         ))}
       </div>
 
