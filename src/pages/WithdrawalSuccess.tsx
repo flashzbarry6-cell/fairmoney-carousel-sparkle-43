@@ -29,7 +29,7 @@ const WithdrawalSuccess = () => {
   };
 
   const handleShareSuccess = () => {
-    const message = `🎉 Withdrawal Successful! I just withdrew ₦${withdrawalData?.amount || '0'} from FairMoney Pay to my ${withdrawalData?.bankName || 'bank'} account. Join me on FairMoney Pay for seamless transactions! https://fairmoney-pay2025ltds.netlify.app/`;
+    const message = `🎉 Withdrawal Successful! I just withdrew ₦${withdrawalData?.amount || '0'} from LUMEXZZ WIN to my ${withdrawalData?.bankName || 'bank'} account. Join me on LUMEXZZ WIN for seamless transactions! https://lumexzz-win.lovable.app/`;
     
     if (navigator.share) {
       navigator.share({

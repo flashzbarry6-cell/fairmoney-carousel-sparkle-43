@@ -1,10 +1,15 @@
 import { MessageCircle, X, Send } from "lucide-react";
 import { useState } from "react";
 
+interface Message {
+  type: string;
+  text: string;
+}
+
 export const LiveChat = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    { type: "bot", text: "Hi! I'm here to help you with any questions about FairMoney. How can I assist you today?" }
+  const [messages, setMessages] = useState<Message[]>([
+    { type: "bot", text: "Hi! I'm here to help you with any questions about LUMEXZZ WIN. How can I assist you today?" }
   ]);
   const [inputMessage, setInputMessage] = useState("");
 
@@ -26,7 +31,7 @@ export const LiveChat = () => {
     if (!inputMessage.trim()) return;
     
     const userMessage = { type: "user", text: inputMessage };
-    const botReply = { type: "bot", text: "Thank you for your message. Our support team will assist you shortly. For urgent matters, please call our hotline at 0700-FAIRMONEY." };
+    const botReply = { type: "bot", text: "Thank you for your message. Our support team will assist you shortly. For urgent matters, please contact our support." };
     
     setMessages(prev => [...prev, userMessage, botReply]);
     setInputMessage("");
@@ -79,7 +84,7 @@ export const LiveChat = () => {
                     {message.type === 'bot' && (
                       <div className="flex items-start space-x-2 mb-2">
                         <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-                          <span className="text-white text-xs font-bold">FM</span>
+                          <span className="text-white text-xs font-bold">LW</span>
                         </div>
                       </div>
                     )}

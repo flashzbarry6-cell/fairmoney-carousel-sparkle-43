@@ -109,7 +109,7 @@ const Dashboard = () => {
     }
   }, [user]);
 
-  // Countdown timer effect
+  // Countdown timer effect with auto-claim
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (timerActive && countdown > 0) {
@@ -118,18 +118,17 @@ const Dashboard = () => {
           const newCount = prev - 1;
           if (newCount <= 0) {
             setTimerActive(false);
-            // Auto-claim bonus when timer reaches 0
-            if (claimingStarted && user) {
-              handleClaimBonus();
-            }
             return 0;
           }
           return newCount;
         });
       }, 1000);
+    } else if (timerActive === false && countdown === 0 && claimingStarted && user && !isClaiming) {
+      // Auto-claim when timer reaches 0
+      handleClaimBonus();
     }
     return () => clearInterval(timer);
-  }, [timerActive, countdown, claimingStarted, user]);
+  }, [timerActive, countdown, claimingStarted, user, isClaiming]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -187,7 +186,7 @@ const Dashboard = () => {
 
   const copyReferralCode = () => {
     if (profile?.referral_code) {
-      const referralUrl = `https://fairmoney-carousel-sparkle-43.lovable.app/login?ref=${profile.referral_code}&tab=signup`;
+      const referralUrl = `https://lumexzz-win.lovable.app/login?ref=${profile.referral_code}&tab=signup`;
       navigator.clipboard.writeText(referralUrl);
       toast({
         description: "Referral link copied to clipboard!",
@@ -201,7 +200,6 @@ const Dashboard = () => {
     { icon: Banknote, label: "Withdraw", bgClass: "bg-primary/10", route: "/withdrawal-amount" },
     { icon: CreditCard, label: "Airtime", bgClass: "bg-primary/10", route: "/buy-airtime" },
     { icon: Wifi, label: "Data", bgClass: "bg-primary/10", route: "/buy-data" },
-    { icon: CreditCard, label: "Buy Faircode", bgClass: "bg-primary/10", route: "/buy-faircode" },
     { icon: Banknote, label: "Loan", bgClass: "bg-primary/10", route: "/loan" },
     { icon: UserPlus, label: "Invitation", bgClass: "bg-primary/10", route: "/invite-earn" },
     { icon: MoreHorizontal, label: "More", bgClass: "bg-primary/10", route: "/more-options" }
@@ -212,9 +210,9 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-primary/10 to-black p-3 max-w-md mx-auto">
+    <div className="min-h-screen bg-gradient-to-b from-black via-primary/10 to-black p-2 max-w-md mx-auto pb-20">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4 pt-2">
+      <div className="flex items-center justify-between mb-3 pt-2">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
             <User className="w-5 h-5 text-primary" />
@@ -262,7 +260,7 @@ const Dashboard = () => {
       </div>
 
       {/* Balance Card */}
-      <div className="fairmoney-gradient rounded-2xl p-4 text-white mb-6 relative">
+      <div className="fairmoney-gradient rounded-2xl p-3 text-white mb-4 relative">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2">
             <Shield className="w-4 h-4" />
@@ -331,7 +329,7 @@ const Dashboard = () => {
 
       {/* Referral Code Section */}
       {profile?.referral_code && (
-        <div className="bg-card rounded-2xl p-4 mb-6">
+        <div className="bg-card rounded-2xl p-3 mb-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-muted-foreground">Your Referral Code</span>
             <span className="text-sm text-muted-foreground">Referrals: {profile.total_referrals || 0}</span>
@@ -348,26 +346,26 @@ const Dashboard = () => {
       )}
 
       {/* Services Grid */}
-      <div className="grid grid-cols-3 gap-3 mb-6">
+      <div className="grid grid-cols-3 gap-2 mb-4">
         {services.map((service, index) => (
           service.route === "groups" ? (
-            <div key={index} className="flex flex-col items-center space-y-2">
+            <div key={index} className="flex flex-col items-center space-y-1">
               <div 
-                className={`w-12 h-12 rounded-full ${service.bgClass} flex items-center justify-center cursor-pointer`}
+                className={`w-11 h-11 rounded-full ${service.bgClass} flex items-center justify-center cursor-pointer`}
                 onClick={() => setShowGroupModal(true)}
               >
-                <service.icon className="w-5 h-5 text-primary" />
+                <service.icon className="w-4 h-4 text-primary" />
               </div>
-              <span className="text-xs text-center text-muted-foreground font-medium">
+              <span className="text-[10px] text-center text-muted-foreground font-medium leading-tight">
                 {service.label}
               </span>
             </div>
           ) : (
-            <Link key={index} to={service.route} className="flex flex-col items-center space-y-2">
-              <div className={`w-12 h-12 rounded-full ${service.bgClass} flex items-center justify-center`}>
-                <service.icon className="w-5 h-5 text-primary" />
+            <Link key={index} to={service.route} className="flex flex-col items-center space-y-1">
+              <div className={`w-11 h-11 rounded-full ${service.bgClass} flex items-center justify-center`}>
+                <service.icon className="w-4 h-4 text-primary" />
               </div>
-              <span className="text-xs text-center text-muted-foreground font-medium">
+              <span className="text-[10px] text-center text-muted-foreground font-medium leading-tight">
                 {service.label}
               </span>
             </Link>

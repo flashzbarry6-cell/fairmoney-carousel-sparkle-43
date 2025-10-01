@@ -52,7 +52,7 @@ const InviteEarn = () => {
   };
 
   const shareOnWhatsApp = () => {
-    const message = `🎉 Join me on FairMoney Pay and start earning! Get your bonus when you sign up: ${referralLink}`;
+    const message = `🎉 Join me on LUMEXZZ WIN and start earning! Get your bonus when you sign up: ${referralLink}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank");
   };
 

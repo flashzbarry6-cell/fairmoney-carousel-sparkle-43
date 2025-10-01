@@ -70,11 +70,11 @@ const WithdrawalAmount = () => {
   const handleRefer = async () => {
     if (referralCode) {
       const referralUrl = `https://earnbuzzzz.netlify.app/login?tab=signup&ref=${referralCode}`;
-      const message = `🎉 Join me on FairMoney Pay and start earning! Get your bonus when you sign up: ${referralUrl}`;
+      const message = `🎉 Join me on LUMEXZZ WIN and start earning! Get your bonus when you sign up: ${referralUrl}`;
       
       if (navigator.share) {
         navigator.share({
-          title: 'Join FairMoney Pay!',
+          title: 'Join LUMEXZZ WIN!',
           text: message,
         });
       } else {

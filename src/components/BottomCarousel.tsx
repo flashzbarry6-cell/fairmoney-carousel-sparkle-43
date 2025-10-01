@@ -1,18 +1,15 @@
 import { useState, useEffect } from "react";
+import ad1 from "@/assets/ad-1.jpeg";
+import ad2 from "@/assets/ad-2.jpeg";
+import ad3 from "@/assets/ad-3.jpeg";
+import ad4 from "@/assets/ad-4.jpeg";
+import ad5 from "@/assets/ad-5.jpeg";
+import ad6 from "@/assets/ad-6.jpeg";
 
 export const BottomCarousel = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const banners = [
-    "/src/assets/cbn-logo.jpeg",
-    "/lovable-uploads/3a36162b-5f60-487d-989b-359d67cd1c0f.png",
-    "/lovable-uploads/26c9dfb2-f522-417a-84ea-f18765dc02a8.png", 
-    "/lovable-uploads/1333d6cb-a85c-4067-90ff-bc2f31355a49.png",
-    "/lovable-uploads/2b69c3cf-5af0-485e-b853-2130be4c6ef4.png",
-    "/lovable-uploads/49c8ac71-8b88-4aae-a816-ca4ea00a79ad.png",
-    "/lovable-uploads/8450be7e-ad4b-447a-ac75-ebb36d2774e0.png",
-    "/lovable-uploads/cec5ec8c-8d5a-40aa-afed-5bcd5f760c6c.png"
-  ];
+  const banners = [ad1, ad2, ad3, ad4, ad5, ad6];
 
   useEffect(() => {
     const interval = setInterval(() => {

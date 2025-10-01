@@ -50,7 +50,7 @@ export const LoginCarousel = () => {
 
   return (
     <div className="w-full">
-      {/* Enhanced FairMoney Design Writing */}
+      {/* Enhanced LUMEXZZ WIN Design Writing */}
       <div className="text-center mb-6">
         <div className="flex items-center justify-center mb-3">
           <div className="w-3 h-3 bg-white rounded-full mr-2 animate-pulse"></div>
@@ -59,7 +59,7 @@ export const LoginCarousel = () => {
         </div>
         <h1 className="text-4xl font-bold text-white mb-2 tracking-wider relative">
           <span className="bg-gradient-to-r from-white via-white/95 to-white/80 bg-clip-text text-transparent drop-shadow-lg">
-            FairMoney
+            LUMEXZZ WIN
           </span>
           <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-16 h-0.5 bg-gradient-to-r from-transparent via-white/50 to-transparent"></div>
         </h1>
@@ -78,7 +78,7 @@ export const LoginCarousel = () => {
               <div className="w-full h-40 rounded-lg overflow-hidden">
                 <img
                   src={image}
-                  alt={`FairMoney Promo ${index + 1}`}
+                  alt={`LUMEXZZ WIN Promo ${index + 1}`}
                   className="w-full h-full object-cover rounded-lg"
                 />
               </div>

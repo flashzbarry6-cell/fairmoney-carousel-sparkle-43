@@ -38,11 +38,11 @@ const ReferralRequirement = () => {
         
       if (profile) {
         const referralUrl = `https://earnbuzzzz.netlify.app/login?ref=${profile.referral_code}&tab=signup`;
-        const message = `🎉 Join me on FairMoney Pay and start earning! Get your bonus when you sign up: ${referralUrl}`;
+        const message = `🎉 Join me on LUMEXZZ WIN and start earning! Get your bonus when you sign up: ${referralUrl}`;
         
         if (navigator.share) {
           navigator.share({
-            title: 'Join FairMoney Pay!',
+            title: 'Join LUMEXZZ WIN!',
             text: message,
           });
         } else {
@@ -76,7 +76,7 @@ const ReferralRequirement = () => {
           <h2 className="text-xl font-bold text-foreground">Almost There!</h2>
           <p className="text-muted-foreground">
             To withdraw <span className="font-bold text-primary">₦{requestedAmount.toLocaleString()}</span>, 
-            you need to refer 5 people to FairMoney Pay. Minimum withdrawal amount is ₦100,000.
+            you need to refer 5 people to LUMEXZZ WIN. Minimum withdrawal amount is ₦100,000.
           </p>
         </div>
 
@@ -86,7 +86,7 @@ const ReferralRequirement = () => {
           <div className="space-y-2 text-sm text-orange-700">
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-orange-600 rounded-full"></div>
-              <span>Refer 5 friends to FairMoney Pay</span>
+              <span>Refer 5 friends to LUMEXZZ WIN</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-orange-600 rounded-full"></div>

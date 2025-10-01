@@ -28,7 +28,7 @@ const Support = () => {
             <div className="flex-1">
               <h3 className="font-semibold text-foreground mb-1">Telegram Support</h3>
               <p className="text-sm text-muted-foreground mb-2">Get instant support through our Telegram channel</p>
-              <p className="text-sm text-primary">fairmoney</p>
+              <p className="text-sm text-primary">lumexzz</p>
             </div>
           </div>
         </div>
@@ -41,7 +41,7 @@ const Support = () => {
             <div className="flex-1">
               <h3 className="font-semibold text-foreground mb-1">Email Support</h3>
               <p className="text-sm text-muted-foreground mb-2">Send us an email and we'll get back to you within 24 hours</p>
-              <p className="text-sm text-primary">fairmoneysupport@gmail.com</p>
+              <p className="text-sm text-primary">lumexzzsupport@gmail.com</p>
             </div>
           </div>
         </div>

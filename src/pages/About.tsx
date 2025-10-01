@@ -9,7 +9,7 @@ const About = () => {
         <Link to="/more-options" className="mr-4">
           <ArrowLeft className="w-6 h-6 text-foreground" />
         </Link>
-        <h1 className="text-xl font-semibold text-foreground">About FairMoney</h1>
+        <h1 className="text-xl font-semibold text-foreground">About LUMEXZZ WIN</h1>
       </div>
 
       {/* Logo and Title */}
@@ -17,14 +17,14 @@ const About = () => {
         <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4">
           F
         </div>
-        <h2 className="text-2xl font-bold text-foreground mb-2">FairMoney Pay</h2>
+        <h2 className="text-2xl font-bold text-foreground mb-2">LUMEXZZ WIN</h2>
         <p className="text-muted-foreground">Your trusted financial companion</p>
       </div>
 
       {/* Description */}
       <div className="bg-card rounded-2xl p-6 mb-6">
         <p className="text-foreground leading-relaxed mb-4">
-          FairMoney is Nigeria's leading digital financial services platform, designed to provide seamless, 
+          LUMEXZZ WIN is Nigeria's leading digital financial services platform, designed to provide seamless, 
           secure, and affordable financial solutions for everyone. We believe in making financial services 
           accessible to all Nigerians, regardless of their background or location.
         </p>
@@ -78,9 +78,9 @@ const About = () => {
       <div className="bg-card rounded-2xl p-6">
         <h3 className="text-lg font-semibold text-foreground mb-3">Get in Touch</h3>
         <div className="space-y-2 text-sm">
-          <p className="text-muted-foreground">Email: support@fairmoney.io</p>
-          <p className="text-muted-foreground">Phone: +234 700 FAIRMONEY</p>
-          <p className="text-muted-foreground">Website: www.fairmoney.io</p>
+          <p className="text-muted-foreground">Email: support@lumexzz.io</p>
+          <p className="text-muted-foreground">Phone: +234 700 LUMEXZZ</p>
+          <p className="text-muted-foreground">Website: www.lumexzz.io</p>
         </div>
       </div>
     </div>

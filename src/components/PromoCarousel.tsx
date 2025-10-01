@@ -12,11 +12,11 @@ const promoSlides = [
   {
     image: promo1,
     title: "Celebrate Your Success",
-    subtitle: "Get cash rewards with FairMoney"
+    subtitle: "Get cash rewards with LUMEXZZ WIN"
   },
   {
     image: promo2,
-    title: "FairMoney Microfinance Bank", 
+    title: "LUMEXZZ WIN Microfinance Bank", 
     subtitle: "Your trusted financial partner"
   },
   {
@@ -37,7 +37,7 @@ const promoSlides = [
   {
     image: promo6,
     title: "Financial Freedom",
-    subtitle: "With FairMoney you've got the finance"
+    subtitle: "With LUMEXZZ WIN you've got the finance"
   },
   {
     image: promo7,

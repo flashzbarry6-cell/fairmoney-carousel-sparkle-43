@@ -55,7 +55,7 @@ export const WithdrawalNotification = () => {
 
   return (
     <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 animate-fade-in">
-      <div className="bg-green-500 text-white px-4 py-3 rounded-lg shadow-lg flex items-center space-x-3 min-w-80">
+      <div className="bg-gradient-to-r from-purple-900 via-purple-700 to-black text-white px-4 py-3 rounded-lg shadow-lg flex items-center space-x-3 min-w-80">
         <CheckCircle className="w-5 h-5 flex-shrink-0" />
         <div className="flex-1">
           <p className="font-semibold text-sm">{currentNotification.name}</p>
@@ -65,7 +65,7 @@ export const WithdrawalNotification = () => {
         </div>
         <button
           onClick={() => setIsVisible(false)}
-          className="hover:bg-green-600 rounded-full p-1 transition-colors"
+          className="hover:bg-purple-800 rounded-full p-1 transition-colors"
         >
           <X className="w-4 h-4" />
         </button>
