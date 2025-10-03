@@ -31,7 +31,7 @@ export const BottomCarousel = () => {
               <img
                 src={banner}
                 alt={`Advertisement ${index + 1}`}
-                className="w-full h-full object-contain bg-black"
+                className="w-full h-full object-cover"
                 onError={(e) => {
                   console.log(`Failed to load image: ${banner}`);
                   e.currentTarget.style.display = 'none';

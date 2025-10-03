@@ -360,15 +360,15 @@ const Dashboard = () => {
       )}
 
       {/* Services Grid */}
-      <div className="grid grid-cols-3 gap-3 mb-4">
+      <div className="grid grid-cols-4 gap-3 mb-4">
         {services.map((service, index) => (
           service.route === "groups" ? (
             <div key={index} className="flex flex-col items-center space-y-2">
               <div 
-                className="w-14 h-14 rounded-2xl bg-gradient-to-br from-gold to-gold-dark flex items-center justify-center cursor-pointer shadow-lg hover:shadow-gold/50 transition-all"
+                className="w-14 h-14 rounded-2xl bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600 flex items-center justify-center cursor-pointer shadow-lg hover:shadow-yellow-500/50 transition-all animate-pulse"
                 onClick={() => setShowGroupModal(true)}
               >
-                <service.icon className="w-6 h-6 text-black" />
+                <service.icon className="w-6 h-6 text-white" />
               </div>
               <span className="text-[10px] text-center text-white font-medium leading-tight">
                 {service.label}
@@ -376,8 +376,8 @@ const Dashboard = () => {
             </div>
           ) : (
             <Link key={index} to={service.route} className="flex flex-col items-center space-y-2">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-gold to-gold-dark flex items-center justify-center shadow-lg hover:shadow-gold/50 transition-all">
-                <service.icon className="w-6 h-6 text-black" />
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600 flex items-center justify-center shadow-lg hover:shadow-yellow-500/50 transition-all animate-pulse">
+                <service.icon className="w-6 h-6 text-white" />
               </div>
               <span className="text-[10px] text-center text-white font-medium leading-tight">
                 {service.label}
