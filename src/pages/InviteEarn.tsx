@@ -11,7 +11,7 @@ const InviteEarn = () => {
   const [referralCode, setReferralCode] = useState("");
   const [totalReferrals, setTotalReferrals] = useState(0);
   const [totalEarnings, setTotalEarnings] = useState(0);
-  const referralLink = referralCode ? `https://earnbuzzzz.netlify.app/login?ref=${referralCode}&tab=signup` : "";
+  const referralLink = referralCode ? `https://lumexzz.netlify.app/login?ref=${referralCode}&tab=signup` : "";
 
   useEffect(() => {
     const loadUserData = async () => {

@@ -20,7 +20,7 @@ export const BottomCarousel = () => {
   }, [banners.length]);
 
   return (
-    <div className="fixed bottom-16 left-1/2 transform -translate-x-1/2 w-full max-w-md px-2">
+    <div className="w-full max-w-md mx-auto px-2 mt-6 mb-20">
       <div className="relative h-32 overflow-hidden rounded-lg border-2 border-gold/30 shadow-lg">
         <div
           className="flex transition-transform duration-700 ease-in-out h-full"

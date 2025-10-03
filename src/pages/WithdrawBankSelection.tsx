@@ -21,14 +21,35 @@ const WithdrawBankSelection = () => {
   const [isVerified, setIsVerified] = useState(false);
 
   const banks = [
-    "Access Bank", "Citibank", "Ecobank", "Fidelity Bank", "First Bank of Nigeria",
-    "First City Monument Bank", "Globus Bank", "Guaranty Trust Bank",
-    "Heritage Bank", "Jaiz Bank", "Keystone Bank", "Kuda Bank", "Moniepoint", "Opay",
-    "Palmpay", "Polaris Bank", "Providus Bank", "Stanbic IBTC Bank", 
-    "Standard Chartered", "Sterling Bank", "SunTrust Bank", "Titan Trust Bank",
-    "Union Bank", "United Bank for Africa", "Unity Bank", "VFD Microfinance Bank",
-    "Wema Bank", "Zenith Bank"
-  ].sort();
+    { name: "Access Bank", logo: "🏦" },
+    { name: "Citibank", logo: "🏦" },
+    { name: "Ecobank", logo: "🏦" },
+    { name: "Fidelity Bank", logo: "🏦" },
+    { name: "First Bank of Nigeria", logo: "🏦" },
+    { name: "First City Monument Bank", logo: "🏦" },
+    { name: "Globus Bank", logo: "🏦" },
+    { name: "Guaranty Trust Bank", logo: "🏦" },
+    { name: "Heritage Bank", logo: "🏦" },
+    { name: "Jaiz Bank", logo: "🏦" },
+    { name: "Keystone Bank", logo: "🏦" },
+    { name: "Kuda Bank", logo: "🏦" },
+    { name: "Moniepoint", logo: "🏦" },
+    { name: "Opay", logo: "🏦" },
+    { name: "Palmpay", logo: "🏦" },
+    { name: "Polaris Bank", logo: "🏦" },
+    { name: "Providus Bank", logo: "🏦" },
+    { name: "Stanbic IBTC Bank", logo: "🏦" },
+    { name: "Standard Chartered", logo: "🏦" },
+    { name: "Sterling Bank", logo: "🏦" },
+    { name: "SunTrust Bank", logo: "🏦" },
+    { name: "Titan Trust Bank", logo: "🏦" },
+    { name: "Union Bank", logo: "🏦" },
+    { name: "United Bank for Africa", logo: "🏦" },
+    { name: "Unity Bank", logo: "🏦" },
+    { name: "VFD Microfinance Bank", logo: "🏦" },
+    { name: "Wema Bank", logo: "🏦" },
+    { name: "Zenith Bank", logo: "🏦" }
+  ].sort((a, b) => a.name.localeCompare(b.name));
 
   const handleAccountNumberChange = (value: string) => {
     setFormData(prev => ({ ...prev, accountNumber: value }));
@@ -129,8 +150,11 @@ const WithdrawBankSelection = () => {
             </SelectTrigger>
             <SelectContent>
               {banks.map((bank) => (
-                <SelectItem key={bank} value={bank}>
-                  {bank}
+                <SelectItem key={bank.name} value={bank.name}>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-lg">{bank.logo}</span>
+                    <span>{bank.name}</span>
+                  </div>
                 </SelectItem>
               ))}
             </SelectContent>
@@ -142,12 +166,20 @@ const WithdrawBankSelection = () => {
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">Account Name</label>
             <div className="relative">
-              <Input
-                type="text"
-                value={isVerifying ? "Verifying..." : formData.accountName}
-                disabled
-                className="w-full bg-muted/50"
-              />
+              <div className="space-y-2">
+                <Input
+                  type="text"
+                  value={isVerifying ? "Verifying..." : formData.accountName}
+                  disabled
+                  className="w-full bg-muted/50"
+                />
+                {isVerified && formData.bankName && (
+                  <div className="text-sm text-muted-foreground bg-muted/30 rounded-lg p-2">
+                    <span className="font-medium">Bank: </span>
+                    <span>{formData.bankName}</span>
+                  </div>
+                )}
+              </div>
               {isVerified && (
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                   <Check className="w-5 h-5 text-green-600" />

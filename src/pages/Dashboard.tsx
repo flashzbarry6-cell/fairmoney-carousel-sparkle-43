@@ -222,7 +222,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black p-2 max-w-md mx-auto pb-20">
+    <div className="min-h-screen bg-black p-2 max-w-md mx-auto pb-32">
       {/* Header */}
       <div className="flex items-center justify-between mb-3 pt-2">
         <div className="flex items-center space-x-3">
@@ -360,7 +360,7 @@ const Dashboard = () => {
       )}
 
       {/* Services Grid */}
-      <div className="grid grid-cols-4 gap-3 mb-4">
+      <div className="grid grid-cols-4 gap-3 mb-6">
         {services.map((service, index) => (
           service.route === "groups" ? (
             <div key={index} className="flex flex-col items-center space-y-2">

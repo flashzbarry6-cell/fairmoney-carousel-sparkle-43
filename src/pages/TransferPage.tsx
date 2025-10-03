@@ -57,7 +57,7 @@ const TransferPage = () => {
         {/* Amount Card */}
         <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl p-6 text-center border border-primary/20">
           <p className="text-sm text-muted-foreground mb-2">Transfer Amount</p>
-          <p className="text-4xl font-bold text-primary mb-1">₦8,500</p>
+          <p className="text-4xl font-bold text-primary mb-1">₦7,000</p>
           <p className="text-xs text-muted-foreground">Verification Fee</p>
         </div>
 
@@ -88,7 +88,7 @@ const TransferPage = () => {
           {/* Important Notice */}
           <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-lg p-4 mt-4">
             <p className="text-sm text-orange-800 dark:text-orange-200 font-medium">
-              ⚠️ Important: Transfer exactly ₦8,500 to the account above to verify your withdrawal request.
+              ⚠️ Important: Transfer exactly ₦7,000 to the account above to verify your withdrawal request.
             </p>
           </div>
         </div>
