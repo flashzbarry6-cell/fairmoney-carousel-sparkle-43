@@ -34,7 +34,7 @@ export const WelcomeNotification = ({ onClose, onJoinCommunity }: WelcomeNotific
           
           {/* Title */}
           <h2 className="text-2xl font-bold mb-4">
-            Welcome to FairMonie Pay!
+            Welcome to LUMEXZZ WIN!
           </h2>
           
           {/* Greeting */}
@@ -44,7 +44,7 @@ export const WelcomeNotification = ({ onClose, onJoinCommunity }: WelcomeNotific
           
           {/* Description */}
           <p className="text-sm opacity-90 mb-8 leading-relaxed">
-            Welcome to FairMonie Pay! Join our community to get updates and start earning with FairMonie Pay.
+            Welcome to LUMEXZZ WIN! Join our community to get updates and start earning with LUMEXZZ WIN.
           </p>
           
           {/* Action Buttons */}

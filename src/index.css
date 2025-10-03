@@ -22,6 +22,12 @@ All colors MUST be HSL.
     --primary-foreground: 0 0% 100%;
     --primary-light: 270 65% 60%;
     --primary-dark: 270 75% 30%;
+    
+    /* Gold colors */
+    --gold: 45 100% 51%;
+    --gold-foreground: 0 0% 0%;
+    --gold-light: 45 100% 65%;
+    --gold-dark: 45 100% 40%;
 
     --secondary: 270 20% 95%;
     --secondary-foreground: 270 75% 25%;
@@ -125,6 +131,10 @@ All colors MUST be HSL.
     background: var(--gradient-background);
   }
   
+  .gold-gradient {
+    background: linear-gradient(135deg, hsl(var(--gold)) 0%, hsl(var(--gold-dark)) 100%);
+  }
+  
   .form-container {
     @apply bg-card rounded-3xl p-8 shadow-[var(--shadow-form)] border border-border/50;
   }
@@ -143,6 +153,23 @@ All colors MUST be HSL.
   
   .carousel-slide {
     @apply rounded-2xl overflow-hidden bg-cover bg-center bg-no-repeat shadow-lg transition-transform duration-500 hover:scale-[1.02];
+  }
+  
+  @keyframes typewriter {
+    from {
+      width: 0;
+    }
+    to {
+      width: 100%;
+    }
+  }
+  
+  .typewriter {
+    overflow: hidden;
+    white-space: nowrap;
+    display: inline-block;
+    animation: typewriter 3s steps(40) 1s forwards;
+    width: 0;
   }
 }
 
