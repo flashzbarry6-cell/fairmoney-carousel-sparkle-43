@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const WithdrawBankSelection = () => {
   const { toast } = useToast();
@@ -21,34 +22,34 @@ const WithdrawBankSelection = () => {
   const [isVerified, setIsVerified] = useState(false);
 
   const banks = [
-    { name: "Access Bank", logo: "🏦" },
-    { name: "Citibank", logo: "🏦" },
-    { name: "Ecobank", logo: "🏦" },
-    { name: "Fidelity Bank", logo: "🏦" },
-    { name: "First Bank of Nigeria", logo: "🏦" },
-    { name: "First City Monument Bank", logo: "🏦" },
-    { name: "Globus Bank", logo: "🏦" },
-    { name: "Guaranty Trust Bank", logo: "🏦" },
-    { name: "Heritage Bank", logo: "🏦" },
-    { name: "Jaiz Bank", logo: "🏦" },
-    { name: "Keystone Bank", logo: "🏦" },
-    { name: "Kuda Bank", logo: "🏦" },
-    { name: "Moniepoint", logo: "🏦" },
-    { name: "Opay", logo: "🏦" },
-    { name: "Palmpay", logo: "🏦" },
-    { name: "Polaris Bank", logo: "🏦" },
-    { name: "Providus Bank", logo: "🏦" },
-    { name: "Stanbic IBTC Bank", logo: "🏦" },
-    { name: "Standard Chartered", logo: "🏦" },
-    { name: "Sterling Bank", logo: "🏦" },
-    { name: "SunTrust Bank", logo: "🏦" },
-    { name: "Titan Trust Bank", logo: "🏦" },
-    { name: "Union Bank", logo: "🏦" },
-    { name: "United Bank for Africa", logo: "🏦" },
-    { name: "Unity Bank", logo: "🏦" },
-    { name: "VFD Microfinance Bank", logo: "🏦" },
-    { name: "Wema Bank", logo: "🏦" },
-    { name: "Zenith Bank", logo: "🏦" }
+    { name: "Access Bank", code: "044", logo: "🏦" },
+    { name: "First Bank of Nigeria", code: "011", logo: "🏦" },
+    { name: "Guaranty Trust Bank", code: "058", logo: "🏦" },
+    { name: "United Bank for Africa", code: "033", logo: "🏦" },
+    { name: "Zenith Bank", code: "057", logo: "🏦" },
+    { name: "Opay", code: "999992", logo: "🏦" },
+    { name: "Palmpay", code: "999991", logo: "🏦" },
+    { name: "Moniepoint", code: "50515", logo: "🏦" },
+    { name: "Kuda Bank", code: "50211", logo: "🏦" },
+    { name: "Citibank", code: "023", logo: "🏦" },
+    { name: "Ecobank", code: "050", logo: "🏦" },
+    { name: "Fidelity Bank", code: "070", logo: "🏦" },
+    { name: "First City Monument Bank", code: "214", logo: "🏦" },
+    { name: "Globus Bank", code: "00103", logo: "🏦" },
+    { name: "Heritage Bank", code: "030", logo: "🏦" },
+    { name: "Jaiz Bank", code: "301", logo: "🏦" },
+    { name: "Keystone Bank", code: "082", logo: "🏦" },
+    { name: "Polaris Bank", code: "076", logo: "🏦" },
+    { name: "Providus Bank", code: "101", logo: "🏦" },
+    { name: "Stanbic IBTC Bank", code: "221", logo: "🏦" },
+    { name: "Standard Chartered", code: "068", logo: "🏦" },
+    { name: "Sterling Bank", code: "232", logo: "🏦" },
+    { name: "SunTrust Bank", code: "100", logo: "🏦" },
+    { name: "Titan Trust Bank", code: "102", logo: "🏦" },
+    { name: "Union Bank", code: "032", logo: "🏦" },
+    { name: "Unity Bank", code: "215", logo: "🏦" },
+    { name: "VFD Microfinance Bank", code: "566", logo: "🏦" },
+    { name: "Wema Bank", code: "035", logo: "🏦" }
   ].sort((a, b) => a.name.localeCompare(b.name));
 
   const handleAccountNumberChange = (value: string) => {
@@ -57,37 +58,70 @@ const WithdrawBankSelection = () => {
     setFormData(prev => ({ ...prev, accountName: "" }));
     
     if (value.length === 10 && formData.bankName) {
-      verifyAccount(value, formData.bankName);
+      const selectedBank = banks.find(b => b.name === formData.bankName);
+      if (selectedBank) {
+        verifyAccount(value, selectedBank.code);
+      }
     }
   };
 
   const handleBankChange = (value: string) => {
+    const selectedBank = banks.find(b => b.name === value);
     setFormData(prev => ({ ...prev, bankName: value }));
     setIsVerified(false);
     setFormData(prev => ({ ...prev, accountName: "" }));
     
-    if (formData.accountNumber.length === 10) {
-      verifyAccount(formData.accountNumber, value);
+    if (formData.accountNumber.length === 10 && selectedBank) {
+      verifyAccount(formData.accountNumber, selectedBank.code);
     }
   };
 
-  const verifyAccount = (accountNumber: string, bankName: string) => {
-    if (accountNumber.length !== 10 || !bankName) return;
+  const verifyAccount = async (accountNumber: string, bankCode: string) => {
+    if (accountNumber.length !== 10 || !bankCode) return;
     
     setIsVerifying(true);
+    setIsVerified(false);
+    setFormData(prev => ({ ...prev, accountName: "" }));
     
-    // Simulate account verification
-    setTimeout(() => {
-      const mockNames = [
-        "JOHN SMITH DOE", "MARY JANE JOHNSON", "DAVID MICHAEL BROWN", 
-        "SARAH ELIZABETH DAVIS", "JAMES ROBERT WILSON", "LISA MARIE ANDERSON"
-      ];
-      const randomName = mockNames[Math.floor(Math.random() * mockNames.length)];
-      
-      setFormData(prev => ({ ...prev, accountName: randomName }));
-      setIsVerified(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('verify-bank', {
+        body: { account_number: accountNumber, bank_code: bankCode }
+      });
+
+      console.log('Verification response:', data, error);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (data.success && data.account_name) {
+        setFormData(prev => ({ ...prev, accountName: data.account_name }));
+        setIsVerified(true);
+        toast({
+          title: "Account Verified",
+          description: `Account belongs to ${data.account_name}`,
+        });
+      } else {
+        setFormData(prev => ({ ...prev, accountName: "Could not verify account" }));
+        setIsVerified(false);
+        toast({
+          title: "Verification Failed",
+          description: data.error || "Could not verify account",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Verification error:', error);
+      setFormData(prev => ({ ...prev, accountName: "Could not verify account" }));
+      setIsVerified(false);
+      toast({
+        title: "Verification Error",
+        description: "Could not verify account. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
       setIsVerifying(false);
-    }, 2000);
+    }
   };
 
   const handleCashout = () => {
@@ -171,7 +205,7 @@ const WithdrawBankSelection = () => {
                   type="text"
                   value={isVerifying ? "Verifying..." : formData.accountName}
                   disabled
-                  className="w-full bg-muted/50"
+                  className={`w-full bg-muted/50 ${!isVerified && formData.accountName ? 'text-red-500' : ''}`}
                 />
                 {isVerified && formData.bankName && (
                   <div className="text-sm text-muted-foreground bg-muted/30 rounded-lg p-2">
