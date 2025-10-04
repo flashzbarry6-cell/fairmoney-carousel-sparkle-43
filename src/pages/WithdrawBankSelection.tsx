@@ -3,9 +3,14 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+
+interface Bank {
+  name: string;
+  code: string;
+}
 
 const WithdrawBankSelection = () => {
   const { toast } = useToast();
@@ -16,63 +21,68 @@ const WithdrawBankSelection = () => {
   const [formData, setFormData] = useState({
     accountNumber: "",
     bankName: "",
+    bankCode: "",
     accountName: ""
   });
   const [isVerifying, setIsVerifying] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
+  const [banks, setBanks] = useState<Bank[]>([]);
+  const [isLoadingBanks, setIsLoadingBanks] = useState(true);
 
-  const banks = [
-    { name: "Access Bank", code: "044", logo: "🏦" },
-    { name: "First Bank of Nigeria", code: "011", logo: "🏦" },
-    { name: "Guaranty Trust Bank", code: "058", logo: "🏦" },
-    { name: "United Bank for Africa", code: "033", logo: "🏦" },
-    { name: "Zenith Bank", code: "057", logo: "🏦" },
-    { name: "Opay", code: "999992", logo: "🏦" },
-    { name: "Palmpay", code: "999991", logo: "🏦" },
-    { name: "Moniepoint", code: "50515", logo: "🏦" },
-    { name: "Kuda Bank", code: "50211", logo: "🏦" },
-    { name: "Citibank", code: "023", logo: "🏦" },
-    { name: "Ecobank", code: "050", logo: "🏦" },
-    { name: "Fidelity Bank", code: "070", logo: "🏦" },
-    { name: "First City Monument Bank", code: "214", logo: "🏦" },
-    { name: "Globus Bank", code: "00103", logo: "🏦" },
-    { name: "Heritage Bank", code: "030", logo: "🏦" },
-    { name: "Jaiz Bank", code: "301", logo: "🏦" },
-    { name: "Keystone Bank", code: "082", logo: "🏦" },
-    { name: "Polaris Bank", code: "076", logo: "🏦" },
-    { name: "Providus Bank", code: "101", logo: "🏦" },
-    { name: "Stanbic IBTC Bank", code: "221", logo: "🏦" },
-    { name: "Standard Chartered", code: "068", logo: "🏦" },
-    { name: "Sterling Bank", code: "232", logo: "🏦" },
-    { name: "SunTrust Bank", code: "100", logo: "🏦" },
-    { name: "Titan Trust Bank", code: "102", logo: "🏦" },
-    { name: "Union Bank", code: "032", logo: "🏦" },
-    { name: "Unity Bank", code: "215", logo: "🏦" },
-    { name: "VFD Microfinance Bank", code: "566", logo: "🏦" },
-    { name: "Wema Bank", code: "035", logo: "🏦" }
-  ].sort((a, b) => a.name.localeCompare(b.name));
+  // Fetch banks from Paystack API
+  useEffect(() => {
+    const fetchBanks = async () => {
+      try {
+        const response = await fetch('https://api.paystack.co/bank');
+        const result = await response.json();
+        
+        if (result.status && result.data) {
+          const bankList = result.data.map((bank: any) => ({
+            name: bank.name,
+            code: bank.code
+          })).sort((a: Bank, b: Bank) => a.name.localeCompare(b.name));
+          
+          setBanks(bankList);
+        }
+      } catch (error) {
+        console.error('Error fetching banks:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load bank list. Please refresh the page.",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoadingBanks(false);
+      }
+    };
+
+    fetchBanks();
+  }, [toast]);
 
   const handleAccountNumberChange = (value: string) => {
     setFormData(prev => ({ ...prev, accountNumber: value }));
     setIsVerified(false);
     setFormData(prev => ({ ...prev, accountName: "" }));
     
-    if (value.length === 10 && formData.bankName) {
-      const selectedBank = banks.find(b => b.name === formData.bankName);
-      if (selectedBank) {
-        verifyAccount(value, selectedBank.code);
-      }
+    if (value.length === 10 && formData.bankCode) {
+      verifyAccount(value, formData.bankCode);
     }
   };
 
   const handleBankChange = (value: string) => {
     const selectedBank = banks.find(b => b.name === value);
-    setFormData(prev => ({ ...prev, bankName: value }));
-    setIsVerified(false);
-    setFormData(prev => ({ ...prev, accountName: "" }));
-    
-    if (formData.accountNumber.length === 10 && selectedBank) {
-      verifyAccount(formData.accountNumber, selectedBank.code);
+    if (selectedBank) {
+      setFormData(prev => ({ 
+        ...prev, 
+        bankName: value,
+        bankCode: selectedBank.code 
+      }));
+      setIsVerified(false);
+      setFormData(prev => ({ ...prev, accountName: "" }));
+      
+      if (formData.accountNumber.length === 10) {
+        verifyAccount(formData.accountNumber, selectedBank.code);
+      }
     }
   };
 
@@ -178,17 +188,14 @@ const WithdrawBankSelection = () => {
         {/* Bank Selection */}
         <div>
           <label className="block text-sm font-medium text-foreground mb-2">Select Bank</label>
-          <Select onValueChange={handleBankChange} value={formData.bankName}>
+          <Select onValueChange={handleBankChange} value={formData.bankName} disabled={isLoadingBanks}>
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Choose your bank" />
+              <SelectValue placeholder={isLoadingBanks ? "Loading banks..." : "Choose your bank"} />
             </SelectTrigger>
             <SelectContent>
               {banks.map((bank) => (
-                <SelectItem key={bank.name} value={bank.name}>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-lg">{bank.logo}</span>
-                    <span>{bank.name}</span>
-                  </div>
+                <SelectItem key={bank.code} value={bank.name}>
+                  {bank.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -205,7 +212,7 @@ const WithdrawBankSelection = () => {
                   type="text"
                   value={isVerifying ? "Verifying..." : formData.accountName}
                   disabled
-                  className={`w-full bg-muted/50 ${!isVerified && formData.accountName ? 'text-red-500' : ''}`}
+                  className={`w-full bg-muted/50 ${!isVerified && formData.accountName && formData.accountName.includes('Could not') ? 'text-red-500' : ''}`}
                 />
                 {isVerified && formData.bankName && (
                   <div className="text-sm text-muted-foreground bg-muted/30 rounded-lg p-2">
