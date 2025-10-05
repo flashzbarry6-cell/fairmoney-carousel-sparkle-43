@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { User, Eye, EyeOff, Shield, Users, Calculator, Wifi, CreditCard, Banknote, UserPlus, MoreHorizontal, MessageCircle, Copy, History } from "lucide-react";
+import { User, Eye, EyeOff, Shield, Users, Calculator, Wifi, CreditCard, Banknote, UserPlus, MoreHorizontal, MessageCircle, Copy, History, Gift, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { WelcomeNotification } from "@/components/WelcomeNotification";
@@ -31,6 +31,8 @@ const Dashboard = () => {
   const [countdown, setCountdown] = useState(5 * 60); // 5 minutes in seconds
   const [timerActive, setTimerActive] = useState(false);
   const [claimingStarted, setClaimingStarted] = useState(false);
+  const [lastCheckin, setLastCheckin] = useState<number | null>(null);
+  const [canCheckin, setCanCheckin] = useState(true);
 
   // Check auth and load profile
   useEffect(() => {
@@ -72,6 +74,17 @@ const Dashboard = () => {
             setTimerActive(false);
             setClaimingStarted(true);
           }
+        }
+
+        // Check last check-in time
+        const lastCheckinTime = localStorage.getItem('lastCheckin');
+        if (lastCheckinTime) {
+          const lastTime = parseInt(lastCheckinTime);
+          setLastCheckin(lastTime);
+          const now = Date.now();
+          const timeSinceCheckin = now - lastTime;
+          const twentyFourHours = 24 * 60 * 60 * 1000;
+          setCanCheckin(timeSinceCheckin >= twentyFourHours);
         }
       }
     };
@@ -206,9 +219,58 @@ const Dashboard = () => {
     }
   };
 
+  const handleCheckin = async () => {
+    if (!canCheckin) {
+      toast({
+        title: "Already Checked In",
+        description: "You can check in again in 24 hours",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      // Update balance
+      const newBalance = balance + 1500;
+      const { error } = await supabase
+        .from('profiles')
+        .update({ balance: newBalance })
+        .eq('user_id', session.user.id);
+
+      if (error) throw error;
+
+      // Update state and localStorage
+      setBalance(newBalance);
+      const now = Date.now();
+      setLastCheckin(now);
+      setCanCheckin(false);
+      localStorage.setItem('lastCheckin', now.toString());
+
+      // Save to check-in history
+      const history = JSON.parse(localStorage.getItem('checkinHistory') || '[]');
+      history.unshift({ timestamp: now, amount: 1500 });
+      localStorage.setItem('checkinHistory', JSON.stringify(history));
+
+      toast({
+        title: "Check-in Successful!",
+        description: "₦1,500 has been added to your balance",
+      });
+    } catch (error) {
+      console.error("Check-in error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to process check-in",
+        variant: "destructive"
+      });
+    }
+  };
+
   const services = [
     { icon: Users, label: "Support", bgClass: "bg-primary/10", route: "/support" },
-    { icon: Calculator, label: "Groups", bgClass: "bg-primary/10", route: "groups" },
+    { icon: Calculator, label: "Investment", bgClass: "bg-primary/10", route: "/investment" },
     { icon: Banknote, label: "Withdraw", bgClass: "bg-primary/10", route: "/withdrawal-amount" },
     { icon: CreditCard, label: "Airtime", bgClass: "bg-primary/10", route: "/buy-airtime" },
     { icon: Wifi, label: "Data", bgClass: "bg-primary/10", route: "/buy-data" },
@@ -226,9 +288,7 @@ const Dashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-3 pt-2">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gold/20 rounded-full flex items-center justify-center">
-            <User className="w-5 h-5 text-gold" />
-          </div>
+          <ProfileUpload />
       <div className="overflow-hidden">
         <h1 className="text-lg font-semibold text-white typewriter">{profile?.full_name || user?.email}</h1>
         <p className="text-sm text-gray-400">How are you doing today?</p>
@@ -396,6 +456,12 @@ const Dashboard = () => {
             </div>
             <span className="text-[10px] text-gold font-medium">Home</span>
           </Link>
+          <Link to="/activity" className="flex flex-col items-center space-y-1 flex-1">
+            <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center">
+              <div className="w-3 h-3 bg-gray-600 rounded-sm"></div>
+            </div>
+            <span className="text-[10px] text-gray-500">Activity</span>
+          </Link>
           <Link to="/loan" className="flex flex-col items-center space-y-1 flex-1">
             <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center">
               <div className="w-3 h-3 bg-gray-600 rounded-sm"></div>
@@ -423,6 +489,80 @@ const Dashboard = () => {
       
       {/* Bottom Carousel */}
       <BottomCarousel />
+
+      {/* Task and Check-in Buttons */}
+      <div className="grid grid-cols-2 gap-3 mb-6 px-2 mt-6">
+        <Link to="/activity">
+          <div className="bg-gradient-to-br from-purple-900 to-purple-700 rounded-2xl p-4 border border-purple-500/30 hover:scale-105 transition-transform">
+            <div className="flex items-center gap-2 mb-2">
+              <Gift className="w-6 h-6 text-yellow-400" />
+              <h3 className="text-white font-semibold">Task</h3>
+            </div>
+            <p className="text-purple-200 text-sm">Complete daily tasks</p>
+          </div>
+        </Link>
+
+        <div 
+          onClick={handleCheckin}
+          className={`bg-gradient-to-br from-green-900 to-green-700 rounded-2xl p-4 border border-green-500/30 cursor-pointer hover:scale-105 transition-transform ${
+            !canCheckin ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <TrendingUp className="w-6 h-6 text-yellow-400" />
+            <h3 className="text-white font-semibold">Check-in</h3>
+          </div>
+          <p className="text-green-200 text-sm">
+            {canCheckin ? 'Earn ₦1,500' : '24hrs cooldown'}
+          </p>
+        </div>
+      </div>
+
+      {/* Lumexzz Info Section */}
+      <div className="bg-gradient-to-br from-black via-purple-950 to-black rounded-2xl p-6 mb-6 mx-2 border border-purple-500/30">
+        <div className="text-center mb-4">
+          <h2 className="text-2xl font-bold text-white mb-2">Why Lumexzz?</h2>
+          <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-yellow-400 mx-auto mb-4"></div>
+        </div>
+
+        <div className="space-y-3 mb-6">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+              <Shield className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h3 className="text-white font-semibold mb-1">100% Secure</h3>
+              <p className="text-purple-200 text-sm">Bank-level encryption protects your transactions and personal data</p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center flex-shrink-0">
+              <TrendingUp className="w-5 h-5 text-black" />
+            </div>
+            <div>
+              <h3 className="text-white font-semibold mb-1">Lightning Fast</h3>
+              <p className="text-purple-200 text-sm">Instant withdrawals and seamless transactions in seconds</p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+              <Users className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h3 className="text-white font-semibold mb-1">100% Reliable</h3>
+              <p className="text-purple-200 text-sm">24/7 support and guaranteed service uptime</p>
+            </div>
+          </div>
+        </div>
+
+        <Link to="/invite-earn">
+          <Button className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-black font-bold py-3 rounded-full text-lg">
+            Earn Now
+          </Button>
+        </Link>
+      </div>
 
       {/* Live Chat */}
       <LiveChat />

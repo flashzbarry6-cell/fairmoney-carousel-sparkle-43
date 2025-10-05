@@ -1,12 +1,15 @@
 import { ArrowLeft, ChevronDown } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const LoanApplication = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const [isProcessing, setIsProcessing] = useState(false);
   const [formData, setFormData] = useState({
     accountNumber: "",
     accountName: "",
@@ -20,6 +23,82 @@ const LoanApplication = () => {
       ...formData,
       [e.target.name]: e.target.value
     });
+  };
+
+  const handleProceed = async () => {
+    const loanAmount = parseInt(formData.loanAmount);
+    
+    // Validate loan amount
+    if (!loanAmount || isNaN(loanAmount)) {
+      toast({
+        title: "Invalid Amount",
+        description: "Please enter a valid loan amount",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (loanAmount > 200000) {
+      toast({
+        title: "Invalid Loan Amount",
+        description: "Maximum loan amount is ₦200,000",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      // Get current user
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({
+          title: "Error",
+          description: "Please login to continue",
+          variant: "destructive"
+        });
+        navigate("/login");
+        return;
+      }
+
+      // Get current balance
+      const { data: profile, error: fetchError } = await supabase
+        .from('profiles')
+        .select('balance')
+        .eq('user_id', session.user.id)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      const currentBalance = profile?.balance || 0;
+      const newBalance = currentBalance + loanAmount;
+
+      // Update balance
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ balance: newBalance })
+        .eq('user_id', session.user.id);
+
+      if (updateError) throw updateError;
+
+      toast({
+        title: "Loan Approved!",
+        description: `₦${loanAmount.toLocaleString()} has been added to your balance`,
+      });
+
+      // Navigate back to dashboard
+      setTimeout(() => navigate("/dashboard"), 1500);
+    } catch (error) {
+      console.error("Loan processing error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to process loan. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -95,15 +174,10 @@ const LoanApplication = () => {
 
         <Button 
           className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 rounded-full mt-6"
-          onClick={() => {
-            toast({
-              title: "Wrong Fair Code",
-              description: "Please purchase a valid Fair Code from the Buy Fair Code page.",
-              variant: "destructive"
-            });
-          }}
+          onClick={handleProceed}
+          disabled={isProcessing}
         >
-          Proceed
+          {isProcessing ? "Processing..." : "Proceed"}
         </Button>
       </div>
     </div>
