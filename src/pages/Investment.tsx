@@ -5,23 +5,38 @@ import { Button } from "@/components/ui/button";
 const Investment = () => {
   const plans = [
     {
+      id: 1,
       amount: 20,
+      roi: "30%",
+      duration: "7 days",
+      returns: 26,
+      accountNumber: "8102562883",
+      bank: "Opay",
+      accountName: "Veronica Chisom Benjamin",
       naira: 32000,
-      returns: "150%",
-      duration: "30 days"
     },
     {
+      id: 2,
       amount: 50,
+      roi: "40%",
+      duration: "14 days",
+      returns: 70,
+      accountNumber: "8102562883",
+      bank: "Opay",
+      accountName: "Veronica Chisom Benjamin",
       naira: 80000,
-      returns: "200%",
-      duration: "45 days"
     },
     {
+      id: 3,
       amount: 200,
+      roi: "50%",
+      duration: "30 days",
+      returns: 300,
+      accountNumber: "8102562883",
+      bank: "Opay",
+      accountName: "Veronica Chisom Benjamin",
       naira: 320000,
-      returns: "300%",
-      duration: "60 days"
-    }
+    },
   ];
 
   return (
@@ -95,7 +110,7 @@ const Investment = () => {
                 <p className="text-purple-300 text-sm mt-1">₦{plan.naira.toLocaleString()}</p>
               </div>
               <div className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black px-3 py-1 rounded-full text-sm font-semibold">
-                {plan.returns} ROI
+                {plan.roi} ROI
               </div>
             </div>
 

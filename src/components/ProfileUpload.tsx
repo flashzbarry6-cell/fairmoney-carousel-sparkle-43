@@ -5,10 +5,18 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 
 export const ProfileUpload = () => {
-  const [profile, setProfile] = useState<any>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  // Load avatar from localStorage on mount
+  useState(() => {
+    const savedAvatar = localStorage.getItem("userAvatar");
+    if (savedAvatar) {
+      setAvatarUrl(savedAvatar);
+    }
+  });
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -36,14 +44,21 @@ export const ProfileUpload = () => {
 
     setUploading(true);
     
-    // Simulate upload for demo
-    setTimeout(() => {
+    // Read the file and convert to base64
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = reader.result as string;
+      setAvatarUrl(base64String);
+      localStorage.setItem("userAvatar", base64String);
+      
       toast({
         title: "Profile updated",
         description: "Your profile picture has been updated successfully"
       });
       setUploading(false);
-    }, 2000);
+    };
+    reader.readAsDataURL(file);
+    
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -65,8 +80,8 @@ export const ProfileUpload = () => {
   return (
     <div className="relative inline-block">
       <Avatar className="w-16 h-16">
-        <AvatarImage src={profile?.avatar_url} alt="Profile" />
-        <AvatarFallback className="text-lg font-semibold">
+        <AvatarImage src={avatarUrl || undefined} alt="Profile" />
+        <AvatarFallback className="text-lg font-semibold bg-purple-500 text-white">
           {getInitials()}
         </AvatarFallback>
       </Avatar>
