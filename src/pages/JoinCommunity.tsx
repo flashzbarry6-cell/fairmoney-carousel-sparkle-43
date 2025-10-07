@@ -24,7 +24,7 @@ const JoinCommunity = () => {
       {/* Description */}
       <div className="text-center mb-8">
         <p className="text-muted-foreground">
-          Join our community to get updates, tips, and start earning with FairMonie Pay!
+          Join our community to get updates, tips, and start earning with LUMEXZZ WIN!
         </p>
       </div>
 
@@ -64,7 +64,7 @@ const JoinCommunity = () => {
         </div>
         <Button 
           onClick={handleWhatsAppJoin}
-          className="w-full mt-4 bg-green-500 hover:bg-green-600 text-white"
+          className="w-full mt-4 bg-black-500 hover:bg-purple-600 text-white"
         >
           Join WhatsApp Group
         </Button>
