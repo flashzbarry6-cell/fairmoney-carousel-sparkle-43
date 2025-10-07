@@ -411,13 +411,31 @@ const Dashboard = () => {
           </div>
         </div>
         
-        {/* Timer under eye */}
-        <div className="flex justify-center mb-2">
+        {/* Timer and Buttons Row */}
+        <div className="flex items-center justify-between mb-2">
+          <Link to="/upgrade-account">
+            <Button
+              size="sm"
+              className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-semibold h-7 text-xs px-3"
+            >
+              Upgrade
+            </Button>
+          </Link>
+          
           {claimingStarted && (
             <div className="bg-gold text-black text-xs px-3 py-1 rounded-full font-bold">
               {timerActive && countdown > 0 ? formatTime(countdown) : "Ready to claim!"}
             </div>
           )}
+          
+          <Link to="/withdrawal-amount">
+            <Button
+              size="sm"
+              className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold h-7 text-xs px-3"
+            >
+              Withdraw
+            </Button>
+          </Link>
         </div>
         
         <div className="text-3xl font-bold mb-4 text-center">
