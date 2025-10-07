@@ -134,6 +134,39 @@ const Dashboard = () => {
     }
   }, [user]);
 
+  // Auto-add ₦5000 every 5 minutes
+  useEffect(() => {
+    if (!user) return;
+
+    const autoBonus = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+
+        const newBalance = balance + 5000;
+        const { error } = await supabase
+          .from('profiles')
+          .update({ balance: newBalance })
+          .eq('user_id', session.user.id);
+
+        if (!error) {
+          setBalance(newBalance);
+          toast({
+            title: "Auto Bonus!",
+            description: "₦5,000 added to your balance",
+          });
+        }
+      } catch (error) {
+        console.error('Auto bonus error:', error);
+      }
+    };
+
+    // Run auto-bonus every 5 minutes
+    const interval = setInterval(autoBonus, 5 * 60 * 1000);
+    
+    return () => clearInterval(interval);
+  }, [user, balance, toast]);
+
   // Countdown timer effect with auto-claim
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -168,7 +201,7 @@ const Dashboard = () => {
     
     try {
       // Update balance in Supabase
-      const newBalance = balance + 1000;
+      const newBalance = balance + 5300;
       const { error } = await supabase
         .from('profiles')
         .update({ balance: newBalance })
@@ -181,7 +214,7 @@ const Dashboard = () => {
       
       toast({
         title: "Bonus Claimed!",
-        description: "₦1,000 added to your balance",
+        description: "₦5,300 added to your balance",
       });
       
       // Restart timer for next claim
@@ -396,7 +429,7 @@ const Dashboard = () => {
             ? "🎁 Start Claim"
             : (timerActive && countdown > 0)
             ? `⏰ Wait ${formatTime(countdown)}`
-            : "🎁 Claim ₦1,000"
+            : "🎁 Claim ₦5,300"
           }
         </Button>
       </div>
@@ -491,7 +524,7 @@ const Dashboard = () => {
       <BottomCarousel />
 
       {/* Task and Check-in Buttons */}
-      <div className="grid grid-cols-2 gap-3 mb-6 px-2 mt-6">
+      <div className="grid grid-cols-2 gap-3 mb-6 px-2 mt-3">
         <Link to="/activity">
           <div className="bg-gradient-to-br from-purple-900 to-purple-700 rounded-2xl p-4 border border-purple-500/30 hover:scale-105 transition-transform">
             <div className="flex items-center gap-2 mb-2">
