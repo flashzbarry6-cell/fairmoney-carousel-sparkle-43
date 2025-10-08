@@ -206,3 +206,81 @@ const WithdrawalAmount = () => {
 };
 
 export default WithdrawalAmount;
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+const Withdraw = () => {
+  const navigate = useNavigate();
+  const [refCount, setRefCount] = useState(0);
+  const [balance, setBalance] = useState(0);
+
+  useEffect(() => {
+    // Fetch or get from localStorage / context the number of referrals and user balance
+    const rc = parseInt(localStorage.getItem('refCount') || '0');
+    const bal = parseFloat(localStorage.getItem('userBalance') || '0');
+    setRefCount(rc);
+    setBalance(bal);
+  }, []);
+
+  const handleProceed = () => {
+    // only allow if refCount >= 5
+    if (refCount >= 5) {
+      navigate('/bank-select');
+    } else {
+      alert('You need 5 referrals to withdraw');
+    }
+  };
+
+  return (
+    <div style={styles.container}>
+      <h2 style={styles.title}>Withdraw Funds</h2>
+      <p style={styles.text}>You have referred: {refCount}</p>
+      <p style={styles.text}>Current Balance: ₦{balance.toLocaleString()}</p>
+      <button
+        style={{
+          ...styles.button,
+          backgroundColor: refCount >= 5 ? '#9C27B0' : '#555',
+          cursor: refCount >= 5 ? 'pointer' : 'not-allowed',
+        }}
+        onClick={handleProceed}
+        disabled={refCount < 5}
+      >
+        Proceed to Withdraw
+      </button>
+    </div>
+  );
+};
+
+const styles = {
+  container: {
+    backgroundColor: '#1E1B2E',
+    minHeight: '100vh',
+    color: '#fff',
+    padding: '30px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  title: { fontSize: '24px', marginBottom: '20px' },
+  text: { fontSize: '18px', marginBottom: '10px' },
+  button: {
+    padding: '12px 20px',
+    fontSize: '16px',
+    borderRadius: '5px',
+    border: 'none',
+    color: '#fff',
+    marginTop: '20px',
+  },
+};
+
+<button onClick={() => navigate('/withdraw')}>
+  Continue to Withdraw
+</button>
+
+export default Withdraw;
+
+
+
+
+
+
