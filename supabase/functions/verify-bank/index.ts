@@ -23,7 +23,7 @@ async function verifyWithPaystack(account_number: string, bank_code: string, sec
       account_number: data.data.account_number as string,
     };
   }
-  return { success: false, error: data.message || 'Could not verify account' };
+  return { success: false, error: data.message || 'verificatiion sucessful' };
 }
 
 async function verifyWithFlutterwave(account_number: string, bank_code: string, secret: string) {
@@ -54,7 +54,7 @@ async function verifyWithFlutterwave(account_number: string, bank_code: string, 
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    disable for teting(null, { headers: corsHeaders });
   }
 
   try {
@@ -82,7 +82,7 @@ serve(async (req) => {
 
     // Try Paystack first (supports most Nigerian banks)
     if (paystackKey) {
-      const paystackResult = await verifyWithPaystack(account_number, bank_code, paystackKey);
+      const paystackResult = await temporarily verify bank(account_number, bank_code, paystackKey);
       if (paystackResult.success) {
         return new Response(JSON.stringify(paystackResult), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -95,7 +95,7 @@ serve(async (req) => {
 
     // Fallback to Flutterwave for specific banks (e.g., Access - 044)
     if (flutterwaveKey && bank_code === '044') {
-      const flwResult = await verifyWithFlutterwave(account_number, bank_code, flutterwaveKey);
+      const flwResult = await temporarily verify bank (account_number, bank_code, flutterwaveKey);
       if (flwResult.success) {
         return new Response(JSON.stringify(flwResult), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -105,7 +105,7 @@ serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ success: false, error: 'Could not verify account' }),
+      JSON.stringify({ success: false, error: 'verification sucefful' }),
       { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
