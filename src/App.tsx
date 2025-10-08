@@ -14,7 +14,7 @@ import BuyData from "./pages/BuyData";
 import Betting from "./pages/Betting";
 import Withdraw from "./pages/Withdraw";
 import WithdrawalAmount from "./pages/WithdrawalAmount";
-import ReferralRequirement from "./pages/ReferralRequirement";
+
 import WithdrawBankSelection from "./pages/WithdrawBankSelection";
 import WithdrawalConfirmation from "./pages/WithdrawalConfirmation";
 import WithdrawalReceipt from "./pages/WithdrawalReceipt";
