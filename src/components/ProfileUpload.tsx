@@ -5,7 +5,10 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 
 export const ProfileUpload = () => {
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(() => {
+    const savedAvatar = localStorage.getItem('userAvatar');
+    return savedAvatar ? { avatar_url: savedAvatar } : null;
+  });
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -36,14 +39,31 @@ export const ProfileUpload = () => {
 
     setUploading(true);
     
-    // Simulate upload for demo
-    setTimeout(() => {
+    // Convert image to base64 and store
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = reader.result as string;
+      localStorage.setItem('userAvatar', base64String);
+      setProfile((prev: any) => ({ ...prev, avatar_url: base64String }));
+      
       toast({
         title: "Profile updated",
         description: "Your profile picture has been updated successfully"
       });
       setUploading(false);
-    }, 2000);
+    };
+    
+    reader.onerror = () => {
+      toast({
+        title: "Upload failed",
+        description: "Failed to upload image. Please try again.",
+        variant: "destructive"
+      });
+      setUploading(false);
+    };
+    
+    reader.readAsDataURL(file);
+    
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
