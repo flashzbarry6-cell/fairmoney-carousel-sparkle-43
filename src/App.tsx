@@ -30,10 +30,6 @@ import About from "./pages/About";
 import UpgradeAccount from "./pages/UpgradeAccount";
 import JoinCommunity from "./pages/JoinCommunity";
 import BuyFaircode from "./pages/BuyFaircode";
-import Investment from "./pages/Investment";
-import InvestmentPayment from "./pages/InvestmentPayment";
-import Activity from "./pages/Activity";
-import PlayGames from "./pages/PlayGames";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -51,10 +47,6 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/support" element={<Support />} />
           <Route path="/loan" element={<LoanApplication />} />
-          <Route path="/investment" element={<Investment />} />
-          <Route path="/investment-payment" element={<InvestmentPayment />} />
-          <Route path="/activity" element={<Activity />} />
-          <Route path="/play-games" element={<PlayGames />} />
           <Route path="/tv-recharge" element={<TVRecharge />} />
           <Route path="/buy-data" element={<BuyData />} />
           <Route path="/betting" element={<Betting />} />
