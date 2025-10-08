@@ -14,7 +14,7 @@ import BuyData from "./pages/BuyData";
 import Betting from "./pages/Betting";
 import Withdraw from "./pages/Withdraw";
 import WithdrawalAmount from "./pages/WithdrawalAmount";
-
+import ReferralRequirement from "./pages/ReferralRequirement";
 import WithdrawBankSelection from "./pages/WithdrawBankSelection";
 import WithdrawalConfirmation from "./pages/WithdrawalConfirmation";
 import WithdrawalReceipt from "./pages/WithdrawalReceipt";
@@ -86,12 +86,6 @@ const App = () => (
           <Route path="/upgrade-confirming" element={<UpgradeConfirming />} />
           <Route path="/join-community" element={<JoinCommunity />} />
           <Route path="/buy-faircode" element={<BuyFaircode />} />
-          <Route path="/withdraw" element={<Withdraw />} />
-          <Route path="/bank-select" element={<BankSelect />} />
-          <Route path="/withdraw-receipt" element={<WithdrawReceipt />} />
-          <Route path="/withdraw-process" element={<WithdrawProcessing />} />
-          <Route path="/withdraw-result" element={<WithdrawResult />} />
-
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
@@ -100,23 +94,3 @@ const App = () => (
 );
 
 export default App;
-
-
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LoanPage from './components/LoanPage';
-import Dashboard from './components/Dashboard';
-
-function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<LoanPage />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-      </Routes>
-    </Router>
-  );
-}
-
-export default App;
-

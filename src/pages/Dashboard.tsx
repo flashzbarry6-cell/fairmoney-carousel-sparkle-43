@@ -680,45 +680,4 @@ const Dashboard = () => {
   );
 };
 
-
-import React from 'react';
-import { useLocation } from 'react-router-dom';
-
-const Dashboard = () => {
-  const location = useLocation();
-  const query = new URLSearchParams(location.search);
-  const amount = query.get('amount');
-
-  return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>Dashboard</h2>
-      {amount ? (
-        <p style={styles.text}>Your loan of ₦{parseFloat(amount).toLocaleString()} has been added!</p>
-      ) : (
-        <p style={styles.text}>No loan amount found.</p>
-      )}
-    </div>
-  );
-};
-
-const styles = {
-  container: {
-    backgroundColor: '#1E1B2E',
-    minHeight: '100vh',
-    color: 'white',
-    padding: '40px',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  title: {
-    marginBottom: '20px',
-  },
-  text: {
-    fontSize: '20px',
-  },
-};
-
 export default Dashboard;
-
-
