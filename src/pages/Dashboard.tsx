@@ -32,6 +32,10 @@ const Dashboard = () => {
   const [timerActive, setTimerActive] = useState(false);
   const [claimingStarted, setClaimingStarted] = useState(false);
 
+  // Daily claim cooldown state (₦3,000)
+  const [dailyClaimDisabled, setDailyClaimDisabled] = useState(false);
+  const DAILY_COOLDOWN_MS = 24 * 60 * 60 * 1000; // 24 hours
+
   // Check auth and load profile
   useEffect(() => {
     const checkAuth = async () => {
@@ -54,7 +58,7 @@ const Dashboard = () => {
         setProfile(profileData);
         setBalance(profileData.balance || 5000);
         
-        // Check claiming state
+        // Check claiming state (existing 5-minute claim)
         const claimState = localStorage.getItem('claimingState');
         const lastClaimTime = localStorage.getItem('lastClaimTime');
         
@@ -73,6 +77,19 @@ const Dashboard = () => {
             setClaimingStarted(true);
           }
         }
+      }
+
+      // Check daily claim cooldown
+      const lastDaily = localStorage.getItem('dailyClaimLast');
+      if (lastDaily) {
+        const elapsed = Date.now() - parseInt(lastDaily);
+        if (elapsed < DAILY_COOLDOWN_MS) {
+          setDailyClaimDisabled(true);
+        } else {
+          setDailyClaimDisabled(false);
+        }
+      } else {
+        setDailyClaimDisabled(false);
       }
     };
 
@@ -121,7 +138,7 @@ const Dashboard = () => {
     }
   }, [user]);
 
-  // Countdown timer effect with auto-claim
+  // Countdown timer effect with auto-claim for the 5-minute claim (keeps original behavior)
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (timerActive && countdown > 0) {
@@ -136,7 +153,7 @@ const Dashboard = () => {
         });
       }, 1000);
     } else if (timerActive === false && countdown === 0 && claimingStarted && user && !isClaiming) {
-      // Auto-claim when timer reaches 0
+      // Auto-claim when timer reaches 0 (existing behavior)
       handleClaimBonus();
     }
     return () => clearInterval(timer);
@@ -148,13 +165,14 @@ const Dashboard = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  // Existing claim (₦5,000) function — now also logs transaction
   const handleClaimBonus = async () => {
     if (!user || !profile) return;
     
     setIsClaiming(true);
     
     try {
-      // Update balance in Supabase (now +₦5,000)
+      // Update balance in Supabase (₦5,000)
       const newBalance = balance + 5000;
       const { error } = await supabase
         .from('profiles')
@@ -163,6 +181,17 @@ const Dashboard = () => {
         
       if (error) throw error;
       
+      // Insert transaction record
+      await supabase
+        .from('transactions')
+        .insert([{
+          user_id: user.id,
+          type: 'bonus',
+          amount: 5000,
+          description: 'Timed Claim Bonus +₦5,000',
+          created_at: new Date().toISOString()
+        }]);
+
       setBalance(newBalance);
       setProfile(prev => ({ ...prev, balance: newBalance }));
       
@@ -196,6 +225,65 @@ const Dashboard = () => {
     localStorage.setItem('lastClaimTime', Date.now().toString());
   };
 
+  // New Daily Claim (manual) — +₦3,000, 24h cooldown, logs transaction
+  const handleDailyClaim = async () => {
+    if (!user || !profile) return;
+    const lastDaily = localStorage.getItem('dailyClaimLast');
+    if (lastDaily && (Date.now() - parseInt(lastDaily)) < DAILY_COOLDOWN_MS) {
+      const remaining = DAILY_COOLDOWN_MS - (Date.now() - parseInt(lastDaily));
+      const hrs = Math.floor(remaining / (3600 * 1000));
+      toast({
+        description: `Daily claim locked. Try again in ${hrs}h.`,
+      });
+      return;
+    }
+
+    setIsClaiming(true);
+    try {
+      const newBalance = balance + 3000;
+      const { error } = await supabase
+        .from('profiles')
+        .update({ balance: newBalance })
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      // Log transaction
+      const { error: txError } = await supabase
+        .from('transactions')
+        .insert([{
+          user_id: user.id,
+          type: 'bonus',
+          amount: 3000,
+          description: 'Daily Claim Bonus +₦3,000',
+          created_at: new Date().toISOString()
+        }]);
+      if (txError) throw txError;
+
+      setBalance(newBalance);
+      setProfile(prev => ({ ...prev, balance: newBalance }));
+
+      // Set cooldown
+      localStorage.setItem('dailyClaimLast', Date.now().toString());
+      setDailyClaimDisabled(true);
+
+      toast({
+        title: "Daily Claim Success",
+        description: "₦3,000 added to your balance",
+      });
+
+    } catch (error) {
+      console.error('Daily claim error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to claim daily bonus. Try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsClaiming(false);
+    }
+  };
+
   const copyReferralCode = () => {
     if (profile?.referral_code) {
       const referralUrl = `https://lumexzz-win.lovable.app/login?ref=${profile.referral_code}&tab=signup`;
@@ -206,15 +294,14 @@ const Dashboard = () => {
     }
   };
 
+  // Services array — removed Groups button per request
   const services = [
     { icon: Users, label: "Support", bgClass: "bg-primary/10", route: "/support" },
-    { icon: Calculator, label: "Groups", bgClass: "bg-primary/10", route: "groups" },
-    // Removed Withdraw from services — moved into Balance card as requested
+    // Groups button removed
     { icon: CreditCard, label: "Airtime", bgClass: "bg-primary/10", route: "/buy-airtime" },
     { icon: Wifi, label: "Data", bgClass: "bg-primary/10", route: "/buy-data" },
     { icon: Banknote, label: "Loan", bgClass: "bg-primary/10", route: "/loan" },
     { icon: UserPlus, label: "Invitation", bgClass: "bg-primary/10", route: "/invite-earn" }
-    // Removed "More" button as requested
   ];
 
   if (!user) {
@@ -278,26 +365,8 @@ const Dashboard = () => {
             <Shield className="w-4 h-4 text-gold" />
             <span className="text-sm opacity-90">Available Balance</span>
           </div>
+          {/* top-right icons removed History/Withdraw from here; they will be below timer */}
           <div className="flex items-center space-x-2">
-            <Button
-              onClick={() => setShowTransactionHistory(true)}
-              size="sm"
-              className="bg-gold hover:bg-gold-dark text-black font-semibold h-7 text-xs px-2"
-            >
-              <History className="w-3 h-3 mr-1" />
-              History
-            </Button>
-
-            {/* Withdraw button moved into Balance card per request */}
-            <Button
-              onClick={() => navigate("/withdrawal-amount")}
-              size="sm"
-              className="bg-transparent hover:bg-white/10 border border-gold/20 text-gold font-semibold h-7 text-xs px-2"
-            >
-              <Banknote className="w-3 h-3 mr-1" />
-              Withdraw
-            </Button>
-
             <button
               onClick={() => setShowBalance(!showBalance)}
               className="hover:bg-white/20 rounded-full p-1 transition-colors"
@@ -318,6 +387,33 @@ const Dashboard = () => {
               {timerActive && countdown > 0 ? formatTime(countdown) : "Ready to claim!"}
             </div>
           )}
+        </div>
+
+        {/* New row under timer: History (left) and Withdraw (right) */}
+        <div className="flex items-center justify-between mb-3 px-1">
+          <div className="flex-1 pr-2">
+            <Button
+              onClick={() => setShowTransactionHistory(true)}
+              size="sm"
+              className="w-full bg-gold hover:bg-gold-dark text-black font-semibold h-10 text-sm px-3"
+            >
+              <History className="w-4 h-4 mr-2" />
+              History
+            </Button>
+          </div>
+
+          <div className="flex-1 pl-2">
+            <div className="flex justify-end">
+              <Button
+                onClick={() => navigate("/withdrawal-amount")}
+                size="sm"
+                className="w-full bg-transparent hover:bg-white/10 border border-gold/20 text-gold font-semibold h-10 text-sm px-3"
+              >
+                <Banknote className="w-4 h-4 mr-2" />
+                Withdraw
+              </Button>
+            </div>
+          </div>
         </div>
         
         <div className="text-3xl font-bold mb-4 text-center">
@@ -370,101 +466,74 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* Services Grid */}
+      {/* Services Grid (Groups removed) */}
       <div className="grid grid-cols-4 gap-3 mb-6">
         {services.map((service, index) => (
-          service.route === "groups" ? (
-            <div key={index} className="flex flex-col items-center space-y-2">
-              <div 
-                className="w-14 h-14 rounded-2xl bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600 flex items-center justify-center cursor-pointer shadow-lg hover:shadow-yellow-500/50 transition-all animate-pulse"
-                onClick={() => setShowGroupModal(true)}
-              >
-                <service.icon className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-[10px] text-center text-white font-medium leading-tight">
-                {service.label}
-              </span>
+          <Link key={index} to={service.route} className="flex flex-col items-center space-y-2">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600 flex items-center justify-center shadow-lg hover:shadow-yellow-500/50 transition-all animate-pulse">
+              <service.icon className="w-6 h-6 text-white" />
             </div>
-          ) : (
-            <Link key={index} to={service.route} className="flex flex-col items-center space-y-2">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600 flex items-center justify-center shadow-lg hover:shadow-yellow-500/50 transition-all animate-pulse">
-                <service.icon className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-[10px] text-center text-white font-medium leading-tight">
-                {service.label}
-              </span>
-            </Link>
-          )
+            <span className="text-[10px] text-center text-white font-medium leading-tight">
+              {service.label}
+            </span>
+          </Link>
         ))}
       </div>
 
-      {/* Bottom Carousel (dashboard ads) */}
+      {/* Top Bottom Carousel (keep only one as requested) */}
       <BottomCarousel />
 
-      {/* Daily Claim button under the ads and above the Lumexzz write-up */}
+      {/* Daily Claim row: left = Daily Claim (rectangular), right = Upgrade button */}
       <div className="mb-4 px-2">
-        <Button
-          onClick={() => {
-            // If not started, start; else if ready claim
-            if (!claimingStarted) {
-              handleStartClaiming();
-            } else if (!timerActive && countdown === 0) {
-              handleClaimBonus();
-            } else {
-              // If still waiting, show a small toast
-              toast({
-                description: claimingStarted && timerActive ? `Please wait ${formatTime(countdown)} to claim.` : `Claim will be available soon.`,
-              });
-            }
-          }}
-          disabled={isClaiming || (claimingStarted && timerActive && countdown > 0)}
-          className={`w-full font-semibold py-3 rounded-full ${
-            isClaiming
-              ? "bg-gold/70 text-black cursor-not-allowed"
-              : (claimingStarted && timerActive && countdown > 0)
-              ? "bg-gray-700 text-gray-400 cursor-not-allowed"
-              : "bg-gold hover:bg-gold-dark text-black"
-          }`}
-        >
-          {isClaiming 
-            ? "⏳ Claiming..." 
-            : !claimingStarted
-            ? "🎁 Start Daily Claim"
-            : (timerActive && countdown > 0)
-            ? `⏰ Wait ${formatTime(countdown)}`
-            : "🎁 Daily Claim ₦5,000"
-          }
-        </Button>
+        <div className="flex items-center gap-3">
+          <div className="flex-1">
+            <Button
+              onClick={handleDailyClaim}
+              disabled={dailyClaimDisabled || isClaiming}
+              className={`w-full font-semibold py-3 rounded-md ${
+                isClaiming || dailyClaimDisabled
+                  ? "bg-gray-700 text-gray-400 cursor-not-allowed"
+                  : "bg-purple-700 hover:bg-purple-600 text-white"
+              }`}
+            >
+              {dailyClaimDisabled ? "Daily Claimed (24h)" : "🎁 Claim ₦3,000"}
+            </Button>
+          </div>
+          <div className="w-32">
+            <Button
+              onClick={() => navigate("/upgrade")}
+              className="w-full font-semibold py-3 rounded-md bg-gold hover:bg-gold-dark text-black"
+            >
+              Upgrade
+            </Button>
+          </div>
+        </div>
       </div>
 
-      {/* Lumexzz Write-up (animated, black & purple background) */}
+      {/* Lumexzz Write-up (8 lines, box) */}
       <div className="mb-20 px-2">
         <div className="rounded-2xl overflow-hidden border border-gold/20">
           <div className="bg-gradient-to-r from-black via-purple-900 to-purple-800 p-4 text-white">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-bold tracking-wide animate-pulse">Why Lumexzz</h3>
-                <p className="mt-2 text-xs text-gray-200 leading-tight typewriter">
-                  Lumexzz blends speed, trust and rewarding moments — your daily hub for earning, saving and celebrating wins.
-                </p>
-              </div>
-              <div className="ml-4">
-                {/* small animated badge */}
-                <div className="px-3 py-1 rounded-full bg-black/30 backdrop-blur-sm border border-white/10 text-xs font-semibold animate-bounce">
-                  Legit & Fast
-                </div>
-              </div>
+            <h3 className="text-sm font-bold tracking-wide mb-2 animate-pulse">Why Lumexzz</h3>
+            <div className="text-xs text-gray-200 leading-relaxed space-y-1">
+              <p>1. Lightning payouts and clear, transparent rewards.</p>
+              <p>2. Earn daily by claiming and inviting friends.</p>
+              <p>3. Secure wallet features built-in for peace of mind.</p>
+              <p>4. Simple UI so you focus on earning, not learning.</p>
+              <p>5. Community support and helpful resources available.</p>
+              <p>6. Smart bonuses that reward consistent users.</p>
+              <p>7. Easy withdrawals with quick processing.</p>
+              <p>8. Designed for trust, speed and delightful wins.</p>
             </div>
           </div>
         </div>
-        {/* small note at the very bottom of dashboard */}
         <div className="mt-2 text-center text-[11px] text-gray-400">
           Note: Lumexzz fuels simple daily rewards — claim, refer, and withdraw anytime.
         </div>
       </div>
 
-      {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-black border-t border-gold/20">
+      {/* Bottom Navigation — fixed/sticky so it appears across pages (keeps visible) */}
+      <div className="fixed bottom-0 left-0 right-0 w-full max-w-md mx-auto bg-black border-t border-gold/20 z-50">
         <div className="flex justify-around py-2 px-2">
           <Link to="/dashboard" className="flex flex-col items-center space-y-1 flex-1">
             <div className="w-8 h-8 bg-gradient-to-br from-gold to-gold-dark rounded-lg flex items-center justify-center">
@@ -492,14 +561,11 @@ const Dashboard = () => {
         <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-gold text-black px-6 py-3 rounded-full shadow-lg animate-pulse z-50">
           <div className="flex items-center space-x-2">
             <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
-            <span className="font-medium">Claiming bonus...</span>
+            <span className="font-medium">Processing...</span>
           </div>
         </div>
       )}
       
-      {/* Bottom Carousel */}
-      <BottomCarousel />
-
       {/* Live Chat */}
       <LiveChat />
 
@@ -537,7 +603,7 @@ const Dashboard = () => {
         onClose={() => setShowTransactionHistory(false)}
       />
 
-      {/* Group Modal */}
+      {/* Group Modal (if still needed elsewhere) */}
       {showGroupModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl p-6 mx-4 max-w-sm w-full">
