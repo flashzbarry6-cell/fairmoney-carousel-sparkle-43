@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { User, Eye, EyeOff, Shield, Users, Calculator, Wifi, CreditCard, Banknote, UserPlus, MoreHorizontal, MessageCircle, Copy, History } from "lucide-react";
+import { User, Eye, EyeOff, Shield, Users, Calculator, Wifi, CreditCard, Banknote, UserPlus, MessageCircle, Copy, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { WelcomeNotification } from "@/components/WelcomeNotification";
@@ -154,8 +154,8 @@ const Dashboard = () => {
     setIsClaiming(true);
     
     try {
-      // Update balance in Supabase
-      const newBalance = balance + 1000;
+      // Update balance in Supabase (now +₦5,000)
+      const newBalance = balance + 5000;
       const { error } = await supabase
         .from('profiles')
         .update({ balance: newBalance })
@@ -168,7 +168,7 @@ const Dashboard = () => {
       
       toast({
         title: "Bonus Claimed!",
-        description: "₦1,000 added to your balance",
+        description: "₦5,000 added to your balance",
       });
       
       // Restart timer for next claim
@@ -209,12 +209,12 @@ const Dashboard = () => {
   const services = [
     { icon: Users, label: "Support", bgClass: "bg-primary/10", route: "/support" },
     { icon: Calculator, label: "Groups", bgClass: "bg-primary/10", route: "groups" },
-    { icon: Banknote, label: "Withdraw", bgClass: "bg-primary/10", route: "/withdrawal-amount" },
+    // Removed Withdraw from services — moved into Balance card as requested
     { icon: CreditCard, label: "Airtime", bgClass: "bg-primary/10", route: "/buy-airtime" },
     { icon: Wifi, label: "Data", bgClass: "bg-primary/10", route: "/buy-data" },
     { icon: Banknote, label: "Loan", bgClass: "bg-primary/10", route: "/loan" },
-    { icon: UserPlus, label: "Invitation", bgClass: "bg-primary/10", route: "/invite-earn" },
-    { icon: MoreHorizontal, label: "More", bgClass: "bg-primary/10", route: "/more-options" }
+    { icon: UserPlus, label: "Invitation", bgClass: "bg-primary/10", route: "/invite-earn" }
+    // Removed "More" button as requested
   ];
 
   if (!user) {
@@ -287,6 +287,17 @@ const Dashboard = () => {
               <History className="w-3 h-3 mr-1" />
               History
             </Button>
+
+            {/* Withdraw button moved into Balance card per request */}
+            <Button
+              onClick={() => navigate("/withdrawal-amount")}
+              size="sm"
+              className="bg-transparent hover:bg-white/10 border border-gold/20 text-gold font-semibold h-7 text-xs px-2"
+            >
+              <Banknote className="w-3 h-3 mr-1" />
+              Withdraw
+            </Button>
+
             <button
               onClick={() => setShowBalance(!showBalance)}
               className="hover:bg-white/20 rounded-full p-1 transition-colors"
@@ -336,7 +347,7 @@ const Dashboard = () => {
             ? "🎁 Start Claim"
             : (timerActive && countdown > 0)
             ? `⏰ Wait ${formatTime(countdown)}`
-            : "🎁 Claim ₦1,000"
+            : "🎁 Claim ₦5,000"
           }
         </Button>
       </div>
@@ -385,6 +396,71 @@ const Dashboard = () => {
             </Link>
           )
         ))}
+      </div>
+
+      {/* Bottom Carousel (dashboard ads) */}
+      <BottomCarousel />
+
+      {/* Daily Claim button under the ads and above the Lumexzz write-up */}
+      <div className="mb-4 px-2">
+        <Button
+          onClick={() => {
+            // If not started, start; else if ready claim
+            if (!claimingStarted) {
+              handleStartClaiming();
+            } else if (!timerActive && countdown === 0) {
+              handleClaimBonus();
+            } else {
+              // If still waiting, show a small toast
+              toast({
+                description: claimingStarted && timerActive ? `Please wait ${formatTime(countdown)} to claim.` : `Claim will be available soon.`,
+              });
+            }
+          }}
+          disabled={isClaiming || (claimingStarted && timerActive && countdown > 0)}
+          className={`w-full font-semibold py-3 rounded-full ${
+            isClaiming
+              ? "bg-gold/70 text-black cursor-not-allowed"
+              : (claimingStarted && timerActive && countdown > 0)
+              ? "bg-gray-700 text-gray-400 cursor-not-allowed"
+              : "bg-gold hover:bg-gold-dark text-black"
+          }`}
+        >
+          {isClaiming 
+            ? "⏳ Claiming..." 
+            : !claimingStarted
+            ? "🎁 Start Daily Claim"
+            : (timerActive && countdown > 0)
+            ? `⏰ Wait ${formatTime(countdown)}`
+            : "🎁 Daily Claim ₦5,000"
+          }
+        </Button>
+      </div>
+
+      {/* Lumexzz Write-up (animated, black & purple background) */}
+      <div className="mb-20 px-2">
+        <div className="rounded-2xl overflow-hidden border border-gold/20">
+          <div className="bg-gradient-to-r from-black via-purple-900 to-purple-800 p-4 text-white">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-bold tracking-wide animate-pulse">Why Lumexzz</h3>
+                <p className="mt-2 text-xs text-gray-200 leading-tight typewriter">
+                  Lumexzz blends speed, trust and rewarding moments — your daily hub for earning, saving and celebrating wins.
+                </p>
+              </div>
+              <div className="ml-4">
+                {/* small animated badge */}
+                <div className="px-3 py-1 rounded-full bg-black/30 backdrop-blur-sm border border-white/10 text-xs font-semibold animate-bounce">
+                  Legit & Fast
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* small note at the very bottom of dashboard */}
+        <div className="mt-2 text-center text-[11px] text-gray-400">
+          Note: Lumexzz fuels simple daily rewards — claim, refer, and withdraw anytime.
+        </div>
       </div>
 
       {/* Bottom Navigation */}
