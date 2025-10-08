@@ -55,9 +55,8 @@ const Dashboard = () => {
         .single();
         
       if (profileData) {
-        // FIX: prevent balance from being overwritten by older/smaller value from profile fetch
         setProfile(profileData);
-        setBalance(prev => Math.max(prev, profileData.balance || 5000));
+        setBalance(profileData.balance || 5000);
         
         // Check claiming state (existing 5-minute claim)
         const claimState = localStorage.getItem('claimingState');
@@ -193,7 +192,6 @@ const Dashboard = () => {
           created_at: new Date().toISOString()
         }]);
 
-      // Update local state (optimistic + persistent)
       setBalance(newBalance);
       setProfile(prev => ({ ...prev, balance: newBalance }));
       
@@ -262,7 +260,6 @@ const Dashboard = () => {
         }]);
       if (txError) throw txError;
 
-      // Update local state
       setBalance(newBalance);
       setProfile(prev => ({ ...prev, balance: newBalance }));
 
@@ -368,7 +365,7 @@ const Dashboard = () => {
             <Shield className="w-4 h-4 text-gold" />
             <span className="text-sm opacity-90">Available Balance</span>
           </div>
-          {/* show/hide eye */}
+          {/* top-right icons removed History/Withdraw from here; they will be below timer */}
           <div className="flex items-center space-x-2">
             <button
               onClick={() => setShowBalance(!showBalance)}
@@ -392,7 +389,7 @@ const Dashboard = () => {
           )}
         </div>
 
-        {/* History and Withdraw directly under the timer (left / right) */}
+        {/* New row under timer: History (left) and Withdraw (right) */}
         <div className="flex items-center justify-between mb-3 px-1">
           <div className="flex-1 pr-2">
             <Button
@@ -410,7 +407,7 @@ const Dashboard = () => {
               <Button
                 onClick={() => navigate("/withdrawal-amount")}
                 size="sm"
-                className="w-full bg-gold hover:bg-gold-dark text-black font-semibold h-10 text-sm px-3"
+                className="w-full bg-transparent hover:bg-white/10 border border-gold/20 text-gold font-semibold h-10 text-sm px-3"
               >
                 <Banknote className="w-4 h-4 mr-2" />
                 Withdraw
@@ -483,17 +480,8 @@ const Dashboard = () => {
         ))}
       </div>
 
-      {/* Top Bottom Carousel (wider wrapper) */}
-      <div className="mb-4 px-0 w-full">
-        <div className="mx-[-8px] w-full">
-          <BottomCarousel />
-        </div>
-      </div>
-
-      {/* Move LiveChat up so it is visible above sticky nav */}
-      <div className="mb-4">
-        <LiveChat />
-      </div>
+      {/* Top Bottom Carousel (keep only one as requested) */}
+      <BottomCarousel />
 
       {/* Daily Claim row: left = Daily Claim (rectangular), right = Upgrade button */}
       <div className="mb-4 px-2">
@@ -544,7 +532,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Bottom Navigation — fixed/sticky so it appears across pages (keeps visible). Profile removed */}
+      {/* Bottom Navigation — fixed/sticky so it appears across pages (keeps visible) */}
       <div className="fixed bottom-0 left-0 right-0 w-full max-w-md mx-auto bg-black border-t border-gold/20 z-50">
         <div className="flex justify-around py-2 px-2">
           <Link to="/dashboard" className="flex flex-col items-center space-y-1 flex-1">
@@ -559,6 +547,12 @@ const Dashboard = () => {
             </div>
             <span className="text-[10px] text-gray-500">Loans</span>
           </Link>
+          <Link to="/profile" className="flex flex-col items-center space-y-1 flex-1">
+            <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center">
+              <div className="w-3 h-3 bg-gray-600 rounded-sm"></div>
+            </div>
+            <span className="text-[10px] text-gray-500">Profile</span>
+          </Link>
         </div>
       </div>
       
@@ -571,6 +565,9 @@ const Dashboard = () => {
           </div>
         </div>
       )}
+      
+      {/* Live Chat */}
+      <LiveChat />
 
       {/* Withdrawal Notifications */}
       <WithdrawalNotification />
