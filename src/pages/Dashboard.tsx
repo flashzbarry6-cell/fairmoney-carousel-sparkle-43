@@ -44,7 +44,7 @@ const Dashboard = () => {
   const [dailyClaimDisabled, setDailyClaimDisabled] = useState(false);
   const DAILY_COOLDOWN_MS = 24 * 60 * 60 * 1000;
 
-  // ✅ Profile image upload
+  // ✅ Fixed Profile image upload
   const handleProfilePicUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files?.[0] || !user) return;
     const file = event.target.files[0];
@@ -53,15 +53,20 @@ const Dashboard = () => {
     const filePath = `avatars/${fileName}`;
 
     try {
+      // Upload file to Supabase Storage
       const { error: uploadError } = await supabase.storage
         .from("avatars")
         .upload(filePath, file, { upsert: true });
 
       if (uploadError) throw uploadError;
 
-      const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
-      const publicUrl = data.publicUrl;
+      // ✅ Get the public URL safely
+      const { data: publicData } = supabase.storage.from("avatars").getPublicUrl(filePath);
+      const publicUrl = publicData?.publicUrl ?? "";
 
+      if (!publicUrl) throw new Error("Failed to retrieve public URL.");
+
+      // ✅ Update user's profile record
       const { error: updateError } = await supabase
         .from("profiles")
         .update({ profile_pic_url: publicUrl })
@@ -69,6 +74,7 @@ const Dashboard = () => {
 
       if (updateError) throw updateError;
 
+      // Update UI
       setProfile((prev: any) => ({ ...prev, profile_pic_url: publicUrl }));
 
       toast({
