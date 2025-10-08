@@ -205,7 +205,7 @@ const WithdrawalAmount = () => {
   );
 };
 
-
+export default Withdraw;
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
