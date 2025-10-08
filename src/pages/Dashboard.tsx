@@ -722,3 +722,10 @@ const styles = {
 };
 
 export default Dashboard;
+
+{localStorage.getItem('lastLoanTime') && (
+  <p style={{ marginTop: '20px', color: '#ccc' }}>
+    🕒 You can apply for another loan in 7 days.
+  </p>
+)}
+
