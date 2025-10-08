@@ -205,7 +205,7 @@ const WithdrawalAmount = () => {
   );
 };
 
-export default Withdraw;
+export default WithdrawAmount;
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -277,7 +277,7 @@ const styles = {
   Continue to Withdraw
 </button>
 
-export default Withdraw;
+export default WithdrawAmount;
 
 
 
