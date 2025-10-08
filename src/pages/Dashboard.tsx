@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, ChangeEvent } from "react";
 import {
   User,
   Eye,
@@ -30,37 +30,36 @@ const Dashboard = () => {
   const [showPaymentNotification, setShowPaymentNotification] = useState(false);
   const [showBalance, setShowBalance] = useState(true);
   const [showTransactionHistory, setShowTransactionHistory] = useState(false);
-  const [balance, setBalance] = useState(5000);
+  const [balance, setBalance] = useState<number>(5000);
   const [isClaiming, setIsClaiming] = useState(false);
   const [dailyClaimDisabled, setDailyClaimDisabled] = useState(false);
 
-  // ✅ Fixed Profile image upload
-  const handleProfilePicUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const DAILY_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+
+  // Fixed Profile image upload
+  const handleProfilePicUpload = async (event: ChangeEvent<HTMLInputElement>) => {
     try {
       if (!event.target.files?.length || !user) return;
 
       const file = event.target.files[0];
-      const fileExt = file.name.split(".").pop();
+      const fileExt = file.name.split(".").pop() ?? "jpg";
       const fileName = `${user.id}.${fileExt}`;
       const filePath = `avatars/${fileName}`;
 
-      // Upload to Supabase storage
+      // Upload to Supabase storage (upsert true to overwrite existing)
       const { error: uploadError } = await supabase.storage
         .from("avatars")
         .upload(filePath, file, { upsert: true });
 
       if (uploadError) throw uploadError;
 
-      // ✅ Correctly get the public URL
-      const { data: publicUrlData, error: urlError } = supabase.storage
-  .from("avatars")
-  .getPublicUrl(filePath);
+      // getPublicUrl is synchronous in the SDK (returns an object). Grab the URL safely:
+      const urlRes = supabase.storage.from("avatars").getPublicUrl(filePath);
+      const publicUrl = urlRes?.data?.publicUrl ?? "";
 
-if (urlError) throw urlError;
+      if (!publicUrl) throw new Error("Failed to get public URL for uploaded avatar.");
 
-const publicUrl = publicUrlData?.publicUrl as string;
-if (!publicUrl) throw new Error("Failed to get public URL");
-      // ✅ Update user profile with new URL
+      // Update user's profile record with the new public URL
       const { error: updateError } = await supabase
         .from("profiles")
         .update({ profile_pic_url: publicUrl })
@@ -68,7 +67,8 @@ if (!publicUrl) throw new Error("Failed to get public URL");
 
       if (updateError) throw updateError;
 
-      setProfile((prev: any) => ({ ...prev, profile_pic_url: publicUrl }));
+      // Update UI state
+      setProfile((prev: any) => ({ ...(prev || {}), profile_pic_url: publicUrl }));
 
       toast({
         title: "Profile Picture Updated",
@@ -84,10 +84,12 @@ if (!publicUrl) throw new Error("Failed to get public URL");
     }
   };
 
-  // ✅ Load session and profile
+  // Load session and profile
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data } = await supabase.auth.getSession();
+      // supabase.auth.getSession() returns { data: { session } } in v2
+      const session = (data as any)?.session ?? null;
       if (!session) {
         navigate("/login");
         return;
@@ -102,19 +104,25 @@ if (!publicUrl) throw new Error("Failed to get public URL");
 
       if (profileData) {
         setProfile(profileData);
-        setBalance(profileData.balance || 5000);
+        setBalance(Number(profileData.balance ?? 5000));
       }
     };
     checkAuth();
   }, [navigate]);
 
-  // ✅ Daily Claim Bonus
+  // Daily Claim Bonus
   const handleDailyClaim = async () => {
     if (!user || !profile) return;
     setIsClaiming(true);
     try {
-      const newBalance = balance + 3000;
-      await supabase.from("profiles").update({ balance: newBalance }).eq("user_id", user.id);
+      const newBalance = Number(balance) + 3000;
+      const { error } = await supabase
+        .from("profiles")
+        .update({ balance: newBalance })
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+
       await supabase.from("transactions").insert([
         {
           user_id: user.id,
@@ -124,12 +132,20 @@ if (!publicUrl) throw new Error("Failed to get public URL");
           created_at: new Date().toISOString(),
         },
       ]);
+
+      // Keep local UI in sync (persisting server value)
       setBalance(newBalance);
       setDailyClaimDisabled(true);
       localStorage.setItem("dailyClaimLast", Date.now().toString());
+
       toast({ title: "Daily Claim Success", description: "₦3,000 added to your balance" });
     } catch (error) {
       console.error("Daily claim error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to claim daily bonus. Try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsClaiming(false);
     }
@@ -152,33 +168,19 @@ if (!publicUrl) throw new Error("Failed to get public URL");
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 rounded-full overflow-hidden bg-gold/20 flex items-center justify-center">
             {profile?.profile_pic_url ? (
-              <img
-                src={profile.profile_pic_url}
-                alt="Profile"
-                className="w-10 h-10 object-cover"
-              />
+              <img src={profile.profile_pic_url} alt="Profile" className="w-10 h-10 object-cover" />
             ) : (
               <User className="w-5 h-5 text-gold" />
             )}
           </div>
           <div>
-            <h1 className="text-lg font-semibold text-white">
-              {profile?.full_name || user?.email}
-            </h1>
+            <h1 className="text-lg font-semibold text-white">{profile?.full_name || user?.email}</h1>
             <p className="text-sm text-gray-400">How are you doing today?</p>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleProfilePicUpload}
-              className="text-xs text-gray-400 mt-1"
-            />
+            <input type="file" accept="image/*" onChange={handleProfilePicUpload} className="text-xs text-gray-400 mt-1" />
           </div>
         </div>
         <div className="flex items-center space-x-4">
-          <button
-            onClick={() => setShowTransactionHistory(true)}
-            className="w-8 h-8 flex items-center justify-center text-gold"
-          >
+          <button onClick={() => setShowTransactionHistory(true)} className="w-8 h-8 flex items-center justify-center text-gold">
             <History className="w-5 h-5" />
           </button>
         </div>
@@ -191,26 +193,17 @@ if (!publicUrl) throw new Error("Failed to get public URL");
             <Shield className="w-4 h-4 text-gold" />
             <span className="text-sm opacity-90">Available Balance</span>
           </div>
-          <button
-            onClick={() => setShowBalance(!showBalance)}
-            className="hover:bg-white/10 rounded-full p-1"
-          >
+          <button onClick={() => setShowBalance(!showBalance)} className="hover:bg-white/10 rounded-full p-1">
             {showBalance ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
           </button>
         </div>
 
-        <div className="text-3xl font-bold mb-4 text-center">
-          {showBalance ? `₦${balance.toLocaleString()}.00` : "₦****"}
-        </div>
+        <div className="text-3xl font-bold mb-4 text-center">{showBalance ? `₦${balance.toLocaleString()}.00` : "₦****"}</div>
 
         <Button
           onClick={handleDailyClaim}
           disabled={dailyClaimDisabled || isClaiming}
-          className={`w-full font-semibold py-3 rounded-full ${
-            dailyClaimDisabled
-              ? "bg-gray-700 text-gray-400"
-              : "bg-gold text-black hover:bg-gold-dark"
-          }`}
+          className={`w-full font-semibold py-3 rounded-full ${dailyClaimDisabled ? "bg-gray-700 text-gray-400" : "bg-gold text-black hover:bg-gold-dark"}`}
         >
           {dailyClaimDisabled ? "Daily Claimed" : "🎁 Claim ₦3,000"}
         </Button>
@@ -221,9 +214,7 @@ if (!publicUrl) throw new Error("Failed to get public URL");
         <div className="bg-gradient-to-br from-gray-900 to-black border border-gold/20 rounded-2xl p-3 mb-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-gray-400">Your Referral Code</span>
-            <span className="text-sm text-gray-400">
-              Referrals: {profile.total_referrals || 0}
-            </span>
+            <span className="text-sm text-gray-400">Referrals: {profile.total_referrals || 0}</span>
           </div>
           <div className="flex items-center space-x-2">
             <div className="flex-1 bg-black/50 rounded-lg p-3 border border-gold/30">
@@ -241,29 +232,13 @@ if (!publicUrl) throw new Error("Failed to get public URL");
       <LiveChat />
       <WithdrawalNotification />
 
-      <TransactionHistory
-        isOpen={showTransactionHistory}
-        onClose={() => setShowTransactionHistory(false)}
-      />
+      <TransactionHistory isOpen={showTransactionHistory} onClose={() => setShowTransactionHistory(false)} />
 
       {showWelcomeNotification && (
-        <WelcomeNotification
-          onClose={() => setShowWelcomeNotification(false)}
-          onJoinCommunity={() => setShowJoinGroupNotification(true)}
-        />
+        <WelcomeNotification onClose={() => setShowWelcomeNotification(false)} onJoinCommunity={() => setShowJoinGroupNotification(true)} />
       )}
-      {showJoinGroupNotification && (
-        <JoinGroupNotification
-          onClose={() => setShowJoinGroupNotification(false)}
-          onGetStarted={() => setShowJoinGroupNotification(false)}
-        />
-      )}
-      {showPaymentNotification && (
-        <PaymentNotification
-          onClose={() => setShowPaymentNotification(false)}
-          onStartPayments={() => setShowPaymentNotification(false)}
-        />
-      )}
+      {showJoinGroupNotification && <JoinGroupNotification onClose={() => setShowJoinGroupNotification(false)} onGetStarted={() => setShowJoinGroupNotification(false)} />}
+      {showPaymentNotification && <PaymentNotification onClose={() => setShowPaymentNotification(false)} onStartPayments={() => setShowPaymentNotification(false)} />}
     </div>
   );
 };
