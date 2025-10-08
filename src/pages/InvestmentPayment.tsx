@@ -21,9 +21,9 @@ const InvestmentPayment = () => {
   const plan = planAmount ? planDetails[planAmount] : null;
 
   const bankDetails = {
-    bankName: "Opay",
-    accountName: "Veronica Chisom Benjamin",
-    accountNumber: "8102562883"
+    bankName: "First Bank Nigeria",
+    accountName: "Lumexzz Investment Ltd",
+    accountNumber: "3085749261"
   };
 
   const copyToClipboard = (text: string, label: string) => {

@@ -33,12 +33,6 @@ import BuyFaircode from "./pages/BuyFaircode";
 import Investment from "./pages/Investment";
 import InvestmentPayment from "./pages/InvestmentPayment";
 import Activity from "./pages/Activity";
-import PlayGames from "./pages/PlayGames";
-import UpgradeProcessing from "./pages/UpgradeProcessing";
-import UpgradePaymentMethod from "./pages/UpgradePaymentMethod";
-import UpgradeBankTransfer from "./pages/UpgradeBankTransfer";
-import UpgradeReceiptUpload from "./pages/UpgradeReceiptUpload";
-import UpgradeConfirming from "./pages/UpgradeConfirming";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -59,7 +53,6 @@ const App = () => (
           <Route path="/investment" element={<Investment />} />
           <Route path="/investment-payment" element={<InvestmentPayment />} />
           <Route path="/activity" element={<Activity />} />
-          <Route path="/play-games" element={<PlayGames />} />
           <Route path="/tv-recharge" element={<TVRecharge />} />
           <Route path="/buy-data" element={<BuyData />} />
           <Route path="/betting" element={<Betting />} />
@@ -79,11 +72,6 @@ const App = () => (
           <Route path="/profile" element={<Profile />} />
           <Route path="/about" element={<About />} />
           <Route path="/upgrade-account" element={<UpgradeAccount />} />
-          <Route path="/upgrade-processing" element={<UpgradeProcessing />} />
-          <Route path="/upgrade-payment-method" element={<UpgradePaymentMethod />} />
-          <Route path="/upgrade-bank-transfer" element={<UpgradeBankTransfer />} />
-          <Route path="/upgrade-receipt-upload" element={<UpgradeReceiptUpload />} />
-          <Route path="/upgrade-confirming" element={<UpgradeConfirming />} />
           <Route path="/join-community" element={<JoinCommunity />} />
           <Route path="/buy-faircode" element={<BuyFaircode />} />
           <Route path="*" element={<NotFound />} />
