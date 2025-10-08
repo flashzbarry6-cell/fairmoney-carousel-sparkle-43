@@ -1,15 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const LoanPage = () => {
+  const navigate = useNavigate();
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const [isLoanTaken, setIsLoanTaken] = useState(false);
+
+  useEffect(() => {
+    const lastLoanTime = localStorage.getItem('lastLoanTime');
+    if (lastLoanTime) {
+      const now = new Date();
+      const loanTime = new Date(lastLoanTime);
+      const diffDays = Math.floor((now - loanTime) / (1000 * 60 * 60 * 24));
+      if (diffDays < 7) {
+        setIsLoanTaken(true);
+      } else {
+        localStorage.removeItem('lastLoanTime');
+      }
+    }
+  }, []);
 
   const handleProceed = () => {
     const num = parseFloat(amount);
+
     if (!name || !email || !amount) {
       setError('Please fill in all fields.');
       return;
@@ -20,22 +37,26 @@ const LoanPage = () => {
       return;
     }
 
-    // Clear error
     setError('');
+    localStorage.setItem('lastLoanTime', new Date().toISOString());
+    localStorage.setItem('loanAmount', num);
+    setIsLoanTaken(true);
 
-    // Redirect to dashboard and pass the loan amount
+    // Navigate to dashboard
     navigate(`/dashboard?amount=${num}`);
   };
 
   return (
     <div style={styles.container}>
       <h2 style={styles.title}>Apply for a Loan</h2>
+
       <input
         style={styles.input}
         type="text"
         placeholder="Full Name"
         value={name}
         onChange={(e) => setName(e.target.value)}
+        disabled={isLoanTaken}
       />
       <input
         style={styles.input}
@@ -43,6 +64,7 @@ const LoanPage = () => {
         placeholder="Email Address"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
+        disabled={isLoanTaken}
       />
       <input
         style={styles.input}
@@ -50,9 +72,28 @@ const LoanPage = () => {
         placeholder="Loan Amount (₦20,000 - ₦50,000)"
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
+        disabled={isLoanTaken}
       />
+
       {error && <p style={styles.error}>{error}</p>}
-      <button style={styles.button} onClick={handleProceed}>Proceed</button>
+
+      <button
+        style={{
+          ...styles.button,
+          backgroundColor: isLoanTaken ? '#555' : '#9C27B0',
+          cursor: isLoanTaken ? 'not-allowed' : 'pointer',
+        }}
+        onClick={handleProceed}
+        disabled={isLoanTaken}
+      >
+        {isLoanTaken ? 'Loan Locked' : 'Proceed'}
+      </button>
+
+      {isLoanTaken && (
+        <div style={styles.notification} className="animated-notification">
+          🎉 Next loan available in 7 days
+        </div>
+      )}
     </div>
   );
 };
@@ -68,32 +109,39 @@ const styles = {
     alignItems: 'center',
   },
   title: {
-    marginBottom: '20px',
     fontSize: '24px',
+    marginBottom: '20px',
   },
   input: {
-    width: '100%',
-    maxWidth: '400px',
+    backgroundColor: '#3A2F4D',
+    color: '#fff',
+    border: 'none',
     padding: '12px',
     marginBottom: '15px',
+    width: '100%',
+    maxWidth: '400px',
     borderRadius: '5px',
-    border: 'none',
-    backgroundColor: '#3A2F4D',
-    color: 'white',
     fontSize: '16px',
   },
   button: {
-    backgroundColor: '#9C27B0',
-    color: 'white',
     padding: '12px 25px',
     fontSize: '16px',
     border: 'none',
     borderRadius: '5px',
-    cursor: 'pointer',
+    marginTop: '10px',
   },
   error: {
     color: 'red',
     marginBottom: '10px',
+  },
+  notification: {
+    marginTop: '25px',
+    padding: '15px 20px',
+    backgroundColor: '#3A2F4D',
+    color: '#fff',
+    borderRadius: '8px',
+    fontSize: '16px',
+    animation: 'fadeInSlide 1s ease-in-out',
   },
 };
 
