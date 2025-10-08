@@ -4,17 +4,12 @@ import {
   Eye,
   EyeOff,
   Shield,
-  Users,
-  Wifi,
-  CreditCard,
-  Banknote,
-  UserPlus,
   Copy,
   History,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { WelcomeNotification } from "@/components/WelcomeNotification";
 import { PaymentNotification } from "@/components/PaymentNotification";
 import { JoinGroupNotification } from "@/components/JoinGroupNotification";
@@ -35,38 +30,38 @@ const Dashboard = () => {
   const [showPaymentNotification, setShowPaymentNotification] = useState(false);
   const [showBalance, setShowBalance] = useState(true);
   const [showTransactionHistory, setShowTransactionHistory] = useState(false);
-  const [showGroupModal, setShowGroupModal] = useState(false);
   const [balance, setBalance] = useState(5000);
   const [isClaiming, setIsClaiming] = useState(false);
-  const [countdown, setCountdown] = useState(5 * 60);
-  const [timerActive, setTimerActive] = useState(false);
-  const [claimingStarted, setClaimingStarted] = useState(false);
   const [dailyClaimDisabled, setDailyClaimDisabled] = useState(false);
-  const DAILY_COOLDOWN_MS = 24 * 60 * 60 * 1000;
 
   // ✅ Fixed Profile image upload
   const handleProfilePicUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files?.[0] || !user) return;
-    const file = event.target.files[0];
-    const fileExt = file.name.split(".").pop();
-    const fileName = `${user.id}.${fileExt}`;
-    const filePath = `avatars/${fileName}`;
-
     try {
-      // Upload file to Supabase Storage
+      if (!event.target.files?.length || !user) return;
+
+      const file = event.target.files[0];
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${user.id}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+
+      // Upload to Supabase storage
       const { error: uploadError } = await supabase.storage
         .from("avatars")
         .upload(filePath, file, { upsert: true });
 
       if (uploadError) throw uploadError;
 
-      // ✅ Get the public URL safely
-      const { data: publicData } = supabase.storage.from("avatars").getPublicUrl(filePath);
-      const publicUrl = publicData?.publicUrl ?? "";
+      // ✅ Correctly get the public URL
+      const { data, error: urlError } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(filePath);
 
-      if (!publicUrl) throw new Error("Failed to retrieve public URL.");
+      if (urlError) throw urlError;
 
-      // ✅ Update user's profile record
+      const publicUrl = data?.publicUrl;
+      if (!publicUrl) throw new Error("Failed to get public URL");
+
+      // ✅ Update user profile with new URL
       const { error: updateError } = await supabase
         .from("profiles")
         .update({ profile_pic_url: publicUrl })
@@ -74,7 +69,6 @@ const Dashboard = () => {
 
       if (updateError) throw updateError;
 
-      // Update UI
       setProfile((prev: any) => ({ ...prev, profile_pic_url: publicUrl }));
 
       toast({
@@ -91,6 +85,7 @@ const Dashboard = () => {
     }
   };
 
+  // ✅ Load session and profile
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -114,30 +109,7 @@ const Dashboard = () => {
     checkAuth();
   }, [navigate]);
 
-  const handleClaimBonus = async () => {
-    if (!user || !profile) return;
-    setIsClaiming(true);
-    try {
-      const newBalance = balance + 5000;
-      await supabase.from("profiles").update({ balance: newBalance }).eq("user_id", user.id);
-      await supabase.from("transactions").insert([
-        {
-          user_id: user.id,
-          type: "bonus",
-          amount: 5000,
-          description: "Timed Claim Bonus +₦5,000",
-          created_at: new Date().toISOString(),
-        },
-      ]);
-      setBalance(newBalance);
-      toast({ title: "Bonus Claimed!", description: "₦5,000 added to your balance" });
-    } catch (error) {
-      console.error("Error claiming bonus:", error);
-    } finally {
-      setIsClaiming(false);
-    }
-  };
-
+  // ✅ Daily Claim Bonus
   const handleDailyClaim = async () => {
     if (!user || !profile) return;
     setIsClaiming(true);
