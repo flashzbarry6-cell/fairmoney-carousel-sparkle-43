@@ -86,6 +86,12 @@ const App = () => (
           <Route path="/upgrade-confirming" element={<UpgradeConfirming />} />
           <Route path="/join-community" element={<JoinCommunity />} />
           <Route path="/buy-faircode" element={<BuyFaircode />} />
+          <Route path="/withdraw" element={<Withdraw />} />
+          <Route path="/bank-select" element={<BankSelect />} />
+          <Route path="/withdraw-receipt" element={<WithdrawReceipt />} />
+          <Route path="/withdraw-process" element={<WithdrawProcessing />} />
+          <Route path="/withdraw-result" element={<WithdrawResult />} />
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
