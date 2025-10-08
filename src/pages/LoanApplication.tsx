@@ -1,187 +1,100 @@
-import { ArrowLeft, ChevronDown } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const LoanApplication = () => {
-  const { toast } = useToast();
+const LoanPage = () => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [amount, setAmount] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [formData, setFormData] = useState({
-    accountNumber: "",
-    accountName: "",
-    bank: "",
-    loanAmount: "",
-    fairCode: ""
-  });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleProceed = async () => {
-    const loanAmount = parseInt(formData.loanAmount);
-    
-    // Validate loan amount
-    if (!loanAmount || isNaN(loanAmount)) {
-      toast({
-        title: "Invalid Amount",
-        description: "Please enter a valid loan amount",
-        variant: "destructive"
-      });
+  const handleProceed = () => {
+    const num = parseFloat(amount);
+    if (!name || !email || !amount) {
+      setError('Please fill in all fields.');
       return;
     }
 
-    if (loanAmount > 200000) {
-      toast({
-        title: "Invalid Loan Amount",
-        description: "Maximum loan amount is ₦200,000",
-        variant: "destructive"
-      });
+    if (isNaN(num) || num < 20000 || num > 50000) {
+      setError('Loan must be between ₦20,000 and ₦50,000.');
       return;
     }
 
-    setIsProcessing(true);
+    // Clear error
+    setError('');
 
-    try {
-      // Get current user
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast({
-          title: "Error",
-          description: "Please login to continue",
-          variant: "destructive"
-        });
-        navigate("/login");
-        return;
-      }
-
-      // Get current balance
-      const { data: profile, error: fetchError } = await supabase
-        .from('profiles')
-        .select('balance')
-        .eq('user_id', session.user.id)
-        .single();
-
-      if (fetchError) throw fetchError;
-
-      const currentBalance = profile?.balance || 0;
-      const newBalance = currentBalance + loanAmount;
-
-      // Update balance
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ balance: newBalance })
-        .eq('user_id', session.user.id);
-
-      if (updateError) throw updateError;
-
-      toast({
-        title: "Loan Approved!",
-        description: `₦${loanAmount.toLocaleString()} has been added to your balance`,
-      });
-
-      // Navigate back to dashboard
-      setTimeout(() => navigate("/dashboard"), 1500);
-    } catch (error) {
-      console.error("Loan processing error:", error);
-      toast({
-        title: "Error",
-        description: "Failed to process loan. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsProcessing(false);
-    }
+    // Redirect to dashboard and pass the loan amount
+    navigate(`/dashboard?amount=${num}`);
   };
 
   return (
-    <div className="min-h-screen bg-muted/30 p-3 max-w-md mx-auto">
-      {/* Header */}
-      <div className="flex items-center mb-6 pt-2">
-        <Link to="/dashboard" className="mr-3">
-          <ArrowLeft className="w-6 h-6 text-foreground" />
-        </Link>
-        <h1 className="text-xl font-semibold text-foreground">Apply for Loan</h1>
-      </div>
-
-      <div className="bg-card rounded-2xl p-4 space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-2">Account Number</label>
-          <Input
-            type="text"
-            name="accountNumber"
-            placeholder="Enter account number"
-            value={formData.accountNumber}
-            onChange={handleInputChange}
-            className="w-full border border-input rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-2">Account Name</label>
-          <Input
-            type="text"
-            name="accountName"
-            placeholder="Enter account name"
-            value={formData.accountName}
-            onChange={handleInputChange}
-            className="w-full border border-input rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-2">Select Bank</label>
-          <Input
-            type="text"
-            name="bank"
-            placeholder="Select your bank"
-            value={formData.bank}
-            onChange={handleInputChange}
-            className="w-full border border-input rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-2">Enter Loan Amount</label>
-          <Input
-            type="text"
-            name="loanAmount"
-            placeholder="Enter loan amount"
-            value={formData.loanAmount}
-            onChange={handleInputChange}
-            className="w-full border border-input rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-2">Fair Code</label>
-          <Input
-            type="text"
-            name="fairCode"
-            placeholder="Enter your faircode"
-            value={formData.fairCode}
-            onChange={handleInputChange}
-            className="w-full border border-input rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
-          />
-        </div>
-
-        <Button 
-          className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 rounded-full mt-6"
-          onClick={handleProceed}
-          disabled={isProcessing}
-        >
-          {isProcessing ? "Processing..." : "Proceed"}
-        </Button>
-      </div>
+    <div style={styles.container}>
+      <h2 style={styles.title}>Apply for a Loan</h2>
+      <input
+        style={styles.input}
+        type="text"
+        placeholder="Full Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
+      <input
+        style={styles.input}
+        type="email"
+        placeholder="Email Address"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <input
+        style={styles.input}
+        type="number"
+        placeholder="Loan Amount (₦20,000 - ₦50,000)"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+      />
+      {error && <p style={styles.error}>{error}</p>}
+      <button style={styles.button} onClick={handleProceed}>Proceed</button>
     </div>
   );
 };
 
-export default LoanApplication;
+const styles = {
+  container: {
+    backgroundColor: '#1E1B2E',
+    minHeight: '100vh',
+    color: 'white',
+    padding: '30px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  title: {
+    marginBottom: '20px',
+    fontSize: '24px',
+  },
+  input: {
+    width: '100%',
+    maxWidth: '400px',
+    padding: '12px',
+    marginBottom: '15px',
+    borderRadius: '5px',
+    border: 'none',
+    backgroundColor: '#3A2F4D',
+    color: 'white',
+    fontSize: '16px',
+  },
+  button: {
+    backgroundColor: '#9C27B0',
+    color: 'white',
+    padding: '12px 25px',
+    fontSize: '16px',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
+  error: {
+    color: 'red',
+    marginBottom: '10px',
+  },
+};
+
+export default LoanPage;
