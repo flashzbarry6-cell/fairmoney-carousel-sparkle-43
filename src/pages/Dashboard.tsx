@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { User, Eye, EyeOff, Shield, Users, Calculator, Wifi, CreditCard, Banknote, UserPlus, MoreHorizontal, MessageCircle, Copy, History, Gift, TrendingUp } from "lucide-react";
+import { User, Eye, EyeOff, Shield, Users, Calculator, Wifi, CreditCard, Banknote, UserPlus, MessageCircle, Copy, History, Gift, TrendingUp, Gamepad2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { WelcomeNotification } from "@/components/WelcomeNotification";
@@ -10,6 +10,7 @@ import { TransactionHistory } from "@/components/TransactionHistory";
 import { BottomCarousel } from "@/components/BottomCarousel";
 import { WithdrawalNotification } from "@/components/WithdrawalNotification";
 import { ProfileUpload } from "@/components/ProfileUpload";
+import { BottomNav } from "@/components/BottomNav";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -151,6 +152,10 @@ const Dashboard = () => {
 
         if (!error) {
           setBalance(newBalance);
+          
+          // Add to activity history
+          addToActivityHistory('auto-bonus', 5000, 'Auto Bonus Reward');
+          
           toast({
             title: "Auto Bonus!",
             description: "₦5,000 added to your balance",
@@ -194,6 +199,18 @@ const Dashboard = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const addToActivityHistory = (type: string, amount: number, description: string) => {
+    const history = JSON.parse(localStorage.getItem('activityHistory') || '[]');
+    const newActivity = {
+      type,
+      amount,
+      description,
+      timestamp: Date.now()
+    };
+    history.unshift(newActivity);
+    localStorage.setItem('activityHistory', JSON.stringify(history));
+  };
+
   const handleClaimBonus = async () => {
     if (!user || !profile) return;
     
@@ -211,6 +228,9 @@ const Dashboard = () => {
       
       setBalance(newBalance);
       setProfile(prev => ({ ...prev, balance: newBalance }));
+      
+      // Add to activity history
+      addToActivityHistory('bonus', 5300, 'Bonus Claim Reward');
       
       toast({
         title: "Bonus Claimed!",
@@ -282,10 +302,8 @@ const Dashboard = () => {
       setCanCheckin(false);
       localStorage.setItem('lastCheckin', now.toString());
 
-      // Save to check-in history
-      const history = JSON.parse(localStorage.getItem('checkinHistory') || '[]');
-      history.unshift({ timestamp: now, amount: 1500 });
-      localStorage.setItem('checkinHistory', JSON.stringify(history));
+      // Add to activity history
+      addToActivityHistory('check-in', 1500, 'Daily Check-in Reward');
 
       toast({
         title: "Check-in Successful!",
@@ -309,7 +327,7 @@ const Dashboard = () => {
     { icon: Wifi, label: "Data", bgClass: "bg-primary/10", route: "/buy-data" },
     { icon: Banknote, label: "Loan", bgClass: "bg-primary/10", route: "/loan" },
     { icon: UserPlus, label: "Invitation", bgClass: "bg-primary/10", route: "/invite-earn" },
-    { icon: MoreHorizontal, label: "More", bgClass: "bg-primary/10", route: "/more-options" }
+    { icon: TrendingUp, label: "Play Games", bgClass: "bg-primary/10", route: "/play-games" }
   ];
 
   if (!user) {
@@ -480,35 +498,7 @@ const Dashboard = () => {
         ))}
       </div>
 
-      {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-black border-t border-gold/20">
-        <div className="flex justify-around py-2 px-2">
-          <Link to="/dashboard" className="flex flex-col items-center space-y-1 flex-1">
-            <div className="w-8 h-8 bg-gradient-to-br from-gold to-gold-dark rounded-lg flex items-center justify-center">
-              <div className="w-3 h-3 bg-black rounded-sm"></div>
-            </div>
-            <span className="text-[10px] text-gold font-medium">Home</span>
-          </Link>
-          <Link to="/activity" className="flex flex-col items-center space-y-1 flex-1">
-            <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center">
-              <div className="w-3 h-3 bg-gray-600 rounded-sm"></div>
-            </div>
-            <span className="text-[10px] text-gray-500">Activity</span>
-          </Link>
-          <Link to="/loan" className="flex flex-col items-center space-y-1 flex-1">
-            <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center">
-              <div className="w-3 h-3 bg-gray-600 rounded-sm"></div>
-            </div>
-            <span className="text-[10px] text-gray-500">Loans</span>
-          </Link>
-          <Link to="/profile" className="flex flex-col items-center space-y-1 flex-1">
-            <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center">
-              <div className="w-3 h-3 bg-gray-600 rounded-sm"></div>
-            </div>
-            <span className="text-[10px] text-gray-500">Profile</span>
-          </Link>
-        </div>
-      </div>
+      <BottomNav />
       
       {/* Claiming Bonus Notification */}
       {isClaiming && (
