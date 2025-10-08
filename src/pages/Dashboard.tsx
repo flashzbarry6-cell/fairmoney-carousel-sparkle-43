@@ -52,15 +52,14 @@ const Dashboard = () => {
       if (uploadError) throw uploadError;
 
       // ✅ Correctly get the public URL
-      const { data, error: urlError } = supabase.storage
-        .from("avatars")
-        .getPublicUrl(filePath);
+      const { data: publicUrlData, error: urlError } = supabase.storage
+  .from("avatars")
+  .getPublicUrl(filePath);
 
-      if (urlError) throw urlError;
+if (urlError) throw urlError;
 
-      const publicUrl = data?.publicUrl;
-      if (!publicUrl) throw new Error("Failed to get public URL");
-
+const publicUrl = publicUrlData?.publicUrl as string;
+if (!publicUrl) throw new Error("Failed to get public URL");
       // ✅ Update user profile with new URL
       const { error: updateError } = await supabase
         .from("profiles")
