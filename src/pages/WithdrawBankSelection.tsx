@@ -160,6 +160,7 @@ const WithdrawBankSelection = () => {
           />
         </div>
 
+        {/* Cashout Button */}
         <Button
           className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 rounded-full mt-6"
           onClick={handleCashout}
