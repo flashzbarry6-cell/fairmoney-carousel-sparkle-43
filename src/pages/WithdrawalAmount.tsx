@@ -69,7 +69,7 @@ const WithdrawalAmount = () => {
 
   const handleRefer = async () => {
     if (referralCode) {
-      const referralUrl = `https://earnbuzzzz.netlify.app/login?tab=signup&ref=${referralCode}`;
+      const referralUrl = `https://lumexzz.netlify.app/login?ref=REF94D97212&tab=signup=${referralCode}`;
       const message = `🎉 Join me on LUMEXZZ WIN and start earning! Get your bonus when you sign up: ${referralUrl}`;
       
       if (navigator.share) {
