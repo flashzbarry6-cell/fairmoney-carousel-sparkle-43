@@ -1,4 +1,4 @@
-import { ArrowLeft, Check } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,14 +11,12 @@ const WithdrawBankSelection = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const amount = location.state?.amount || 0;
-  
+
   const [formData, setFormData] = useState({
     accountNumber: "",
     bankName: "",
-    accountName: ""
+    accountName: "",
   });
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [isVerified, setIsVerified] = useState(false);
 
   const banks = [
     { name: "Access Bank", logo: "🏦" },
@@ -48,66 +46,39 @@ const WithdrawBankSelection = () => {
     { name: "Unity Bank", logo: "🏦" },
     { name: "VFD Microfinance Bank", logo: "🏦" },
     { name: "Wema Bank", logo: "🏦" },
-    { name: "Zenith Bank", logo: "🏦" }
+    { name: "Zenith Bank", logo: "🏦" },
   ].sort((a, b) => a.name.localeCompare(b.name));
 
   const handleAccountNumberChange = (value: string) => {
-    setFormData(prev => ({ ...prev, accountNumber: value }));
-    setIsVerified(false);
-    setFormData(prev => ({ ...prev, accountName: "" }));
-    
-    if (value.length === 10 && formData.bankName) {
-      verifyAccount(value, formData.bankName);
-    }
+    setFormData((prev) => ({ ...prev, accountNumber: value.replace(/\D/g, "").slice(0, 10) }));
   };
 
   const handleBankChange = (value: string) => {
-    setFormData(prev => ({ ...prev, bankName: value }));
-    setIsVerified(false);
-    setFormData(prev => ({ ...prev, accountName: "" }));
-    
-    if (formData.accountNumber.length === 10) {
-      verifyAccount(formData.accountNumber, value);
-    }
+    setFormData((prev) => ({ ...prev, bankName: value }));
   };
 
-  const verifyAccount = (accountNumber: string, bankName: string) => {
-    if (accountNumber.length !== 10 || !bankName) return;
-    
-    setIsVerifying(true);
-    
-    // Simulate account verification
-    setTimeout(() => {
-      const mockNames = [
-        "JOHN SMITH DOE", "MARY JANE JOHNSON", "DAVID MICHAEL BROWN", 
-        "SARAH ELIZABETH DAVIS", "JAMES ROBERT WILSON", "LISA MARIE ANDERSON"
-      ];
-      const randomName = mockNames[Math.floor(Math.random() * mockNames.length)];
-      
-      setFormData(prev => ({ ...prev, accountName: randomName }));
-      setIsVerified(true);
-      setIsVerifying(false);
-    }, 2000);
+  const handleAccountNameChange = (value: string) => {
+    setFormData((prev) => ({ ...prev, accountName: value }));
   };
 
   const handleCashout = () => {
-    if (!formData.accountNumber || !formData.bankName || !isVerified) {
+    if (!formData.accountNumber || !formData.bankName || !formData.accountName) {
       toast({
         title: "Incomplete Information",
-        description: "Please fill in all required fields and verify your account.",
-        variant: "destructive"
+        description: "Please fill in all required fields before proceeding.",
+        variant: "destructive",
       });
       return;
     }
 
     // Navigate directly to withdrawal receipt
-    navigate('/withdrawal-receipt', {
+    navigate("/withdrawal-receipt", {
       state: {
         withdrawalData: {
           ...formData,
-          amount: amount
-        }
-      }
+          amount: amount,
+        },
+      },
     });
   };
 
@@ -135,7 +106,7 @@ const WithdrawBankSelection = () => {
             type="text"
             placeholder="Enter 10-digit account number"
             value={formData.accountNumber}
-            onChange={(e) => handleAccountNumberChange(e.target.value.replace(/\D/g, '').slice(0, 10))}
+            onChange={(e) => handleAccountNumberChange(e.target.value)}
             className="w-full"
             maxLength={10}
           />
@@ -161,46 +132,23 @@ const WithdrawBankSelection = () => {
           </Select>
         </div>
 
-        {/* Account Name Display */}
-        {(formData.accountNumber.length === 10 && formData.bankName) && (
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">Account Name</label>
-            <div className="relative">
-              <div className="space-y-2">
-                <Input
-                  type="text"
-                  value={isVerifying ? "Verifying..." : formData.accountName}
-                  disabled
-                  className="w-full bg-muted/50"
-                />
-                {isVerified && formData.bankName && (
-                  <div className="text-sm text-muted-foreground bg-muted/30 rounded-lg p-2">
-                    <span className="font-medium">Bank: </span>
-                    <span>{formData.bankName}</span>
-                  </div>
-                )}
-              </div>
-              {isVerified && (
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                  <Check className="w-5 h-5 text-green-600" />
-                </div>
-              )}
-            </div>
-            {isVerified && (
-              <p className="text-xs text-green-600 mt-1 flex items-center">
-                <Check className="w-3 h-3 mr-1" />
-                Account verified successfully
-              </p>
-            )}
-          </div>
-        )}
+        {/* Account Name Input */}
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-2">Account Name</label>
+          <Input
+            type="text"
+            placeholder="Enter account name"
+            value={formData.accountName}
+            onChange={(e) => handleAccountNameChange(e.target.value)}
+            className="w-full"
+          />
+        </div>
 
-        <Button 
+        <Button
           className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 rounded-full mt-6"
           onClick={handleCashout}
-          disabled={!isVerified || isVerifying}
         >
-          {isVerifying ? "Verifying Account..." : "Cashout"}
+          Cashout
         </Button>
       </div>
     </div>
