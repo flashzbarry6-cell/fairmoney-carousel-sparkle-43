@@ -3,8 +3,14 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+
+interface Bank {
+  name: string;
+  code: string;
+}
 
 const WithdrawBankSelection = () => {
   const { toast } = useToast();
@@ -15,79 +21,117 @@ const WithdrawBankSelection = () => {
   const [formData, setFormData] = useState({
     accountNumber: "",
     bankName: "",
+    bankCode: "",
     accountName: ""
   });
   const [isVerifying, setIsVerifying] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
+  const [banks, setBanks] = useState<Bank[]>([]);
+  const [isLoadingBanks, setIsLoadingBanks] = useState(true);
 
-  const banks = [
-    { name: "Access Bank", logo: "🏦" },
-    { name: "Citibank", logo: "🏦" },
-    { name: "Ecobank", logo: "🏦" },
-    { name: "Fidelity Bank", logo: "🏦" },
-    { name: "First Bank of Nigeria", logo: "🏦" },
-    { name: "First City Monument Bank", logo: "🏦" },
-    { name: "Globus Bank", logo: "🏦" },
-    { name: "Guaranty Trust Bank", logo: "🏦" },
-    { name: "Heritage Bank", logo: "🏦" },
-    { name: "Jaiz Bank", logo: "🏦" },
-    { name: "Keystone Bank", logo: "🏦" },
-    { name: "Kuda Bank", logo: "🏦" },
-    { name: "Moniepoint", logo: "🏦" },
-    { name: "Opay", logo: "🏦" },
-    { name: "Palmpay", logo: "🏦" },
-    { name: "Polaris Bank", logo: "🏦" },
-    { name: "Providus Bank", logo: "🏦" },
-    { name: "Stanbic IBTC Bank", logo: "🏦" },
-    { name: "Standard Chartered", logo: "🏦" },
-    { name: "Sterling Bank", logo: "🏦" },
-    { name: "SunTrust Bank", logo: "🏦" },
-    { name: "Titan Trust Bank", logo: "🏦" },
-    { name: "Union Bank", logo: "🏦" },
-    { name: "United Bank for Africa", logo: "🏦" },
-    { name: "Unity Bank", logo: "🏦" },
-    { name: "VFD Microfinance Bank", logo: "🏦" },
-    { name: "Wema Bank", logo: "🏦" },
-    { name: "Zenith Bank", logo: "🏦" }
-  ].sort((a, b) => a.name.localeCompare(b.name));
+  // Fetch banks from Paystack API
+  useEffect(() => {
+    const fetchBanks = async () => {
+      try {
+        const response = await fetch('https://api.paystack.co/bank');
+        const result = await response.json();
+        
+        if (result.status && result.data) {
+          const bankList = result.data.map((bank: any) => ({
+            name: bank.name,
+            code: bank.code
+          })).sort((a: Bank, b: Bank) => a.name.localeCompare(b.name));
+          
+          setBanks(bankList);
+        }
+      } catch (error) {
+        console.error('Error fetching banks:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load bank list. Please refresh the page.",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoadingBanks(false);
+      }
+    };
+
+    fetchBanks();
+  }, [toast]);
 
   const handleAccountNumberChange = (value: string) => {
     setFormData(prev => ({ ...prev, accountNumber: value }));
     setIsVerified(false);
     setFormData(prev => ({ ...prev, accountName: "" }));
     
-    if (value.length === 10 && formData.bankName) {
-      verifyAccount(value, formData.bankName);
+    if (value.length === 10 && formData.bankCode) {
+      verifyAccount(value, formData.bankCode);
     }
   };
 
   const handleBankChange = (value: string) => {
-    setFormData(prev => ({ ...prev, bankName: value }));
-    setIsVerified(false);
-    setFormData(prev => ({ ...prev, accountName: "" }));
-    
-    if (formData.accountNumber.length === 10) {
-      verifyAccount(formData.accountNumber, value);
+    const selectedBank = banks.find(b => b.name === value);
+    if (selectedBank) {
+      setFormData(prev => ({ 
+        ...prev, 
+        bankName: value,
+        bankCode: selectedBank.code 
+      }));
+      setIsVerified(false);
+      setFormData(prev => ({ ...prev, accountName: "" }));
+      
+      if (formData.accountNumber.length === 10) {
+        verifyAccount(formData.accountNumber, selectedBank.code);
+      }
     }
   };
 
-  const verifyAccount = (accountNumber: string, bankName: string) => {
-    if (accountNumber.length !== 10 || !bankName) return;
+  const verifyAccount = async (accountNumber: string, bankCode: string) => {
+    if (accountNumber.length !== 10 || !bankCode) return;
     
     setIsVerifying(true);
+    setIsVerified(false);
+    setFormData(prev => ({ ...prev, accountName: "" }));
     
-    // Simulate account verification
-    setTimeout(() => {
-      const mockNames = [
-        "JOHN SMITH DOE", "MARY JANE JOHNSON", "DAVID MICHAEL BROWN", 
-        "SARAH ELIZABETH DAVIS", "JAMES ROBERT WILSON", "LISA MARIE ANDERSON"
-      ];
-      const randomName = mockNames[Math.floor(Math.random() * mockNames.length)];
-      
-      setFormData(prev => ({ ...prev, accountName: randomName }));
-      setIsVerified(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('verify-bank', {
+        body: { account_number: accountNumber, bank_code: bankCode }
+      });
+
+      console.log('Verification response:', data, error);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (data.success && data.account_name) {
+        setFormData(prev => ({ ...prev, accountName: data.account_name }));
+        setIsVerified(true);
+        toast({
+          title: "Account Verified",
+          description: `Account belongs to ${data.account_name}`,
+        });
+      } else {
+        setFormData(prev => ({ ...prev, accountName: "Could not verify account" }));
+        setIsVerified(false);
+        toast({
+          title: "Verification Failed",
+          description: data.error || "Could not verify account",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Verification error:', error);
+      setFormData(prev => ({ ...prev, accountName: "Could not verify account" }));
+      setIsVerified(false);
+      toast({
+        title: "Verification Error",
+        description: "Could not verify account. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
       setIsVerifying(false);
-    }, 2000);
+    }
   };
 
   const handleCashout = () => {
@@ -144,17 +188,14 @@ const WithdrawBankSelection = () => {
         {/* Bank Selection */}
         <div>
           <label className="block text-sm font-medium text-foreground mb-2">Select Bank</label>
-          <Select onValueChange={handleBankChange} value={formData.bankName}>
+          <Select onValueChange={handleBankChange} value={formData.bankName} disabled={isLoadingBanks}>
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Choose your bank" />
+              <SelectValue placeholder={isLoadingBanks ? "Loading banks..." : "Choose your bank"} />
             </SelectTrigger>
             <SelectContent>
               {banks.map((bank) => (
-                <SelectItem key={bank.name} value={bank.name}>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-lg">{bank.logo}</span>
-                    <span>{bank.name}</span>
-                  </div>
+                <SelectItem key={bank.code} value={bank.name}>
+                  {bank.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -171,7 +212,7 @@ const WithdrawBankSelection = () => {
                   type="text"
                   value={isVerifying ? "Verifying..." : formData.accountName}
                   disabled
-                  className="w-full bg-muted/50"
+                  className={`w-full bg-muted/50 ${!isVerified && formData.accountName && formData.accountName.includes('Could not') ? 'text-red-500' : ''}`}
                 />
                 {isVerified && formData.bankName && (
                   <div className="text-sm text-muted-foreground bg-muted/30 rounded-lg p-2">
