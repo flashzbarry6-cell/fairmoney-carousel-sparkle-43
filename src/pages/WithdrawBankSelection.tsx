@@ -2,7 +2,13 @@ import { ArrowLeft } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -50,7 +56,10 @@ const WithdrawBankSelection = () => {
   ].sort((a, b) => a.name.localeCompare(b.name));
 
   const handleAccountNumberChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, accountNumber: value.replace(/\D/g, "").slice(0, 10) }));
+    setFormData((prev) => ({
+      ...prev,
+      accountNumber: value.replace(/\D/g, "").slice(0, 10),
+    }));
   };
 
   const handleBankChange = (value: string) => {
@@ -71,7 +80,6 @@ const WithdrawBankSelection = () => {
       return;
     }
 
-    // Navigate directly to withdrawal receipt
     navigate("/withdrawal-receipt", {
       state: {
         withdrawalData: {
@@ -96,12 +104,16 @@ const WithdrawBankSelection = () => {
         {/* Amount Display */}
         <div className="text-center py-4 bg-muted/50 rounded-lg">
           <p className="text-sm text-muted-foreground">Withdrawal Amount</p>
-          <p className="text-2xl font-bold text-primary">₦{amount.toLocaleString()}.00</p>
+          <p className="text-2xl font-bold text-primary">
+            ₦{amount.toLocaleString()}.00
+          </p>
         </div>
 
         {/* Account Number */}
         <div>
-          <label className="block text-sm font-medium text-foreground mb-2">Account Number</label>
+          <label className="block text-sm font-medium text-foreground mb-2">
+            Account Number
+          </label>
           <Input
             type="text"
             placeholder="Enter 10-digit account number"
@@ -114,7 +126,9 @@ const WithdrawBankSelection = () => {
 
         {/* Bank Selection */}
         <div>
-          <label className="block text-sm font-medium text-foreground mb-2">Select Bank</label>
+          <label className="block text-sm font-medium text-foreground mb-2">
+            Select Bank
+          </label>
           <Select onValueChange={handleBankChange} value={formData.bankName}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Choose your bank" />
@@ -132,9 +146,11 @@ const WithdrawBankSelection = () => {
           </Select>
         </div>
 
-        {/* Account Name Input */}
+        {/* Account Name */}
         <div>
-          <label className="block text-sm font-medium text-foreground mb-2">Account Name</label>
+          <label className="block text-sm font-medium text-foreground mb-2">
+            Account Name
+          </label>
           <Input
             type="text"
             placeholder="Enter account name"
