@@ -6,7 +6,7 @@ import { WelcomeNotification } from "@/components/WelcomeNotification";
 import { PaymentNotification } from "@/components/PaymentNotification";
 import { JoinGroupNotification } from "@/components/JoinGroupNotification";
 import { LiveChat } from "@/components/LiveChat";
-import  TransactionHistory  from "@/components/TransactionHistory";
+import TransactionHistory from "@/components/TransactionHistory";
 import { BottomCarousel } from "@/components/BottomCarousel";
 import { WithdrawalNotification } from "@/components/WithdrawalNotification";
 import { ProfileUpload } from "@/components/ProfileUpload";
@@ -18,6 +18,7 @@ const Dashboard = () => {
   const { toast } = useToast();
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true); // ✅ added loading state
   const [showWelcomeNotification, setShowWelcomeNotification] = useState(false);
   const [showJoinGroupNotification, setShowJoinGroupNotification] = useState(false);
   const [showPaymentNotification, setShowPaymentNotification] = useState(false);
@@ -35,49 +36,54 @@ const Dashboard = () => {
   // Check auth and load profile
   useEffect(() => {
     const checkAuth = async () => {
-      // ✅ FIXED: proper destructuring syntax
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        navigate("/login");
-        return;
-      }
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
 
-      setUser(session.user);
-      
-      // Load user profile
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .single();
-        
-      if (profileData) {
-        setProfile(profileData);
+        if (!session) {
+          navigate("/login");
+          return;
+        }
 
-        // Prevent overwriting a higher in-memory balance with a lower DB value:
-        const dbBal = profileData.balance || 5000;
-        setBalance(prev => (prev && prev > dbBal ? prev : dbBal));
-        
-        // Check claiming state
-        const claimState = localStorage.getItem('claimingState');
-        const lastClaimTime = localStorage.getItem('lastClaimTime');
-        
-        if (claimState === 'active' && lastClaimTime) {
-          const elapsed = Math.floor((Date.now() - parseInt(lastClaimTime)) / 1000);
-          const remaining = (5 * 60) - elapsed;
-          
-          if (remaining > 0) {
-            setCountdown(remaining);
-            setTimerActive(true);
-            setClaimingStarted(true);
-          } else {
-            // Time to claim bonus
-            setCountdown(0);
-            setTimerActive(false);
-            setClaimingStarted(true);
+        setUser(session.user);
+
+        // Load user profile
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .single();
+
+        if (profileData) {
+          setProfile(profileData);
+
+          // Prevent overwriting a higher in-memory balance with a lower DB value:
+          const dbBal = profileData.balance || 5000;
+          setBalance(prev => (prev && prev > dbBal ? prev : dbBal));
+
+          // Check claiming state
+          const claimState = localStorage.getItem('claimingState');
+          const lastClaimTime = localStorage.getItem('lastClaimTime');
+
+          if (claimState === 'active' && lastClaimTime) {
+            const elapsed = Math.floor((Date.now() - parseInt(lastClaimTime)) / 1000);
+            const remaining = (5 * 60) - elapsed;
+
+            if (remaining > 0) {
+              setCountdown(remaining);
+              setTimerActive(true);
+              setClaimingStarted(true);
+            } else {
+              // Time to claim bonus
+              setCountdown(0);
+              setTimerActive(false);
+              setClaimingStarted(true);
+            }
           }
         }
+      } catch (err) {
+        console.error("Auth check failed:", err);
+      } finally {
+        setLoading(false); // ✅ stop loading
       }
     };
 
@@ -97,30 +103,27 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (user) {
-      // Check if notifications have been shown before
       const hasShownWelcome = localStorage.getItem('hasShownWelcome');
       const hasShownPayment = localStorage.getItem('hasShownPayment');
-      
-      // Show welcome notification after 1 second if not shown before
+
       if (!hasShownWelcome) {
         const welcomeTimer = setTimeout(() => {
           setShowWelcomeNotification(true);
           localStorage.setItem('hasShownWelcome', 'true');
         }, 1000);
-        
-        // Show payment notification after 4 seconds if not shown before
+
         if (!hasShownPayment) {
           const paymentTimer = setTimeout(() => {
             setShowPaymentNotification(true);
             localStorage.setItem('hasShownPayment', 'true');
           }, 4000);
-          
+
           return () => {
             clearTimeout(welcomeTimer);
             clearTimeout(paymentTimer);
           };
         }
-        
+
         return () => clearTimeout(welcomeTimer);
       }
     }
@@ -141,7 +144,6 @@ const Dashboard = () => {
         });
       }, 1000);
     } else if (timerActive === false && countdown === 0 && claimingStarted && user && !isClaiming) {
-      // Auto-claim when timer reaches 0
       handleClaimBonus();
     }
     return () => clearInterval(timer);
@@ -155,32 +157,30 @@ const Dashboard = () => {
 
   const handleClaimBonus = async () => {
     if (!user || !profile) return;
-    
+
     setIsClaiming(true);
-    
+
     try {
-      // Update balance in Supabase — amount increased to ₦5,000
       const newBalance = balance + 5000;
       const { error } = await supabase
         .from('profiles')
         .update({ balance: newBalance })
         .eq('user_id', user.id);
-        
+
       if (error) throw error;
-      
+
       setBalance(newBalance);
       setProfile(prev => ({ ...prev, balance: newBalance }));
-      
+
       toast({
         title: "Bonus Claimed!",
         description: "₦5,000 added to your balance",
       });
-      
-      // Restart timer for next claim
+
       setCountdown(5 * 60);
       setTimerActive(true);
       localStorage.setItem('lastClaimTime', Date.now().toString());
-      
+
     } catch (error) {
       console.error('Error claiming bonus:', error);
       toast({
@@ -217,8 +217,16 @@ const Dashboard = () => {
     { icon: CreditCard, label: "Data", bgClass: "bg-primary/10", route: "/buy-data" },
     { icon: Banknote, label: "Loan", bgClass: "bg-primary/10", route: "/loan" },
     { icon: UserPlus, label: "Invitation", bgClass: "bg-primary/10", route: "/invite-earn" }
-    // Removed Groups and More and Withdraw from the grid per request
   ];
+
+  // ✅ Fix: show a loading placeholder instead of blank screen
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black text-white">
+        <p>Loading dashboard...</p>
+      </div>
+    );
+  }
 
   if (!user) {
     return null;
