@@ -1,5 +1,6 @@
+
 import { useEffect, useState } from "react";
-import { User, Eye, EyeOff, Shield, Users, Calculator, Wifi, CreditCard, Banknote, UserPlus, MessageCircle, Copy, History } from "lucide-react";
+import { User, Eye, EyeOff, Shield, Users, Calculator, Wifi, CreditCard, Banknote, UserPlus, MoreHorizontal, MessageCircle, Copy, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { WelcomeNotification } from "@/components/WelcomeNotification";
@@ -35,7 +36,7 @@ const Dashboard = () => {
   // Check auth and load profile
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } await supabase.auth.getSession();
+      const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         navigate("/login");
         return;
@@ -52,10 +53,7 @@ const Dashboard = () => {
         
       if (profileData) {
         setProfile(profileData);
-
-        // Prevent overwriting a higher in-memory balance with a lower DB value:
-        const dbBal = profileData.balance || 5000;
-        setBalance(prev => (prev && prev > dbBal ? prev : dbBal));
+        setBalance(profileData.balance || 5000);
         
         // Check claiming state
         const claimState = localStorage.getItem('claimingState');
@@ -157,8 +155,8 @@ const Dashboard = () => {
     setIsClaiming(true);
     
     try {
-      // Update balance in Supabase — amount increased to ₦5,000
-      const newBalance = balance + 5000;
+      // Update balance in Supabase
+      const newBalance = balance + 1000;
       const { error } = await supabase
         .from('profiles')
         .update({ balance: newBalance })
@@ -171,7 +169,7 @@ const Dashboard = () => {
       
       toast({
         title: "Bonus Claimed!",
-        description: "₦5,000 added to your balance",
+        description: "₦1,000 added to your balance",
       });
       
       // Restart timer for next claim
@@ -211,11 +209,13 @@ const Dashboard = () => {
 
   const services = [
     { icon: Users, label: "Support", bgClass: "bg-primary/10", route: "/support" },
-    { icon: Calculator, label: "Airtime", bgClass: "bg-primary/10", route: "/buy-airtime" },
-    { icon: CreditCard, label: "Data", bgClass: "bg-primary/10", route: "/buy-data" },
+    { icon: Calculator, label: "Groups", bgClass: "bg-primary/10", route: "groups" },
+    { icon: Banknote, label: "Withdraw", bgClass: "bg-primary/10", route: "/withdrawal-amount" },
+    { icon: CreditCard, label: "Airtime", bgClass: "bg-primary/10", route: "/buy-airtime" },
+    { icon: Wifi, label: "Data", bgClass: "bg-primary/10", route: "/buy-data" },
     { icon: Banknote, label: "Loan", bgClass: "bg-primary/10", route: "/loan" },
-    { icon: UserPlus, label: "Invitation", bgClass: "bg-primary/10", route: "/invite-earn" }
-    // Removed Groups and More and Withdraw from the grid per request
+    { icon: UserPlus, label: "Invitation", bgClass: "bg-primary/10", route: "/invite-earn" },
+    { icon: MoreHorizontal, label: "More", bgClass: "bg-primary/10", route: "/more-options" }
   ];
 
   if (!user) {
@@ -224,12 +224,11 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-black p-2 max-w-md mx-auto pb-32">
-      {/* Header - made sticky */}
-      <div className="flex items-center justify-between mb-3 pt-2 sticky top-0 z-50 bg-black">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-3 pt-2">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gold/20 rounded-full flex items-center justify-center overflow-hidden">
-            {/* Profile Upload component (shows profile pic / enables upload) */}
-            <ProfileUpload />
+          <div className="w-10 h-10 bg-gold/20 rounded-full flex items-center justify-center">
+            <User className="w-5 h-5 text-gold" />
           </div>
       <div className="overflow-hidden">
         <h1 className="text-lg font-semibold text-white typewriter">{profile?.full_name || user?.email}</h1>
@@ -281,7 +280,14 @@ const Dashboard = () => {
             <span className="text-sm opacity-90">Available Balance</span>
           </div>
           <div className="flex items-center space-x-2">
-            {/* Eye toggle remains here */}
+            <Button
+              onClick={() => setShowTransactionHistory(true)}
+              size="sm"
+              className="bg-gold hover:bg-gold-dark text-black font-semibold h-7 text-xs px-2"
+            >
+              <History className="w-3 h-3 mr-1" />
+              History
+            </Button>
             <button
               onClick={() => setShowBalance(!showBalance)}
               className="hover:bg-white/20 rounded-full p-1 transition-colors"
@@ -308,26 +314,6 @@ const Dashboard = () => {
           {showBalance ? `₦${balance.toLocaleString()}.00` : "₦****"}
         </div>
         
-        {/* New row: History (left) and Withdraw (right) under the timer */}
-        <div className="flex items-center justify-between mb-3">
-          <Button
-            onClick={() => setShowTransactionHistory(true)}
-            size="sm"
-            className="bg-gold hover:bg-gold-dark text-black font-semibold h-8 text-xs px-3"
-          >
-            <History className="w-3 h-3 mr-1" />
-            History
-          </Button>
-
-          <Button
-            onClick={() => navigate("/withdrawal-amount")}
-            size="sm"
-            className="bg-gold hover:bg-gold-dark text-black font-semibold h-8 text-xs px-3"
-          >
-            Withdraw
-          </Button>
-        </div>
-
         <Button 
           onClick={() => {
             if (!claimingStarted) {
@@ -351,7 +337,7 @@ const Dashboard = () => {
             ? "🎁 Start Claim"
             : (timerActive && countdown > 0)
             ? `⏰ Wait ${formatTime(countdown)}`
-            : "🎁 Claim ₦5,000"
+            : "🎁 Claim ₦1,000"
           }
         </Button>
       </div>
@@ -377,6 +363,19 @@ const Dashboard = () => {
       {/* Services Grid */}
       <div className="grid grid-cols-4 gap-3 mb-6">
         {services.map((service, index) => (
+          service.route === "groups" ? (
+            <div key={index} className="flex flex-col items-center space-y-2">
+              <div 
+                className="w-14 h-14 rounded-2xl bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600 flex items-center justify-center cursor-pointer shadow-lg hover:shadow-yellow-500/50 transition-all animate-pulse"
+                onClick={() => setShowGroupModal(true)}
+              >
+                <service.icon className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-[10px] text-center text-white font-medium leading-tight">
+                {service.label}
+              </span>
+            </div>
+          ) : (
             <Link key={index} to={service.route} className="flex flex-col items-center space-y-2">
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600 flex items-center justify-center shadow-lg hover:shadow-yellow-500/50 transition-all animate-pulse">
                 <service.icon className="w-6 h-6 text-white" />
@@ -385,10 +384,11 @@ const Dashboard = () => {
                 {service.label}
               </span>
             </Link>
+          )
         ))}
       </div>
 
-      {/* Bottom Navigation (sticky/fixed at bottom remains) */}
+      {/* Bottom Navigation */}
       <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-black border-t border-gold/20">
         <div className="flex justify-around py-2 px-2">
           <Link to="/dashboard" className="flex flex-col items-center space-y-1 flex-1">
@@ -425,26 +425,13 @@ const Dashboard = () => {
       {/* Bottom Carousel */}
       <BottomCarousel />
 
-      {/* LUMEXZZ write-up under carousel: ~10 lines animated (black & purple) */}
-      <div className="mt-4 mb-6 p-4 rounded-2xl border border-purple-700 bg-gradient-to-b from-black to-purple-950 overflow-hidden">
-        <div className="animate-pulse space-y-2">
-          <p className="text-sm text-purple-300">LUMEXZZ is a cutting-edge fintech platform designed to empower users across Africa with fast, secure and transparent financial services.</p>
-          <p className="text-sm text-purple-200">We combine simplicity with power — allowing you to manage funds, claim bonuses and interact with a vibrant community effortlessly.</p>
-          <p className="text-sm text-purple-300">At LUMEXZZ security and user experience come first: every feature is crafted to be intuitive while protecting your data.</p>
-          <p className="text-sm text-purple-200">We believe in financial inclusion — giving everyone access to tools that grow their savings and unlock new opportunities.</p>
-          <p className="text-sm text-purple-300">Our referral system rewards community champions — invite friends and watch your network and earnings grow.</p>
-          <p className="text-sm text-purple-200">Get instant support, buy airtime and data, withdraw funds, and explore loan options — all from one beautiful app.</p>
-          <p className="text-sm text-purple-300">Expect regular product improvements and features inspired by our users — LUMEXZZ evolves with you.</p>
-          <p className="text-sm text-purple-200">Join thousands who trust LUMEXZZ to manage their everyday finances with confidence and style.</p>
-          <p className="text-sm text-purple-300">We’re more than an app — we're a community dedicated to financial growth and digital empowerment.</p>
-          <p className="text-sm text-purple-200">Welcome to LUMEXZZ — where your financial journey gets simpler, bolder, and more rewarding.</p>
-        </div>
-      </div>
-
+      {/* Live Chat */}
       <LiveChat />
 
+      {/* Withdrawal Notifications */}
       <WithdrawalNotification />
 
+      {/* Notifications */}
         {showJoinGroupNotification && (
           <JoinGroupNotification
             onClose={() => setShowJoinGroupNotification(false)}
@@ -475,7 +462,7 @@ const Dashboard = () => {
         onClose={() => setShowTransactionHistory(false)}
       />
 
-      {/* Group Modal (still available if showGroupModal toggled somewhere) */}
+      {/* Group Modal */}
       {showGroupModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl p-6 mx-4 max-w-sm w-full">
