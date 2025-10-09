@@ -14,7 +14,7 @@ import { WelcomeNotification } from "@/components/WelcomeNotification";
 import { PaymentNotification } from "@/components/PaymentNotification";
 import { JoinGroupNotification } from "@/components/JoinGroupNotification";
 import { LiveChat } from "@/components/LiveChat";
-import { TransactionHistory } from "@/components/TransactionHistory";
+import  TransactionHistory  from "@/components/TransactionHistory";
 import { BottomCarousel } from "@/components/BottomCarousel";
 import { WithdrawalNotification } from "@/components/WithdrawalNotification";
 import { supabase } from "@/integrations/supabase/client";
