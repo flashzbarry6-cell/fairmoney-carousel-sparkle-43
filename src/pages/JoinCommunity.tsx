@@ -1,10 +1,22 @@
 import { ArrowLeft, MessageCircle, Send } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 const JoinCommunity = () => {
+  const navigate = useNavigate();
+  const [joinedTelegram, setJoinedTelegram] = useState(false);
+
   const handleTelegramJoin = () => {
     window.open("https://t.me/+Z93EW8PWHoQzNGU8", "_blank");
+    // Mark as joined
+    setJoinedTelegram(true);
+  };
+
+  const handleProceed = () => {
+    if (joinedTelegram) {
+      navigate("/dashboard");
+    }
   };
 
   const handleWhatsAppJoin = () => {
@@ -41,7 +53,7 @@ const JoinCommunity = () => {
             </p>
           </div>
         </div>
-        <Button 
+        <Button
           onClick={handleTelegramJoin}
           className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white"
         >
@@ -49,8 +61,20 @@ const JoinCommunity = () => {
         </Button>
       </div>
 
+      {/* Proceed Now Button */}
+      <Button
+        onClick={handleProceed}
+        disabled={!joinedTelegram}
+        className={`w-full mt-4 ${joinedTelegram
+          ? "bg-primary hover:bg-primary-dark text-white"
+          : "bg-gray-400 cursor-not-allowed text-white"
+          }`}
+      >
+        Proceed Now
+      </Button>
+
       {/* WhatsApp Group */}
-      <div className="bg-card rounded-2xl p-6">
+      <div className="bg-card rounded-2xl p-6 mt-4">
         <div className="flex items-center space-x-4">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
             <MessageCircle className="w-8 h-8 text-green-600" />
@@ -62,7 +86,7 @@ const JoinCommunity = () => {
             </p>
           </div>
         </div>
-        <Button 
+        <Button
           onClick={handleWhatsAppJoin}
           className="w-full mt-4 bg-green-500 hover:bg-green-600 text-white"
         >
