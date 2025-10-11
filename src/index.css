@@ -185,4 +185,19 @@ All colors MUST be HSL.
     75%, 95% { transform: translateX(-300%); }
     100% { transform: translateX(0%); }
   }
+
+  /* === Added Gradient Animation === */
+  @keyframes gradient-x {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .animate-gradient-x {
+    background-size: 200% 200%;
+    animation: gradient-x 8s ease infinite;
+  }
 }
