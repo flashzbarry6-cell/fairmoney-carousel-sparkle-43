@@ -1,4 +1,4 @@
-import { ArrowLeft, MessageCircle, Send } from "lucide-react";
+import { ArrowLeft, Send } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -9,18 +9,15 @@ const JoinCommunity = () => {
 
   const handleTelegramJoin = () => {
     window.open("https://t.me/+Z93EW8PWHoQzNGU8", "_blank");
-    // Mark as joined
-    setJoinedTelegram(true);
+    setJoinedTelegram(true); // Mark as joined
   };
 
   const handleProceed = () => {
     if (joinedTelegram) {
       navigate("/dashboard");
+    } else {
+      alert("Please join our Telegram community first before proceeding.");
     }
-  };
-
-  const handleWhatsAppJoin = () => {
-    window.open("https://chat.whatsapp.com/Ct9thGEQZUMAhy0Sqp23Hc?mode=ems_copy_c", "_blank");
   };
 
   return (
@@ -40,16 +37,16 @@ const JoinCommunity = () => {
         </p>
       </div>
 
-      {/* Telegram Channel */}
+      {/* Telegram Community */}
       <div className="bg-card rounded-2xl p-6 mb-4">
         <div className="flex items-center space-x-4">
           <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
             <Send className="w-8 h-8 text-blue-600" />
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-foreground">Telegram Channel</h3>
+            <h3 className="text-lg font-semibold text-foreground">FairMonie Telegram</h3>
             <p className="text-sm text-muted-foreground">
-              Join our Telegram community for updates and exclusive content
+              Join our official Telegram community for updates and exclusive content.
             </p>
           </div>
         </div>
@@ -57,7 +54,7 @@ const JoinCommunity = () => {
           onClick={handleTelegramJoin}
           className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white"
         >
-          Join Telegram Channel
+          Join Community
         </Button>
       </div>
 
@@ -72,27 +69,6 @@ const JoinCommunity = () => {
       >
         Proceed Now
       </Button>
-
-      {/* WhatsApp Group */}
-      <div className="bg-card rounded-2xl p-6 mt-4">
-        <div className="flex items-center space-x-4">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-            <MessageCircle className="w-8 h-8 text-green-600" />
-          </div>
-          <div className="flex-1">
-            <h3 className="text-lg font-semibold text-foreground">WhatsApp Group</h3>
-            <p className="text-sm text-muted-foreground">
-              Connect with our WhatsApp community for instant updates
-            </p>
-          </div>
-        </div>
-        <Button
-          onClick={handleWhatsAppJoin}
-          className="w-full mt-4 bg-green-500 hover:bg-green-600 text-white"
-        >
-          Join WhatsApp Group
-        </Button>
-      </div>
     </div>
   );
 };
