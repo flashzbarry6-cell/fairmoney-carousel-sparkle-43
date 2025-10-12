@@ -2,7 +2,6 @@ import { ArrowLeft, Calendar, Gift, CheckCircle, TrendingUp, DollarSign } from "
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { BottomNav } from "@/components/BottomNav";
-import { motion } from "framer-motion";
 
 const TASKS = [
   {
@@ -37,13 +36,11 @@ const Activity = () => {
   const [completedTasks, setCompletedTasks] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    // Load all activity history from localStorage
     const allHistory = localStorage.getItem("activityHistory");
     if (allHistory) {
       setActivities(JSON.parse(allHistory));
     }
 
-    // Load completed tasks from localStorage
     const storedCompleted = localStorage.getItem("completedTasks");
     if (storedCompleted) {
       setCompletedTasks(JSON.parse(storedCompleted));
@@ -106,7 +103,7 @@ const Activity = () => {
           return false;
         });
 
-  // Utility: read & write dashboard balance
+  // Dashboard balance utilities
   const getDashboardBalance = () => {
     const raw = localStorage.getItem("dashboardBalance");
     const n = raw ? Number(raw) : 0;
@@ -126,24 +123,23 @@ const Activity = () => {
   };
 
   const handleCompleteTask = (task: typeof TASKS[number]) => {
-    // If already completed, do nothing
     if (completedTasks[task.id]) return;
 
     // Open link in new tab
     window.open(task.url, "_blank", "noopener,noreferrer");
 
-    // Mark as completed locally and persist
+    // Mark as completed
     const updatedCompleted = { ...completedTasks, [task.id]: true };
     setCompletedTasks(updatedCompleted);
     persistCompletedTasks(updatedCompleted);
 
-    // Add ₦450 to dashboard balance immediately
+    // Reward logic
     const reward = 450;
     const currentBalance = getDashboardBalance();
     const newBalance = currentBalance + reward;
     setDashboardBalance(newBalance);
 
-    // Append activity history entry
+    // Add to activity history
     const entry = {
       type: "task",
       description: `Completed: ${task.title}`,
@@ -203,36 +199,25 @@ const Activity = () => {
 
       {/* Content */}
       <div className="space-y-3">
-        {/* When Task tab is active, show Must Join Channels tasks above the history */}
+        {/* Must Join Channels Section */}
         {activeTab === "task" && (
           <div className="space-y-3">
             {TASKS.map((task) => {
               const done = !!completedTasks[task.id];
               return (
-                <motion.div
+                <div
                   key={task.id}
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{
-                    opacity: [0.95, 1, 0.95],
-                    boxShadow: done
-                      ? "0 6px 18px rgba(76,29,149,0.18)"
-                      : [
-                          "0 0 0px rgba(0,0,0,0)",
-                          "0 0 24px rgba(139,92,246,0.28)",
-                          "0 0 0px rgba(0,0,0,0)",
-                        ],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: done ? 0 : Infinity,
-                    repeatType: "loop",
-                    ease: "easeInOut",
-                  }}
-                  className={`p-4 rounded-2xl bg-black/70 border border-purple-700/40 flex items-center justify-between`}
+                  className={`p-4 rounded-2xl border border-purple-700/40 flex items-center justify-between transition-all duration-500 ${
+                    done
+                      ? "bg-black/70 shadow-none"
+                      : "bg-black/80 animate-pulse-soft"
+                  }`}
                 >
                   <div>
                     <h4 className="text-white font-semibold">{task.title}</h4>
-                    <p className="text-gray-400 text-sm mt-1">{task.description}</p>
+                    <p className="text-gray-400 text-sm mt-1">
+                      {task.description}
+                    </p>
                   </div>
                   <div className="flex flex-col items-end">
                     <p className="text-green-400 font-semibold mb-2">+₦450</p>
@@ -248,17 +233,20 @@ const Activity = () => {
                       {done ? "Completed" : "Complete"}
                     </button>
                   </div>
-                </motion.div>
+                </div>
               );
             })}
           </div>
         )}
 
+        {/* Activity History */}
         {filteredActivities.length === 0 ? (
           <div className="bg-gray-900/50 rounded-2xl p-6 text-center border border-purple-500/20">
             <Calendar className="w-12 h-12 mx-auto mb-3 text-purple-400" />
             <p className="text-gray-400">No activity yet</p>
-            <p className="text-gray-500 text-sm mt-2">Start earning to see your activity here</p>
+            <p className="text-gray-500 text-sm mt-2">
+              Start earning to see your activity here
+            </p>
           </div>
         ) : (
           <div className="bg-gray-900/50 rounded-2xl overflow-hidden border border-purple-500/20">
@@ -273,18 +261,28 @@ const Activity = () => {
                 >
                   <div className="flex items-center gap-3">
                     <div
-                      className={`w-10 h-10 bg-gradient-to-br ${getActivityColor(activity.type)} rounded-full flex items-center justify-center`}
+                      className={`w-10 h-10 bg-gradient-to-br ${getActivityColor(
+                        activity.type
+                      )} rounded-full flex items-center justify-center`}
                     >
                       {getActivityIcon(activity.type)}
                     </div>
                     <div>
-                      <p className="text-white font-medium">{activity.description}</p>
-                      <p className="text-gray-400 text-sm">{formatDate(activity.timestamp)}</p>
+                      <p className="text-white font-medium">
+                        {activity.description}
+                      </p>
+                      <p className="text-gray-400 text-sm">
+                        {formatDate(activity.timestamp)}
+                      </p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-green-400 font-semibold">+₦{activity.amount.toLocaleString()}</p>
-                    <p className="text-gray-500 text-xs">{formatTime(activity.timestamp)}</p>
+                    <p className="text-green-400 font-semibold">
+                      +₦{activity.amount.toLocaleString()}
+                    </p>
+                    <p className="text-gray-500 text-xs">
+                      {formatTime(activity.timestamp)}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -297,5 +295,13 @@ const Activity = () => {
     </div>
   );
 };
+
+// Custom Tailwind pulse
+// Add this in your global CSS or tailwind.config if not existing
+// @keyframes pulse-soft {
+//   0%, 100% { box-shadow: 0 0 0 rgba(139, 92, 246, 0); }
+//   50% { box-shadow: 0 0 24px rgba(139, 92, 246, 0.4); }
+// }
+// .animate-pulse-soft { animation: pulse-soft 2s infinite ease-in-out; }
 
 export default Activity;
