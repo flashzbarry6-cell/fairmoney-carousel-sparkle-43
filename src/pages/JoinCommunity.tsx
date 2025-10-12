@@ -8,7 +8,7 @@ const JoinCommunity = () => {
   const [joinedTelegram, setJoinedTelegram] = useState(false);
 
   const handleTelegramJoin = () => {
-    window.open("https://t.me/+Z93EW8PWHoQzNGU8", "_blank");
+    window.open("https://t.me/Plutozanki", "_blank");
     setJoinedTelegram(true); // Mark as joined
   };
 
