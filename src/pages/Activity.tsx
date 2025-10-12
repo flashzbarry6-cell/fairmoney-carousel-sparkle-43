@@ -2,45 +2,80 @@ import { ArrowLeft, Calendar, Gift, CheckCircle, TrendingUp, DollarSign } from "
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { BottomNav } from "@/components/BottomNav";
+import { motion } from "framer-motion";
+
+const TASKS = [
+  {
+    id: "whatsapp",
+    title: "Join our WhatsApp Channel",
+    description: "Join the WhatsApp channel to stay updated.",
+    url: "https://whatsapp.com/channel/0029Vb6eAwH9mrGTeNSKVh1q",
+  },
+  {
+    id: "telegram",
+    title: "Join our Telegram Channel",
+    description: "Join the Telegram channel for announcements.",
+    url: "https://t.me/Plutozanki",
+  },
+  {
+    id: "tiktok",
+    title: "Follow us on TikTok",
+    description: "Follow our TikTok account.",
+    url: "https://www.tiktok.com/@plutozgbv15?_t=ZS-90V5QAYqdoS&_r=1",
+  },
+  {
+    id: "visit_site",
+    title: "Visit our Site",
+    description: "Visit our site and sign up.",
+    url: "https://lumexzz.netlify.app/login?ref=REF94D97212&tab=signup",
+  },
+];
 
 const Activity = () => {
   const [activeTab, setActiveTab] = useState<"all" | "task" | "checkin">("all");
   const [activities, setActivities] = useState<any[]>([]);
+  const [completedTasks, setCompletedTasks] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     // Load all activity history from localStorage
-    const allHistory = localStorage.getItem('activityHistory');
+    const allHistory = localStorage.getItem("activityHistory");
     if (allHistory) {
       setActivities(JSON.parse(allHistory));
+    }
+
+    // Load completed tasks from localStorage
+    const storedCompleted = localStorage.getItem("completedTasks");
+    if (storedCompleted) {
+      setCompletedTasks(JSON.parse(storedCompleted));
     }
   }, []);
 
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric', 
-      year: 'numeric' 
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
     });
   };
 
   const formatTime = (timestamp: number) => {
     const date = new Date(timestamp);
-    return date.toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   const getActivityIcon = (type: string) => {
     switch (type) {
-      case 'check-in':
+      case "check-in":
         return <CheckCircle className="w-5 h-5 text-white" />;
-      case 'bonus':
+      case "bonus":
         return <Gift className="w-5 h-5 text-white" />;
-      case 'auto-bonus':
+      case "auto-bonus":
         return <TrendingUp className="w-5 h-5 text-white" />;
-      case 'referral':
+      case "referral":
         return <DollarSign className="w-5 h-5 text-white" />;
       default:
         return <Gift className="w-5 h-5 text-white" />;
@@ -49,26 +84,76 @@ const Activity = () => {
 
   const getActivityColor = (type: string) => {
     switch (type) {
-      case 'check-in':
-        return 'from-green-500 to-green-700';
-      case 'bonus':
-        return 'from-yellow-500 to-yellow-700';
-      case 'auto-bonus':
-        return 'from-purple-500 to-purple-700';
-      case 'referral':
-        return 'from-blue-500 to-blue-700';
+      case "check-in":
+        return "from-green-500 to-green-700";
+      case "bonus":
+        return "from-yellow-500 to-yellow-700";
+      case "auto-bonus":
+        return "from-purple-500 to-purple-700";
+      case "referral":
+        return "from-blue-500 to-blue-700";
       default:
-        return 'from-gray-500 to-gray-700';
+        return "from-gray-500 to-gray-700";
     }
   };
 
-  const filteredActivities = activeTab === 'all' 
-    ? activities 
-    : activities.filter(a => {
-        if (activeTab === 'checkin') return a.type === 'check-in';
-        if (activeTab === 'task') return a.type === 'task';
-        return false;
-      });
+  const filteredActivities =
+    activeTab === "all"
+      ? activities
+      : activities.filter((a) => {
+          if (activeTab === "checkin") return a.type === "check-in";
+          if (activeTab === "task") return a.type === "task";
+          return false;
+        });
+
+  // Utility: read & write dashboard balance
+  const getDashboardBalance = () => {
+    const raw = localStorage.getItem("dashboardBalance");
+    const n = raw ? Number(raw) : 0;
+    return isNaN(n) ? 0 : n;
+  };
+
+  const setDashboardBalance = (value: number) => {
+    localStorage.setItem("dashboardBalance", String(value));
+  };
+
+  const persistActivityHistory = (newActivities: any[]) => {
+    localStorage.setItem("activityHistory", JSON.stringify(newActivities));
+  };
+
+  const persistCompletedTasks = (obj: Record<string, boolean>) => {
+    localStorage.setItem("completedTasks", JSON.stringify(obj));
+  };
+
+  const handleCompleteTask = (task: typeof TASKS[number]) => {
+    // If already completed, do nothing
+    if (completedTasks[task.id]) return;
+
+    // Open link in new tab
+    window.open(task.url, "_blank", "noopener,noreferrer");
+
+    // Mark as completed locally and persist
+    const updatedCompleted = { ...completedTasks, [task.id]: true };
+    setCompletedTasks(updatedCompleted);
+    persistCompletedTasks(updatedCompleted);
+
+    // Add ₦450 to dashboard balance immediately
+    const reward = 450;
+    const currentBalance = getDashboardBalance();
+    const newBalance = currentBalance + reward;
+    setDashboardBalance(newBalance);
+
+    // Append activity history entry
+    const entry = {
+      type: "task",
+      description: `Completed: ${task.title}`,
+      amount: reward,
+      timestamp: Date.now(),
+    };
+    const newActivities = [entry, ...activities];
+    setActivities(newActivities);
+    persistActivityHistory(newActivities);
+  };
 
   return (
     <div className="min-h-screen bg-black p-4 max-w-md mx-auto pb-24">
@@ -118,6 +203,57 @@ const Activity = () => {
 
       {/* Content */}
       <div className="space-y-3">
+        {/* When Task tab is active, show Must Join Channels tasks above the history */}
+        {activeTab === "task" && (
+          <div className="space-y-3">
+            {TASKS.map((task) => {
+              const done = !!completedTasks[task.id];
+              return (
+                <motion.div
+                  key={task.id}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{
+                    opacity: [0.95, 1, 0.95],
+                    boxShadow: done
+                      ? "0 6px 18px rgba(76,29,149,0.18)"
+                      : [
+                          "0 0 0px rgba(0,0,0,0)",
+                          "0 0 24px rgba(139,92,246,0.28)",
+                          "0 0 0px rgba(0,0,0,0)",
+                        ],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: done ? 0 : Infinity,
+                    repeatType: "loop",
+                    ease: "easeInOut",
+                  }}
+                  className={`p-4 rounded-2xl bg-black/70 border border-purple-700/40 flex items-center justify-between`}
+                >
+                  <div>
+                    <h4 className="text-white font-semibold">{task.title}</h4>
+                    <p className="text-gray-400 text-sm mt-1">{task.description}</p>
+                  </div>
+                  <div className="flex flex-col items-end">
+                    <p className="text-green-400 font-semibold mb-2">+₦450</p>
+                    <button
+                      onClick={() => handleCompleteTask(task)}
+                      disabled={done}
+                      className={`px-4 py-2 text-sm font-medium rounded-xl shadow-lg transition-all ${
+                        done
+                          ? "bg-gray-700 text-gray-300 cursor-default"
+                          : "bg-gradient-to-r from-purple-600 to-purple-800 text-white hover:from-purple-700"
+                      }`}
+                    >
+                      {done ? "Completed" : "Complete"}
+                    </button>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
+
         {filteredActivities.length === 0 ? (
           <div className="bg-gray-900/50 rounded-2xl p-6 text-center border border-purple-500/20">
             <Calendar className="w-12 h-12 mx-auto mb-3 text-purple-400" />
@@ -131,9 +267,14 @@ const Activity = () => {
             </div>
             <div className="divide-y divide-gray-800">
               {filteredActivities.map((activity, index) => (
-                <div key={index} className="p-4 flex items-center justify-between hover:bg-gray-800/50 transition-colors">
+                <div
+                  key={index}
+                  className="p-4 flex items-center justify-between hover:bg-gray-800/50 transition-colors"
+                >
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 bg-gradient-to-br ${getActivityColor(activity.type)} rounded-full flex items-center justify-center`}>
+                    <div
+                      className={`w-10 h-10 bg-gradient-to-br ${getActivityColor(activity.type)} rounded-full flex items-center justify-center`}
+                    >
                       {getActivityIcon(activity.type)}
                     </div>
                     <div>
