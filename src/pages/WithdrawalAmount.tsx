@@ -1,11 +1,10 @@
 import { ArrowLeft, Share2, Users } from "lucide-react";
-import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import "@/styles/animated-bg.css"; // 👈 Add this line (you’ll create this small CSS file below)
 
 const WithdrawalAmount = () => {
   const navigate = useNavigate();
@@ -94,8 +93,22 @@ const WithdrawalAmount = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden flex flex-col items-center p-3 max-w-md mx-auto">
-      {/* Smooth animated background */}
-      <div className="absolute inset-0 animated-bg"></div>
+      {/* Injected CSS so preview/build can't fail due to a missing external file */}
+      <style>{`
+        @keyframes gradientMove {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        .animated-bg {
+          background: linear-gradient( -45deg, #000000 0%, #1e0536 25%, #4b0082 50%, #1e0536 75%, #000000 100% );
+          background-size: 400% 400%;
+          animation: gradientMove 15s ease infinite;
+        }
+      `}</style>
+
+      {/* Smooth animated black & purple background (non-blinking) */}
+      <div className="absolute inset-0 animated-bg opacity-95"></div>
 
       {/* Content container */}
       <div className="relative z-10 w-full">
