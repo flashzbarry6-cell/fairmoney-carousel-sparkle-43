@@ -53,10 +53,17 @@ const Dashboard = () => {
         .eq('user_id', session.user.id)
         .single();
         
-      if (profileData) {
-        setProfile(profileData);
-        setBalance(profileData.balance || 5000);
-        
+     if (profileData) {
+  setProfile(profileData);
+
+  // ✅ Preserve most recent balance across page visits
+  const storedBalance = localStorage.getItem("latestBalance");
+  const finalBalance = storedBalance
+    ? parseFloat(storedBalance)
+    : (profileData.balance || 5000);
+  setBalance(finalBalance);
+}
+
         // Check claiming state
         const claimState = localStorage.getItem('claimingState');
         const lastClaimTime = localStorage.getItem('lastClaimTime');
@@ -312,7 +319,7 @@ useEffect(() => {
         variant: "destructive"
       });
       return;
-    }
+    }  
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -350,6 +357,13 @@ useEffect(() => {
       });
     }
   };
+
+// ✅ Keep balance persistent across navigation
+useEffect(() => {
+  if (balance) {
+    localStorage.setItem("latestBalance", balance.toString());
+  }
+}, [balance]);
 
   const services = [
     { icon: Users, label: "Support", bgClass: "bg-primary/10", route: "/support" },
