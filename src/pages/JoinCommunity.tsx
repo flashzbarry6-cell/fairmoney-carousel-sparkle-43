@@ -8,8 +8,9 @@ const JoinCommunity = () => {
   const [joinedTelegram, setJoinedTelegram] = useState(false);
 
   const handleTelegramJoin = () => {
+    // Open Telegram channel and mark as joined
     window.open("https://t.me/Plutozanki", "_blank");
-    setJoinedTelegram(true); // Mark as joined
+    setJoinedTelegram(true);
   };
 
   const handleProceed = () => {
@@ -27,13 +28,16 @@ const JoinCommunity = () => {
         <Link to="/dashboard" className="mr-4">
           <ArrowLeft className="w-6 h-6 text-foreground" />
         </Link>
-        <h1 className="text-xl font-semibold text-foreground">Join Our Community</h1>
+        <h1 className="text-xl font-semibold text-foreground">
+          Join Our Community
+        </h1>
       </div>
 
       {/* Description */}
       <div className="text-center mb-8">
         <p className="text-muted-foreground">
-          Join our community to get updates, tips, and start earning with FairMonie Pay!
+          Join our community to get updates, tips, and start earning with
+          FairMonie Pay!
         </p>
       </div>
 
@@ -44,9 +48,12 @@ const JoinCommunity = () => {
             <Send className="w-8 h-8 text-blue-600" />
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-foreground">FairMonie Telegram</h3>
+            <h3 className="text-lg font-semibold text-foreground">
+              FairMonie Telegram
+            </h3>
             <p className="text-sm text-muted-foreground">
-              Join our official Telegram community for updates and exclusive content.
+              Join our official Telegram community for updates and exclusive
+              content.
             </p>
           </div>
         </div>
@@ -58,16 +65,17 @@ const JoinCommunity = () => {
         </Button>
       </div>
 
-      {/* Proceed Now Button */}
+      {/* Proceed Button */}
       <Button
         onClick={handleProceed}
         disabled={!joinedTelegram}
-        className={`w-full mt-4 ${joinedTelegram
-          ? "bg-primary hover:bg-primary-dark text-white"
-          : "bg-gray-400 cursor-not-allowed text-white"
-          }`}
+        className={`w-full mt-4 ${
+          joinedTelegram
+            ? "bg-primary hover:bg-primary-dark text-white"
+            : "bg-gray-400 cursor-not-allowed text-white"
+        }`}
       >
-        Proceed Now
+        Proceed
       </Button>
     </div>
   );
