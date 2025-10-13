@@ -95,10 +95,10 @@ const TransferPage = () => {
           <div className="bg-black/40 backdrop-blur-lg rounded-2xl p-6 text-center border border-purple-700/40 shadow-lg">
             <p className="text-sm text-gray-400 mb-2">Transfer Amount</p>
             <div className="flex justify-center items-center space-x-2 mb-1">
-              <p className="text-4xl font-bold text-yellow-400">₦7,000</p>
+              <p className="text-4xl font-bold text-yellow-400">₦5,700</p>
               <Copy
                 className="w-5 h-5 text-yellow-400 cursor-pointer hover:text-yellow-300"
-                onClick={() => copyToClipboard("7000")}
+                onClick={() => copyToClipboard("5700")}
               />
             </div>
             <p className="text-xs text-gray-400">Verification Fee</p>
@@ -115,13 +115,14 @@ const TransferPage = () => {
               </p>
             </div>
 
-            <div className="space-y-3 bg-black/30 rounded-xl p-4 border border-purple-700/40">
-              <div className="flex justify-between items-center py-2 border-b border-purple-700/40">
+            {/* Horizontal Bank Info */}
+            <div className="flex flex-col bg-black/30 rounded-xl p-4 border border-purple-700/40 space-y-3">
+              <div className="flex justify-between items-center border-b border-purple-700/40 pb-2">
                 <span className="text-sm text-gray-400">Bank:</span>
                 <span className="font-semibold text-white">Opay</span>
               </div>
 
-              <div className="flex justify-between items-center py-2 border-b border-purple-700/40">
+              <div className="flex justify-between items-center border-b border-purple-700/40 pb-2">
                 <span className="text-sm text-gray-400">Account Number:</span>
                 <div className="flex items-center space-x-2">
                   <span className="font-bold text-white">8102562883</span>
@@ -132,9 +133,9 @@ const TransferPage = () => {
                 </div>
               </div>
 
-              <div className="flex justify-between items-center py-2">
+              <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-400">Account Name:</span>
-                <span className="font-semibold text-white">
+                <span className="font-semibold text-white text-right">
                   Veronica Chisom Benjamin
                 </span>
               </div>
@@ -143,28 +144,19 @@ const TransferPage = () => {
             {/* Important Notice */}
             <div className="bg-yellow-50/10 border border-yellow-400 rounded-lg p-4 mt-4 backdrop-blur-md">
               <p className="text-sm text-yellow-300 font-medium">
-                ⚠️ Important: Transfer exactly ₦7,000 to the account above to
+                ⚠️ Important: Transfer exactly ₦5,700 to the account above to
                 verify your withdrawal request.
               </p>
             </div>
           </div>
 
-          {/* Action Buttons */}
+          {/* Action Button Only */}
           <Button
             onClick={handleTransfer}
             className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-4 rounded-full text-lg"
           >
             I Have Made Transfer
           </Button>
-
-          <Link to="/dashboard">
-            <Button
-              variant="outline"
-              className="w-full border-2 border-purple-700/40 text-white font-semibold py-3 rounded-full"
-            >
-              Cancel
-            </Button>
-          </Link>
         </div>
       </div>
 
