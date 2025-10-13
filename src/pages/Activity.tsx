@@ -112,7 +112,7 @@ const Activity = () => {
 
   const setDashboardBalance = (value: number) => {
     localStorage.setItem("dashboardBalance", String(value));
-    // Ensure dashboard listens for this
+    // Notify dashboard in real time
     window.dispatchEvent(new CustomEvent("balanceUpdated", { detail: value }));
   };
 
@@ -140,6 +140,9 @@ const Activity = () => {
     const currentBalance = getDashboardBalance();
     const newBalance = currentBalance + reward;
     setDashboardBalance(newBalance);
+
+    // Dispatch event for real-time dashboard sync
+    window.dispatchEvent(new CustomEvent("balanceUpdated", { detail: newBalance }));
 
     // Add to activity history
     const entry = {
