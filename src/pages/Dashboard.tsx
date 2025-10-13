@@ -389,8 +389,19 @@ const Dashboard = () => {
             <Shield className="w-4 h-4 text-gold" />
             <span className="text-sm opacity-90">Available Balance</span>
           </div>
-          
-             
+          <div className="flex items-center space-x-2">
+            <Button
+              onClick={() => setShowTransactionHistory(true)}
+              size="sm"
+              className="bg-gold hover:bg-gold-dark text-black font-semibold h-7 text-xs px-2"
+            >
+              <History className="w-3 h-3 mr-1" />
+              History
+            </Button>
+            <button
+              onClick={() => setShowBalance(!showBalance)}
+              className="hover:bg-white/20 rounded-full p-1 transition-colors"
+            >
               {showBalance ? (
                 <Eye className="w-4 h-4 opacity-90" />
               ) : (
