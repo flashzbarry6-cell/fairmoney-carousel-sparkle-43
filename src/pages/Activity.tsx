@@ -112,7 +112,7 @@ const Activity = () => {
 
   const setDashboardBalance = (value: number) => {
     localStorage.setItem("dashboardBalance", String(value));
-    // Notify dashboard in real time
+    // Trigger custom update event for any dashboard listener
     window.dispatchEvent(new CustomEvent("balanceUpdated", { detail: value }));
   };
 
@@ -141,7 +141,8 @@ const Activity = () => {
     const newBalance = currentBalance + reward;
     setDashboardBalance(newBalance);
 
-    // Dispatch event for real-time dashboard sync
+    // Immediately sync reward visually
+    localStorage.setItem("dashboardBalance", String(newBalance));
     window.dispatchEvent(new CustomEvent("balanceUpdated", { detail: newBalance }));
 
     // Add to activity history
@@ -300,12 +301,5 @@ const Activity = () => {
     </div>
   );
 };
-
-// Custom Tailwind pulse
-// @keyframes pulse-soft {
-//   0%, 100% { box-shadow: 0 0 0 rgba(139, 92, 246, 0); }
-//   50% { box-shadow: 0 0 24px rgba(139, 92, 246, 0.4); }
-// }
-// .animate-pulse-soft { animation: pulse-soft 2s infinite ease-in-out; }
 
 export default Activity;
