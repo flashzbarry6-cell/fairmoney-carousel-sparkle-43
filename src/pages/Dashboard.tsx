@@ -63,7 +63,7 @@ const Dashboard = () => {
         
         if (claimState === 'active' && lastClaimTime) {
           const elapsed = Math.floor((Date.now() - parseInt(lastClaimTime)) / 1000);
-          const remaining = (5 * 60) - elapsed;
+          const remaining = (2 * 60) - elapsed;
           
           if (remaining > 0) {
             setCountdown(remaining);
@@ -135,7 +135,7 @@ const Dashboard = () => {
     }
   }, [user]);
 
-  // Auto-add ₦5000 every 5 minutes
+  // Auto-add ₦5000 every 2 minutes
 
   // ✅ Sync local balance updates with Supabase
 const syncBalanceToSupabase = async (newBalance: number) => {
@@ -184,7 +184,7 @@ const syncBalanceToSupabase = async (newBalance: number) => {
       }
     };
 
-    // Run auto-bonus every 5 minutes
+    // Run auto-bonus every 2 minutes
     const interval = setInterval(autoBonus, 2 * 60 * 1000);
     
     return () => clearInterval(interval);
