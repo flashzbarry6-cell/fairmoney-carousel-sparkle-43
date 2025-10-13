@@ -593,7 +593,7 @@ const Dashboard = () => {
             </div>
             <div>
               <h3 className="text-white font-semibold mb-1">sure% Reliable</h3>
-              <p className="text-gold-200 text-sm">24/7 trusted and guaranteed service uptime</p>
+              <p className="text-white-200 text-sm">24/7 trusted and guaranteed service uptime</p>
             </div>
           </div>
         </div>
