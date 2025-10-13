@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import "@/styles/animated-bg.css"; // 👈 Add this line (you’ll create this small CSS file below)
 
 const WithdrawalAmount = () => {
   const navigate = useNavigate();
@@ -93,8 +94,8 @@ const WithdrawalAmount = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden flex flex-col items-center p-3 max-w-md mx-auto">
-      {/* Animated black & purple background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black via-purple-900 to-black animate-pulse opacity-90"></div>
+      {/* Smooth animated background */}
+      <div className="absolute inset-0 animated-bg"></div>
 
       {/* Content container */}
       <div className="relative z-10 w-full">
@@ -110,14 +111,20 @@ const WithdrawalAmount = () => {
           {/* Balance Display */}
           <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-purple-700/40">
             <p className="text-sm text-gray-300 mb-1">Available Balance</p>
-            <p className={`text-3xl font-bold ${balanceColor}`}>₦{balance.toLocaleString()}.00</p>
+            <p className={`text-3xl font-bold ${balanceColor}`}>
+              ₦{balance.toLocaleString()}.00
+            </p>
           </div>
 
           {/* Withdrawal Amount Input */}
           <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-purple-700/40">
-            <label className="block text-sm font-medium text-gray-200 mb-2">Enter Amount</label>
+            <label className="block text-sm font-medium text-gray-200 mb-2">
+              Enter Amount
+            </label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg">₦</span>
+              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg">
+                ₦
+              </span>
               <Input
                 type="text"
                 placeholder="0.00"
@@ -145,7 +152,9 @@ const WithdrawalAmount = () => {
 
           {/* Withdrawal Requirements */}
           <div className="bg-gradient-to-r from-purple-800/50 to-black/50 border border-purple-600 rounded-2xl p-4">
-            <h3 className="font-semibold text-yellow-300 mb-3">Withdrawal Requirements:</h3>
+            <h3 className="font-semibold text-yellow-300 mb-3">
+              Withdrawal Requirements:
+            </h3>
             <div className="space-y-2 text-sm text-gray-300">
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
@@ -166,7 +175,9 @@ const WithdrawalAmount = () => {
           <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-purple-700/40">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm text-gray-300">Referrals Progress</span>
-              <span className="text-sm font-semibold text-yellow-400">{totalReferrals}/5</span>
+              <span className="text-sm font-semibold text-yellow-400">
+                {totalReferrals}/5
+              </span>
             </div>
             <div className="w-full bg-purple-900 rounded-full h-2 mb-4">
               <div
@@ -183,7 +194,7 @@ const WithdrawalAmount = () => {
             </Button>
           </div>
 
-          {/* Cash Out Button (changed from Continue) */}
+          {/* Cash Out Button */}
           <Button
             onClick={handleContinue}
             disabled={!isRequirementsMet}
