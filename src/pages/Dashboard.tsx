@@ -104,71 +104,6 @@ const Dashboard = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  // Listen for external balance updates (e.g. Activity page dispatch)
-  useEffect(() => {
-    const handler = (e: Event) => {
-      try {
-        // If event is CustomEvent with detail
-        const ce = e as CustomEvent;
-        const valueFromEvent = (ce && ce.detail) ? Number(ce.detail) : null;
-        const localVal = Number(localStorage.getItem('dashboardBalance') || NaN);
-        const newBalance = !isNaN(valueFromEvent) ? valueFromEvent : (!isNaN(localVal) ? localVal : null);
-
-        if (newBalance === null) return;
-
-        // Sync to Supabase and local state
-        (async () => {
-          try {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) return;
-            // Update supabase profile balance
-            const { error } = await supabase
-              .from('profiles')
-              .update({ balance: newBalance })
-              .eq('user_id', session.user.id);
-
-            if (!error) {
-              setBalance(newBalance);
-              setProfile(prev => ({ ...prev, balance: newBalance }));
-            }
-          } catch (err) {
-            console.error("Error syncing balance from event:", err);
-          }
-        })();
-      } catch (err) {
-        console.error("balanceUpdated handler error:", err);
-      }
-    };
-
-    window.addEventListener('balanceUpdated', handler as EventListener);
-
-    // also try syncing on mount if localStorage has dashboardBalance
-    (async () => {
-      const stored = localStorage.getItem('dashboardBalance');
-      if (stored) {
-        const n = Number(stored);
-        if (!isNaN(n)) {
-          try {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) return;
-            const { error } = await supabase
-              .from('profiles')
-              .update({ balance: n })
-              .eq('user_id', session.user.id);
-            if (!error) {
-              setBalance(n);
-              setProfile(prev => ({ ...prev, balance: n }));
-            }
-          } catch (err) {
-            console.error("Error syncing stored dashboardBalance:", err);
-          }
-        }
-      }
-    })();
-
-    return () => window.removeEventListener('balanceUpdated', handler as EventListener);
-  }, []);
-
   useEffect(() => {
     if (user) {
       // Check if notifications have been shown before
@@ -275,57 +210,6 @@ const Dashboard = () => {
     history.unshift(newActivity);
     localStorage.setItem('activityHistory', JSON.stringify(history));
   };
-
-  // --- NEW: handleTaskReward (credits ₦450 immediately) ---
-  const handleTaskReward = async () => {
-    if (!user) {
-      toast({
-        title: "Not logged in",
-        description: "Please login to receive rewards",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    try {
-      const rewardAmount = 450;
-      const newBalance = (typeof balance === 'number' ? balance : 0) + rewardAmount;
-
-      // Update Supabase profile balance
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
-
-      const { error } = await supabase
-        .from('profiles')
-        .update({ balance: newBalance })
-        .eq('user_id', session.user.id);
-
-      if (error) throw error;
-
-      // Update local state & activity history & localStorage flag
-      setBalance(newBalance);
-      setProfile(prev => ({ ...prev, balance: newBalance }));
-      addToActivityHistory('task', rewardAmount, 'Task Completion Reward');
-
-      // Also persist a dashboardBalance value for other pages that may listen
-      localStorage.setItem('dashboardBalance', String(newBalance));
-      // Dispatch a balanceUpdated event for other open pages to sync
-      window.dispatchEvent(new CustomEvent('balanceUpdated', { detail: newBalance }));
-
-      toast({
-        title: "Task Reward!",
-        description: `₦${rewardAmount.toLocaleString()} added to your balance`,
-      });
-    } catch (err) {
-      console.error('handleTaskReward error:', err);
-      toast({
-        title: "Error",
-        description: "Unable to add task reward. Please try again.",
-        variant: "destructive"
-      });
-    }
-  };
-  // --- end handleTaskReward ---
 
   const handleClaimBonus = async () => {
     if (!user || !profile) return;
@@ -649,17 +533,15 @@ const Dashboard = () => {
 
       {/* Task and Check-in Buttons */}
       <div className="grid grid-cols-2 gap-3 mb-6 px-2 mt-3">
-        {/* TASK: now credits ₦450 immediately on tap */}
-        <div
-          onClick={handleTaskReward}
-          className="bg-gradient-to-br from-purple-900 to-purple-700 rounded-2xl p-4 border border-purple-500/30 cursor-pointer hover:scale-105 transition-transform"
-        >
-          <div className="flex items-center gap-2 mb-2">
-            <Gift className="w-6 h-6 text-yellow-400" />
-            <h3 className="text-white font-semibold">Task</h3>
+        <Link to="/activity">
+          <div className="bg-gradient-to-br from-purple-900 to-purple-700 rounded-2xl p-4 border border-purple-500/30 hover:scale-105 transition-transform">
+            <div className="flex items-center gap-2 mb-2">
+              <Gift className="w-6 h-6 text-yellow-400" />
+              <h3 className="text-white font-semibold">Task</h3>
+            </div>
+            <p className="text-purple-200 text-sm">Complete daily tasks</p>
           </div>
-          <p className="text-purple-200 text-sm">Tap to earn ₦450</p>
-        </div>
+        </Link>
 
         <div 
           onClick={handleCheckin}
