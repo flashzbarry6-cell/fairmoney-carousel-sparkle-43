@@ -38,7 +38,7 @@ const Dashboard = () => {
   // Check auth and load profile
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session } } await supabase.auth.getSession();
       if (!session) {
         navigate("/login");
         return;
@@ -559,48 +559,48 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Lumexzz Info Section */}
+      {/* Lumexzz Info Section (REPLACED - requested updated write-up + soft purple glow) */}
       <div className="bg-gradient-to-br from-black via-purple-950 to-black rounded-2xl p-6 mb-6 mx-2 border border-purple-500/30">
         <div className="text-center mb-4">
-          <h2 className="text-2xl font-bold text-white mb-2">Why Lumexzz?</h2>
-          <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-yellow-400 mx-auto mb-4"></div>
+          <h2 className="text-2xl font-bold text-white mb-2 animate-glow-soft">LUMEXZZ — TRUSTED, SECURE, FAST</h2>
+          <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto mb-4"></div>
         </div>
 
         <div className="space-y-3 mb-6">
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-violet-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
               <Shield className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 className="text-white font-semibold mb-1">100% Secure</h3>
-              <p className="text-purple-200 text-sm">Bank-level encryption protects your transactions and personal data</p>
+              <h3 className="text-white font-semibold mb-1">Bank-Grade Security</h3>
+              <p className="text-purple-200 text-sm">State-of-the-art encryption and strict verification — your funds and data are protected with multi-layer safeguards.</p>
             </div>
           </div>
 
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center flex-shrink-0">
-              <TrendingUp className="w-5 h-5 text-black" />
+            <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-violet-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
+              <TrendingUp className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 className="text-white font-semibold mb-1">Lightning Fast</h3>
-              <p className="text-purple-200 text-sm">Instant withdrawals and seamless transactions in seconds</p>
+              <h3 className="text-white font-semibold mb-1">Instant & Reliable Transfers</h3>
+              <p className="text-purple-200 text-sm">High-throughput rails ensure near-instant payouts and deposits with proven reliability — no unnecessary delays.</p>
             </div>
           </div>
 
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-violet-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
               <Users className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 className="text-white font-semibold mb-1">100% Reliable</h3>
-              <p className="text-purple-200 text-sm">24/7 support and guaranteed service uptime</p>
+              <h3 className="text-white font-semibold mb-1">24/7 Support & Uptime</h3>
+              <p className="text-purple-200 text-sm">Dedicated support and aggressive monitoring keep services up and running — we stand behind every transaction.</p>
             </div>
           </div>
         </div>
 
         <Link to="/invite-earn">
-          <Button className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-black font-bold py-3 rounded-full text-lg">
-            Earn Now
+          <Button className="w-full bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white font-bold py-3 rounded-full text-lg">
+            GO LUMEXZZ
           </Button>
         </Link>
       </div>
@@ -681,3 +681,20 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+/* NOTE:
+ To get the soft purple glow animation used above, add this to your global CSS (e.g. globals.css)
+ or include equivalent Tailwind config if you prefer:
+
+ @keyframes glow-soft {
+   0% { box-shadow: 0 0 0 rgba(139,92,246,0); transform: translateY(0); }
+   50% { box-shadow: 0 0 18px rgba(139,92,246,0.28); transform: translateY(-2px); }
+   100% { box-shadow: 0 0 0 rgba(139,92,246,0); transform: translateY(0); }
+ }
+ .animate-glow-soft {
+   animation: glow-soft 2.4s ease-in-out infinite;
+ }
+
+ You already use similar gradients; if you prefer I can inject the CSS into your project file or
+ convert the animation to pure Tailwind utility classes in your tailwind.config.js — tell me which you prefer.
+*/
