@@ -36,42 +36,37 @@ const Dashboard = () => {
   const [canCheckin, setCanCheckin] = useState(true);
 
   // Check auth and load profile
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate("/login");
-        return;
-      }
+useEffect(() => {
+  const checkAuth = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate("/login");
+      return;
+    }
 
-      setUser(session.user);
-      
+    setUser(session.user);
+
+    try {
       // Load user profile
       const { data: profileData } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', session.user.id)
+        .from("profiles")
+        .select("*")
+        .eq("user_id", session.user.id)
         .single();
-        
-     if (profileData) {
-  setProfile(profileData);
 
-  // ✅ Preserve most recent balance across page visits
-  const storedBalance = localStorage.getItem("latestBalance");
-  const finalBalance = storedBalance
-    ? parseFloat(storedBalance)
-    : (profileData.balance || 5000);
-  setBalance(finalBalance);
-}
+      if (profileData) {
+        setProfile(profileData);
+        // Only set initial balance if not already set by local state (avoid overwriting)
+        setBalance(prev => (typeof prev === "number" && prev !== 5000 ? prev : (profileData.balance || 5000)));
 
         // Check claiming state
-        const claimState = localStorage.getItem('claimingState');
-        const lastClaimTime = localStorage.getItem('lastClaimTime');
-        
-        if (claimState === 'active' && lastClaimTime) {
+        const claimState = localStorage.getItem("claimingState");
+        const lastClaimTime = localStorage.getItem("lastClaimTime");
+
+        if (claimState === "active" && lastClaimTime) {
           const elapsed = Math.floor((Date.now() - parseInt(lastClaimTime)) / 1000);
-          const remaining = (2 * 60) - elapsed;
-          
+          const remaining = (2 * 60) - elapsed; // now using 2 minutes
+
           if (remaining > 0) {
             setCountdown(remaining);
             setTimerActive(true);
@@ -85,7 +80,7 @@ const Dashboard = () => {
         }
 
         // Check last check-in time
-        const lastCheckinTime = localStorage.getItem('lastCheckin');
+        const lastCheckinTime = localStorage.getItem("lastCheckin");
         if (lastCheckinTime) {
           const lastTime = parseInt(lastCheckinTime);
           setLastCheckin(lastTime);
@@ -95,21 +90,28 @@ const Dashboard = () => {
           setCanCheckin(timeSinceCheckin >= twentyFourHours);
         }
       }
-    };
+    } catch (err) {
+      console.error("Error loading profile:", err);
+    }
+  };
 
-    checkAuth();
+  checkAuth();
 
-    // Auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (event === 'SIGNED_OUT' || !session) {
-          navigate("/login");
-        }
+  // Auth state listener
+  const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    (event, session) => {
+      if (event === "SIGNED_OUT" || !session) {
+        navigate("/login");
       }
-    );
+    }
+  );
 
-    return () => subscription.unsubscribe();
-  }, [navigate]);
+  return () => {
+    // cleanup subscription
+    subscription?.unsubscribe();
+  };
+}, [navigate]);
+
 
   useEffect(() => {
     if (user) {
