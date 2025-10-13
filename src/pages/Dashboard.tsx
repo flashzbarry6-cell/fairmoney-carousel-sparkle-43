@@ -572,8 +572,8 @@ const Dashboard = () => {
               <Shield className="w-5 h-5 text-gold" />
             </div>
             <div>
-              <h3 className="text-gold font-semibold mb-1">100% Secure</h3>
-              <p className="text-black-200 text-sm">Bank-level encryption protects your transactions and personal data</p>
+              <h3 className="text-white font-semibold mb-1">safe and Secure</h3>
+              <p className="text-gold-200 text-sm">Bank-level encryption protects your transactions and personal data</p>
             </div>
           </div>
 
@@ -583,7 +583,7 @@ const Dashboard = () => {
             </div>
             <div>
               <h3 className="text-white font-semibold mb-1">Lightning Fast</h3>
-              <p className="text-purple-200 text-sm">fast withdrawals and secure transactions in seconds</p>
+              <p className="text-gold-200 text-sm">fast withdrawals and secure transactions in seconds</p>
             </div>
           </div>
 
@@ -593,7 +593,7 @@ const Dashboard = () => {
             </div>
             <div>
               <h3 className="text-white font-semibold mb-1">sure% Reliable</h3>
-              <p className="text-purple-200 text-sm">24/7 trusted and guaranteed service uptime</p>
+              <p className="text-gold-200 text-sm">24/7 trusted and guaranteed service uptime</p>
             </div>
           </div>
         </div>
