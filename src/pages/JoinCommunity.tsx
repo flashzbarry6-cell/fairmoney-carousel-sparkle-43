@@ -37,7 +37,7 @@ const JoinCommunity = () => {
       <div className="text-center mb-8">
         <p className="text-muted-foreground">
           Join our community to get updates, tips, and start earning with
-          FairMonie Pay!
+          LUMEXZZ WIN !
         </p>
       </div>
 
