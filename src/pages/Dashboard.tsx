@@ -562,18 +562,18 @@ const Dashboard = () => {
       {/* Lumexzz Info Section */}
       <div className="bg-gradient-to-br from-black via-purple-950 to-black rounded-2xl p-6 mb-6 mx-2 border border-purple-500/30">
         <div className="text-center mb-4">
-          <h2 className="text-2xl font-bold text-white mb-2">GO Lumexzz?</h2>
-          <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-yellow-400 mx-auto mb-4"></div>
+          <h2 className="text-2xl font-bold text-gold mb-2">GO Lumexzz?</h2>
+          <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-black-400 mx-auto mb-4"></div>
         </div>
 
         <div className="space-y-3 mb-6">
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
-              <Shield className="w-5 h-5 text-white" />
+              <Shield className="w-5 h-5 text-gold" />
             </div>
             <div>
-              <h3 className="text-white font-semibold mb-1">100% Secure</h3>
-              <p className="text-purple-200 text-sm">Bank-level encryption protects your transactions and personal data</p>
+              <h3 className="text-gold font-semibold mb-1">100% Secure</h3>
+              <p className="text-black-200 text-sm">Bank-level encryption protects your transactions and personal data</p>
             </div>
           </div>
 
@@ -589,10 +589,10 @@ const Dashboard = () => {
 
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-              <Users className="w-5 h-5 text-white" />
+              <Users className="w-5 h-5 text-gold" />
             </div>
             <div>
-              <h3 className="text-white font-semibold mb-1">100% Reliable</h3>
+              <h3 className="text-white font-semibold mb-1">sure% Reliable</h3>
               <p className="text-purple-200 text-sm">24/7 trusted and guaranteed service uptime</p>
             </div>
           </div>
