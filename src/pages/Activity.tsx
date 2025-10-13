@@ -112,8 +112,8 @@ const Activity = () => {
 
   const setDashboardBalance = (value: number) => {
     localStorage.setItem("dashboardBalance", String(value));
-    // Dispatch event so dashboard updates immediately if open
-    window.dispatchEvent(new Event("balanceUpdated"));
+    // Ensure dashboard listens for this
+    window.dispatchEvent(new CustomEvent("balanceUpdated", { detail: value }));
   };
 
   const persistActivityHistory = (newActivities: any[]) => {
@@ -299,7 +299,6 @@ const Activity = () => {
 };
 
 // Custom Tailwind pulse
-// Add this in your global CSS or tailwind.config if not existing
 // @keyframes pulse-soft {
 //   0%, 100% { box-shadow: 0 0 0 rgba(139, 92, 246, 0); }
 //   50% { box-shadow: 0 0 24px rgba(139, 92, 246, 0.4); }
