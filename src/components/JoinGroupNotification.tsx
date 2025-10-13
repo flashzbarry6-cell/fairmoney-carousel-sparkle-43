@@ -10,10 +10,10 @@ interface JoinGroupNotificationProps {
 export const JoinGroupNotification = ({ onClose, onGetStarted }: JoinGroupNotificationProps) => {
   const [hasJoinedGroup, setHasJoinedGroup] = useState(false);
 
-  const handleJoinGroup = () => {
+  const handleJoinCommunity = () => {
     setHasJoinedGroup(true);
-    // Open WhatsApp group
-    window.open("https://chat.whatsapp.com/Ct9thGEQZUMAhy0Sqp23Hc?mode=ac_t", "_blank");
+    // Open WhatsApp Channel
+    window.open("https://whatsapp.com/channel/0029Vb6eAwH9mrGTeNSKVh1q", "_blank");
   };
 
   return (
@@ -25,29 +25,27 @@ export const JoinGroupNotification = ({ onClose, onGetStarted }: JoinGroupNotifi
         >
           <X className="w-5 h-5" />
         </button>
-        
+
         <div className="text-center">
           {/* Users Icon */}
           <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6">
             <Users className="w-10 h-10 text-white" />
           </div>
-          
+
           {/* Title */}
-          <h2 className="text-2xl font-bold mb-4">
-            Join Our Community!
-          </h2>
-          
+          <h2 className="text-2xl font-bold mb-4">Join Our Community!</h2>
+
           {/* Description */}
           <p className="text-sm opacity-90 mb-8 leading-relaxed">
-            Join our WhatsApp group to get updates, tips, and connect with other users of FairMonie Pay.
+            Join our WhatsApp Channel to get updates, tips, and connect with other users of FairMonie Pay.
           </p>
-          
+
           {/* Action Buttons */}
           <div className="space-y-3">
             <Button
-              onClick={handleJoinGroup}
+              onClick={handleJoinCommunity}
               className={`w-full font-semibold py-4 rounded-full text-lg transition-all ${
-                hasJoinedGroup 
+                hasJoinedGroup
                   ? "bg-green-500 hover:bg-green-600 text-white"
                   : "bg-white text-primary hover:bg-white/90"
               }`}
@@ -55,25 +53,25 @@ export const JoinGroupNotification = ({ onClose, onGetStarted }: JoinGroupNotifi
               {hasJoinedGroup ? (
                 <div className="flex items-center justify-center space-x-2">
                   <CheckCircle className="w-5 h-5" />
-                  <span>Joined Group!</span>
+                  <span>Joined Channel!</span>
                 </div>
               ) : (
-                "Join WhatsApp Group"
+                "Join Community"
               )}
             </Button>
-            
+
             <Button
               onClick={hasJoinedGroup ? onGetStarted : () => {}}
               disabled={!hasJoinedGroup}
               className={`w-full font-semibold py-4 rounded-full text-lg transition-all ${
-                hasJoinedGroup 
+                hasJoinedGroup
                   ? "bg-blue-500 hover:bg-blue-600 text-white"
                   : "bg-gray-400 text-gray-600 cursor-not-allowed"
               }`}
             >
-              Get Started
+              Proceed to Dashboard
             </Button>
-            
+
             <Button
               onClick={onClose}
               variant="ghost"
