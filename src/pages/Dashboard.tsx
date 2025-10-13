@@ -58,7 +58,7 @@ useEffect(() => {
         setProfile(profileData);
 
         // ✅ Prevent reset glitch — keep existing balance if already higher than 5000
-        setBalance(prevBalance => {
+        setBalance((prevBalance: number) => {
           if (typeof prevBalance === "number" && prevBalance > 5000) {
             return prevBalance;
           } else {
@@ -73,6 +73,7 @@ useEffect(() => {
 
   checkAuth();
 }, [navigate]);
+
 
         // Check claiming state
         const claimState = localStorage.getItem("claimingState");
