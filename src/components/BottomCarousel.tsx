@@ -20,40 +20,13 @@ export const BottomCarousel = () => {
   }, [banners.length]);
 
   return (
-    <div className="w-full max-w-md mx-auto px-2 mt-6 mb-20">
-      <div className="relative h-32 overflow-hidden rounded-lg border-2 border-gold/30 shadow-lg">
+    <div className="w-full max-w-lg mx-auto px-0 mt-6 mb-20"> 
+      {/* Increased from max-w-md to max-w-lg and removed side padding */}
+      <div className="relative h-36 overflow-hidden rounded-xl border-2 border-gold/30 shadow-lg">
+        {/* Increased height from h-32 to h-36 and rounded corners slightly more */}
         <div
           className="flex transition-transform duration-700 ease-in-out h-full"
           style={{ transform: `translateX(-${currentSlide * 100}%)` }}
         >
           {banners.map((banner, index) => (
-            <div key={index} className="min-w-full h-full flex-shrink-0">
-              <img
-                src={banner}
-                alt={`Advertisement ${index + 1}`}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  console.log(`Failed to load image: ${banner}`);
-                  e.currentTarget.style.display = 'none';
-                }}
-              />
-            </div>
-          ))}
-        </div>
-        
-        {/* Carousel indicators */}
-        <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
-          {banners.map((_, index) => (
-            <button
-              key={index}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                index === currentSlide ? "bg-gold scale-110" : "bg-gold/40"
-              }`}
-              onClick={() => setCurrentSlide(index)}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
+            <div key={index} className="min-w-full h-full flex-shr
