@@ -136,6 +136,24 @@ const Dashboard = () => {
   }, [user]);
 
   // Auto-add ₦5000 every 5 minutes
+
+  // ✅ Sync local balance updates with Supabase
+const syncBalanceToSupabase = async (newBalance: number) => {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+
+    const { error } = await supabase
+      .from("profiles")
+      .update({ balance: newBalance })
+      .eq("user_id", session.user.id);
+
+    if (error) console.error("Balance sync error:", error);
+  } catch (err) {
+    console.error("Sync error:", err);
+  }
+};
+  
   useEffect(() => {
     if (!user) return;
 
@@ -167,10 +185,24 @@ const Dashboard = () => {
     };
 
     // Run auto-bonus every 5 minutes
-    const interval = setInterval(autoBonus, 5 * 60 * 1000);
+    const interval = setInterval(autoBonus, 2 * 60 * 1000);
     
     return () => clearInterval(interval);
   }, [user, balance, toast]);
+
+
+  // ✅ Step 2 — Listen for task rewards and update balance instantly
+useEffect(() => {
+  const handleBalanceUpdate = (event: CustomEvent) => {
+    const newBalance = event.detail;
+    setBalance(newBalance);
+    syncBalanceToSupabase(newBalance); // ensures backend matches
+  };
+
+  window.addEventListener("balanceUpdated", handleBalanceUpdate);
+  return () => window.removeEventListener("balanceUpdated", handleBalanceUpdate);
+}, []);
+
 
   // Countdown timer effect with auto-claim
   useEffect(() => {
@@ -257,7 +289,7 @@ const Dashboard = () => {
   const handleStartClaiming = () => {
     setClaimingStarted(true);
     setTimerActive(true);
-    setCountdown(5 * 60);
+    setCountdown(2 * 60);
     localStorage.setItem('claimingState', 'active');
     localStorage.setItem('lastClaimTime', Date.now().toString());
   };
