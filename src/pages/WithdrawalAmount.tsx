@@ -16,14 +16,17 @@ const WithdrawalAmount = () => {
 
   useEffect(() => {
     const loadBalance = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
       if (session) {
         const { data: profile } = await supabase
-          .from('profiles')
-          .select('balance, total_referrals, referral_code')
-          .eq('user_id', session.user.id)
+          .from("profiles")
+          .select("balance, total_referrals, referral_code")
+          .eq("user_id", session.user.id)
           .single();
-          
+
         if (profile) {
           setBalance(profile.balance || 0);
           setTotalReferrals(profile.total_referrals || 0);
@@ -31,26 +34,26 @@ const WithdrawalAmount = () => {
         }
       }
     };
+
     loadBalance();
   }, []);
 
   const handleContinue = () => {
     const withdrawalAmount = parseFloat(amount);
-    
     if (!amount || withdrawalAmount <= 0) {
       toast({
         title: "Invalid Amount",
         description: "Please enter a valid withdrawal amount.",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
-    
+
     if (withdrawalAmount > balance) {
       toast({
         title: "Insufficient Balance",
         description: "You don't have enough balance for this withdrawal.",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -59,27 +62,27 @@ const WithdrawalAmount = () => {
       toast({
         title: "Requirements Not Met",
         description: "You need ₦100,000 balance and 5 referrals to withdraw.",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
 
-    navigate('/withdraw-bank-selection', { state: { amount: withdrawalAmount } });
+    navigate("/withdraw-bank-selection", { state: { amount: withdrawalAmount } });
   };
 
   const handleRefer = async () => {
     if (referralCode) {
       const referralUrl = `https://lumexzz.netlify.app/login?ref=REF94D97212&tab=signup=${referralCode}`;
       const message = `🎉 Join me on LUMEXZZ WIN and start earning! Get your bonus when you sign up: ${referralUrl}`;
-      
+
       if (navigator.share) {
         navigator.share({
-          title: 'Join LUMEXZZ WIN!',
+          title: "Join LUMEXZZ WIN!",
           text: message,
         });
       } else {
         navigator.clipboard.writeText(message);
-        toast({ description: 'Referral link copied to clipboard!' });
+        toast({ description: "Referral link copied to clipboard!" });
       }
     }
   };
@@ -89,117 +92,116 @@ const WithdrawalAmount = () => {
   const balanceColor = balance >= 100000 ? "text-green-600" : "text-red-600";
 
   return (
-    <div className="min-h-screen bg-muted/30 p-3 max-w-md mx-auto">
-      {/* Header */}
-      <div className="flex items-center mb-6 pt-2">
-        <Link to="/dashboard" className="mr-3">
-          <ArrowLeft className="w-6 h-6 text-foreground" />
-        </Link>
-        <h1 className="text-lg font-semibold text-foreground">Withdraw Funds</h1>
-      </div>
+    <div className="min-h-screen relative overflow-hidden flex flex-col items-center p-3 max-w-md mx-auto">
+      {/* Animated black & purple background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black via-purple-900 to-black animate-pulse opacity-90"></div>
 
-      <div className="space-y-4">
-        {/* Balance Display */}
-        <div className="bg-card rounded-2xl p-4">
-          <p className="text-sm text-muted-foreground mb-1">Available Balance</p>
-          <p className={`text-3xl font-bold ${balanceColor}`}>
-            ₦{balance.toLocaleString()}.00
-          </p>
+      {/* Content container */}
+      <div className="relative z-10 w-full">
+        {/* Header */}
+        <div className="flex items-center mb-6 pt-2">
+          <Link to="/dashboard" className="mr-3">
+            <ArrowLeft className="w-6 h-6 text-white" />
+          </Link>
+          <h1 className="text-lg font-semibold text-white">Withdraw Funds</h1>
         </div>
 
-        {/* Withdrawal Amount Input */}
-        <div className="bg-card rounded-2xl p-4">
-          <label className="block text-sm font-medium text-foreground mb-2">
-            Enter Amount
-          </label>
-          <div className="relative">
-            <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground text-lg">
-              ₦
-            </span>
-            <Input
-              type="text"
-              placeholder="0.00"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value.replace(/\D/g, ''))}
-              className="pl-8 text-lg font-semibold"
-            />
+        <div className="space-y-4">
+          {/* Balance Display */}
+          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-purple-700/40">
+            <p className="text-sm text-gray-300 mb-1">Available Balance</p>
+            <p className={`text-3xl font-bold ${balanceColor}`}>₦{balance.toLocaleString()}.00</p>
           </div>
 
-          {/* Quick Amount Buttons */}
-          <div className="grid grid-cols-4 gap-2 mt-4">
-            {quickAmounts.map((amt) => (
-              <Button
-                key={amt}
-                variant="outline"
-                size="sm"
-                onClick={() => setAmount(amt.toString())}
-                className="text-xs"
-              >
-                ₦{amt.toLocaleString()}
-              </Button>
-            ))}
-          </div>
-        </div>
+          {/* Withdrawal Amount Input */}
+          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-purple-700/40">
+            <label className="block text-sm font-medium text-gray-200 mb-2">Enter Amount</label>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg">₦</span>
+              <Input
+                type="text"
+                placeholder="0.00"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value.replace(/\D/g, ""))}
+                className="pl-8 text-lg font-semibold bg-black/20 text-white border border-purple-700"
+              />
+            </div>
 
-        {/* Referral Requirements */}
-        <div className="bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 border border-purple-200 dark:border-purple-700 rounded-2xl p-4">
-          <h3 className="font-semibold text-purple-800 dark:text-purple-200 mb-3">Withdrawal Requirements:</h3>
-          <div className="space-y-2 text-sm text-purple-700 dark:text-purple-300">
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
-              <span>Minimum balance: ₦100,000</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
-              <span>Refer 5 friends to unlock withdrawals</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
-              <span>Each friend must complete registration</span>
+            {/* Quick Amount Buttons */}
+            <div className="grid grid-cols-4 gap-2 mt-4">
+              {quickAmounts.map((amt) => (
+                <Button
+                  key={amt}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setAmount(amt.toString())}
+                  className="text-xs text-yellow-300 border-yellow-500 hover:bg-yellow-500/10"
+                >
+                  ₦{amt.toLocaleString()}
+                </Button>
+              ))}
             </div>
           </div>
-        </div>
 
-        {/* Referrals Progress */}
-        <div className="bg-card rounded-2xl p-4">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-muted-foreground">Referrals Progress</span>
-            <span className="text-sm font-semibold text-foreground">{totalReferrals}/5</span>
-          </div>
-          <div className="w-full bg-muted rounded-full h-2 mb-4">
-            <div 
-              className="bg-primary h-2 rounded-full transition-all duration-300" 
-              style={{ width: `${Math.min((totalReferrals / 5) * 100, 100)}%` }}
-            ></div>
+          {/* Withdrawal Requirements */}
+          <div className="bg-gradient-to-r from-purple-800/50 to-black/50 border border-purple-600 rounded-2xl p-4">
+            <h3 className="font-semibold text-yellow-300 mb-3">Withdrawal Requirements:</h3>
+            <div className="space-y-2 text-sm text-gray-300">
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                <span>Minimum balance: ₦100,000</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                <span>Refer 5 friends to unlock withdrawals</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                <span>Each friend must complete registration</span>
+              </div>
+            </div>
           </div>
 
-          <Button 
-            onClick={handleRefer}
-            className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 rounded-full"
+          {/* Referrals Progress */}
+          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-purple-700/40">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm text-gray-300">Referrals Progress</span>
+              <span className="text-sm font-semibold text-yellow-400">{totalReferrals}/5</span>
+            </div>
+            <div className="w-full bg-purple-900 rounded-full h-2 mb-4">
+              <div
+                className="bg-yellow-400 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${Math.min((totalReferrals / 5) * 100, 100)}%` }}
+              ></div>
+            </div>
+            <Button
+              onClick={handleRefer}
+              className="w-full bg-purple-700 hover:bg-purple-800 text-white font-semibold py-3 rounded-full"
+            >
+              <Share2 className="w-5 h-5 mr-2" />
+              Start Referring Friends
+            </Button>
+          </div>
+
+          {/* Cash Out Button (changed from Continue) */}
+          <Button
+            onClick={handleContinue}
+            disabled={!isRequirementsMet}
+            className={`w-full font-semibold py-4 rounded-full ${
+              isRequirementsMet
+                ? "bg-yellow-500 hover:bg-yellow-600 text-black"
+                : "bg-gray-700 text-gray-500 cursor-not-allowed"
+            }`}
           >
-            <Share2 className="w-5 h-5 mr-2" />
-            Start Referring Friends
+            {isRequirementsMet ? "Cash Out" : "Requirements Not Met"}
           </Button>
+
+          {!isRequirementsMet && (
+            <p className="text-xs text-center text-gray-400">
+              You need ₦100,000 balance and 5 referrals to withdraw
+            </p>
+          )}
         </div>
-
-        {/* Continue Button */}
-        <Button 
-          onClick={handleContinue}
-          disabled={!isRequirementsMet}
-          className={`w-full font-semibold py-4 rounded-full ${
-            isRequirementsMet 
-              ? "bg-primary hover:bg-primary/90 text-white" 
-              : "bg-muted text-muted-foreground cursor-not-allowed"
-          }`}
-        >
-          {isRequirementsMet ? "Continue" : "Requirements Not Met"}
-        </Button>
-
-        {!isRequirementsMet && (
-          <p className="text-xs text-center text-muted-foreground">
-            You need ₦100,000 balance and 5 referrals to withdraw
-          </p>
-        )}
       </div>
     </div>
   );
