@@ -54,10 +54,17 @@ useEffect(() => {
         .eq("user_id", session.user.id)
         .single();
 
-      if (profileData) {
-        setProfile(profileData);
-        // Only set initial balance if not already set by local state (avoid overwriting)
-        setBalance(prev => (typeof prev === "number" && prev !== 5000 ? prev : (profileData.balance || 5000)));
+     if (profileData) {
+  setProfile(profileData);
+
+  // ✅ Keep previous balance from localStorage or Supabase (no reset)
+  const storedBalance = localStorage.getItem("latestBalance");
+  if (storedBalance) {
+    setBalance(Number(storedBalance));
+  } else {
+    setBalance(profileData.balance ?? 0);
+  }
+}
 
         // Check claiming state
         const claimState = localStorage.getItem("claimingState");
