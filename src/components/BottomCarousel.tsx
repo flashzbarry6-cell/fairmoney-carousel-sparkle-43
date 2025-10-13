@@ -19,7 +19,8 @@ export const BottomCarousel = () => {
   }, [banners.length]);
 
   return (
-    <div className="w-full max-w-lg mx-auto px-0 mt-6 mb-20">
+    <div className="w-full max-w-xl mx-auto px-0 mt-6 mb-20">
+      {/* Increased from max-w-lg to max-w-xl for slightly wider view */}
       <div className="relative h-36 overflow-hidden rounded-xl border-2 border-yellow-400/30 shadow-lg">
         <div
           className="flex transition-transform duration-700 ease-in-out h-full"
