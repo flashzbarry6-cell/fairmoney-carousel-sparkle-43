@@ -16,12 +16,12 @@ const WithdrawBankSelection = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const amount = location.state?.amount || 0;
-  
+
   const [formData, setFormData] = useState({
     accountNumber: "",
     bankName: "",
     bankCode: "",
-    accountName: ""
+    accountName: "",
   });
   const [banks, setBanks] = useState<Bank[]>([]);
   const [isLoadingBanks, setIsLoadingBanks] = useState(true);
@@ -30,23 +30,25 @@ const WithdrawBankSelection = () => {
   useEffect(() => {
     const fetchBanks = async () => {
       try {
-        const response = await fetch('https://api.paystack.co/bank');
+        const response = await fetch("https://api.paystack.co/bank");
         const result = await response.json();
-        
+
         if (result.status && result.data) {
-          const bankList = result.data.map((bank: any) => ({
-            name: bank.name,
-            code: bank.code
-          })).sort((a: Bank, b: Bank) => a.name.localeCompare(b.name));
-          
+          const bankList = result.data
+            .map((bank: any) => ({
+              name: bank.name,
+              code: bank.code,
+            }))
+            .sort((a: Bank, b: Bank) => a.name.localeCompare(b.name));
+
           setBanks(bankList);
         }
       } catch (error) {
-        console.error('Error fetching banks:', error);
+        console.error("Error fetching banks:", error);
         toast({
           title: "Error",
           description: "Failed to load bank list. Please refresh the page.",
-          variant: "destructive"
+          variant: "destructive",
         });
       } finally {
         setIsLoadingBanks(false);
@@ -57,22 +59,25 @@ const WithdrawBankSelection = () => {
   }, [toast]);
 
   const handleAccountNumberChange = (value: string) => {
-    setFormData(prev => ({ ...prev, accountNumber: value.replace(/\D/g, '').slice(0, 10) }));
+    setFormData((prev) => ({
+      ...prev,
+      accountNumber: value.replace(/\D/g, "").slice(0, 10),
+    }));
   };
 
   const handleBankChange = (value: string) => {
-    const selectedBank = banks.find(b => b.name === value);
+    const selectedBank = banks.find((b) => b.name === value);
     if (selectedBank) {
-      setFormData(prev => ({ 
-        ...prev, 
+      setFormData((prev) => ({
+        ...prev,
         bankName: value,
-        bankCode: selectedBank.code 
+        bankCode: selectedBank.code,
       }));
     }
   };
 
   const handleAccountNameChange = (value: string) => {
-    setFormData(prev => ({ ...prev, accountName: value }));
+    setFormData((prev) => ({ ...prev, accountName: value }));
   };
 
   const handleCashout = () => {
@@ -80,89 +85,124 @@ const WithdrawBankSelection = () => {
       toast({
         title: "Incomplete Information",
         description: "Please fill in all required fields before cashing out.",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
 
     // Navigate directly to withdrawal receipt
-    navigate('/withdrawal-receipt', {
+    navigate("/withdrawal-receipt", {
       state: {
         withdrawalData: {
           ...formData,
-          amount: amount
-        }
-      }
+          amount: amount,
+        },
+      },
     });
   };
 
   return (
-    <div className="min-h-screen bg-muted/30 p-3 max-w-md mx-auto">
-      {/* Header */}
-      <div className="flex items-center mb-6 pt-2">
-        <Link to="/withdrawal-amount" className="mr-3">
-          <ArrowLeft className="w-6 h-6 text-foreground" />
-        </Link>
-        <h1 className="text-lg font-semibold text-foreground">Bank Details</h1>
+    <div className="min-h-screen relative overflow-hidden flex flex-col items-center p-3 max-w-md mx-auto">
+      {/* Animated background */}
+      <div className="absolute inset-0 animated-bg"></div>
+
+      {/* Page Content */}
+      <div className="relative z-10 w-full">
+        {/* Header */}
+        <div className="flex items-center mb-6 pt-2">
+          <Link to="/withdrawal-amount" className="mr-3">
+            <ArrowLeft className="w-6 h-6 text-white" />
+          </Link>
+          <h1 className="text-lg font-semibold text-white">Bank Details</h1>
+        </div>
+
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 space-y-4 border border-purple-700/40">
+          {/* Amount Display */}
+          <div className="text-center py-4 bg-black/30 rounded-lg border border-purple-700/40">
+            <p className="text-sm text-gray-300">Withdrawal Amount</p>
+            <p className="text-2xl font-bold text-yellow-400">₦{amount.toLocaleString()}.00</p>
+          </div>
+
+          {/* Account Number */}
+          <div>
+            <label className="block text-sm font-medium text-gray-200 mb-2">
+              Account Number
+            </label>
+            <Input
+              type="text"
+              placeholder="Enter 10-digit account number"
+              value={formData.accountNumber}
+              onChange={(e) => handleAccountNumberChange(e.target.value)}
+              className="w-full bg-black/20 text-white border border-purple-700"
+              maxLength={10}
+            />
+          </div>
+
+          {/* Bank Selection */}
+          <div>
+            <label className="block text-sm font-medium text-gray-200 mb-2">
+              Select Bank
+            </label>
+            <Select
+              onValueChange={handleBankChange}
+              value={formData.bankName}
+              disabled={isLoadingBanks}
+            >
+              <SelectTrigger className="w-full bg-black/20 text-white border border-purple-700">
+                <SelectValue
+                  placeholder={
+                    isLoadingBanks ? "Loading banks..." : "Choose your bank"
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {banks.map((bank) => (
+                  <SelectItem key={bank.code} value={bank.name}>
+                    {bank.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Account Name */}
+          <div>
+            <label className="block text-sm font-medium text-gray-200 mb-2">
+              Account Name
+            </label>
+            <Input
+              type="text"
+              placeholder="Enter your account name"
+              value={formData.accountName}
+              onChange={(e) => handleAccountNameChange(e.target.value)}
+              className="w-full bg-black/20 text-white border border-purple-700"
+            />
+          </div>
+
+          {/* Golden Cash Out Button */}
+          <Button
+            className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 rounded-full mt-6"
+            onClick={handleCashout}
+          >
+            Cash Out
+          </Button>
+        </div>
       </div>
 
-      <div className="bg-card rounded-2xl p-4 space-y-4">
-        {/* Amount Display */}
-        <div className="text-center py-4 bg-muted/50 rounded-lg">
-          <p className="text-sm text-muted-foreground">Withdrawal Amount</p>
-          <p className="text-2xl font-bold text-primary">₦{amount.toLocaleString()}.00</p>
-        </div>
+      {/* Inline gradient animation */}
+      <style>{`
+        @keyframes gradientMove {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
 
-        {/* Account Number */}
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-2">Account Number</label>
-          <Input
-            type="text"
-            placeholder="Enter 10-digit account number"
-            value={formData.accountNumber}
-            onChange={(e) => handleAccountNumberChange(e.target.value)}
-            className="w-full"
-            maxLength={10}
-          />
-        </div>
-
-        {/* Bank Selection */}
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-2">Select Bank</label>
-          <Select onValueChange={handleBankChange} value={formData.bankName} disabled={isLoadingBanks}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder={isLoadingBanks ? "Loading banks..." : "Choose your bank"} />
-            </SelectTrigger>
-            <SelectContent>
-              {banks.map((bank) => (
-                <SelectItem key={bank.code} value={bank.name}>
-                  {bank.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Account Name (manual input now) */}
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-2">Account Name</label>
-          <Input
-            type="text"
-            placeholder="Enter your account name"
-            value={formData.accountName}
-            onChange={(e) => handleAccountNameChange(e.target.value)}
-            className="w-full"
-          />
-        </div>
-
-        {/* Cashout Button */}
-        <Button 
-          className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 rounded-full mt-6"
-          onClick={handleCashout}
-        >
-          Cash Out
-        </Button>
-      </div>
+        .animated-bg {
+          background: linear-gradient(-45deg, #0a0015, #1a0030, #3b0066, #000000);
+          background-size: 400% 400%;
+          animation: gradientMove 12s ease infinite;
+        }
+      `}</style>
     </div>
   );
 };
