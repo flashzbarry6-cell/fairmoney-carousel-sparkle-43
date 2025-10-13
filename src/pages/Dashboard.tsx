@@ -560,10 +560,10 @@ const Dashboard = () => {
       </div>
 
       {/* Lumexzz Info Section */}
-      <div className="bg-gradient-to-br from-black via-purple-950 to-black rounded-2xl p-6 mb-6 mx-2 border border-purple-500/30">
+      <div className="bg-gradient-to-br from-black via-purple-950 to-white rounded-2xl p-6 mb-6 mx-2 border border-purple-500/30">
         <div className="text-center mb-4">
           <h2 className="text-2xl font-bold text-gold mb-2">GO Lumexzz?</h2>
-          <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-black-400 mx-auto mb-4"></div>
+          <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-white-400 mx-auto mb-4"></div>
         </div>
 
         <div className="space-y-3 mb-6">
@@ -573,23 +573,23 @@ const Dashboard = () => {
             </div>
             <div>
               <h3 className="text-white font-semibold mb-1">safe and Secure</h3>
-              <p className="text-gold-200 text-sm">Bank-level encryption protects your transactions and personal data</p>
+              <p className="text-white-200 text-sm">Bank-level encryption protects your transactions and personal data</p>
             </div>
           </div>
 
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center flex-shrink-0">
-              <TrendingUp className="w-5 h-5 text-black" />
+              <TrendingUp className="w-5 h-5 text-white" />
             </div>
             <div>
               <h3 className="text-white font-semibold mb-1">Lightning Fast</h3>
-              <p className="text-gold-200 text-sm">fast withdrawals and secure transactions in seconds</p>
+              <p className="text-white-200 text-sm">fast withdrawals and secure transactions in seconds</p>
             </div>
           </div>
 
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-              <Users className="w-5 h-5 text-gold" />
+              <Users className="w-5 h-5 text-white" />
             </div>
             <div>
               <h3 className="text-white font-semibold mb-1">sure% Reliable</h3>
