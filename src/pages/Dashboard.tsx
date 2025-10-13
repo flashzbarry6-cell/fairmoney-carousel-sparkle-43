@@ -562,7 +562,7 @@ const Dashboard = () => {
       {/* Lumexzz Info Section */}
       <div className="bg-gradient-to-br from-black via-purple-950 to-black rounded-2xl p-6 mb-6 mx-2 border border-purple-500/30">
         <div className="text-center mb-4">
-          <h2 className="text-2xl font-bold text-white mb-2">Why Lumexzz?</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">GO Lumexzz?</h2>
           <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-yellow-400 mx-auto mb-4"></div>
         </div>
 
@@ -583,7 +583,7 @@ const Dashboard = () => {
             </div>
             <div>
               <h3 className="text-white font-semibold mb-1">Lightning Fast</h3>
-              <p className="text-purple-200 text-sm">Instant withdrawals and seamless transactions in seconds</p>
+              <p className="text-purple-200 text-sm">fast withdrawals and secure transactions in seconds</p>
             </div>
           </div>
 
@@ -593,7 +593,7 @@ const Dashboard = () => {
             </div>
             <div>
               <h3 className="text-white font-semibold mb-1">100% Reliable</h3>
-              <p className="text-purple-200 text-sm">24/7 support and guaranteed service uptime</p>
+              <p className="text-purple-200 text-sm">24/7 trusted and guaranteed service uptime</p>
             </div>
           </div>
         </div>
