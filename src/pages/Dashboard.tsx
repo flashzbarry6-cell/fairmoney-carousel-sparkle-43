@@ -270,7 +270,7 @@ useEffect(() => {
       });
       
       // Restart timer for next claim
-      setCountdown(5 * 60);
+      setCountdown(2 * 60);
       setTimerActive(true);
       localStorage.setItem('lastClaimTime', Date.now().toString());
       
