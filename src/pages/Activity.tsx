@@ -112,6 +112,8 @@ const Activity = () => {
 
   const setDashboardBalance = (value: number) => {
     localStorage.setItem("dashboardBalance", String(value));
+    // Dispatch event so dashboard updates immediately if open
+    window.dispatchEvent(new Event("balanceUpdated"));
   };
 
   const persistActivityHistory = (newActivities: any[]) => {
@@ -133,7 +135,7 @@ const Activity = () => {
     setCompletedTasks(updatedCompleted);
     persistCompletedTasks(updatedCompleted);
 
-    // Reward logic
+    // Reward logic — add ₦450 to dashboard balance
     const reward = 450;
     const currentBalance = getDashboardBalance();
     const newBalance = currentBalance + reward;
