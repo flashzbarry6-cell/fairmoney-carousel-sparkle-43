@@ -22,7 +22,7 @@ const JoinCommunity = () => {
   };
 
   return (
-    <div className="min-h-screen bg-muted/30 p-4 max-w-md mx-auto flex flex-col justify-center items-center text-center">
+    <div className="min-h-screen bg-muted/30 flex flex-col justify-center items-center text-center px-6">
       {/* Header */}
       <div className="absolute top-4 left-4">
         <Link to="/dashboard">
@@ -30,30 +30,29 @@ const JoinCommunity = () => {
         </Link>
       </div>
 
-      <div className="mb-8">
-        <Send className="w-16 h-16 text-blue-500 mx-auto mb-4" />
-        <h1 className="text-2xl font-bold text-foreground mb-2">
-          Join Our Community
-        </h1>
-        <p className="text-muted-foreground">
-          Join our community to get updates, tips, and start earning with
-          LUMEXZZ WIN!
-        </p>
-      </div>
+      {/* Main Content */}
+      <Send className="w-16 h-16 text-blue-500 mb-6" />
+      <h1 className="text-2xl font-bold text-foreground mb-3">
+        Join Our Community
+      </h1>
+      <p className="text-muted-foreground mb-10 max-w-sm">
+        Join our official Telegram community to get updates, tips, and start
+        earning with <span className="font-semibold">LUMEXZZ WIN!</span>
+      </p>
 
-      {/* Buttons */}
-      <div className="w-full space-y-4">
+      {/* Action Buttons */}
+      <div className="w-full space-y-5">
         <Button
           onClick={handleTelegramJoin}
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white py-6 text-lg font-semibold rounded-2xl"
+          className="w-full bg-blue-500 hover:bg-blue-600 text-white py-6 text-lg font-semibold rounded-2xl shadow-md"
         >
-          Join Telegram Community
+          Join Telegram Channel
         </Button>
 
         <Button
           onClick={handleProceed}
           disabled={!joinedTelegram}
-          className={`w-full py-6 text-lg font-semibold rounded-2xl ${
+          className={`w-full py-6 text-lg font-semibold rounded-2xl shadow-md ${
             joinedTelegram
               ? "bg-primary hover:bg-primary-dark text-white"
               : "bg-gray-400 cursor-not-allowed text-white"
