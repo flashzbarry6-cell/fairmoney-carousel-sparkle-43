@@ -11,43 +11,70 @@ const InviteEarn = () => {
   const [referralCode, setReferralCode] = useState("");
   const [totalReferrals, setTotalReferrals] = useState(0);
   const [totalEarnings, setTotalEarnings] = useState(0);
-  const referralLink = referralCode ? `https://lumexzz.netlify.app/login?ref=${referralCode}&tab=signup` : "";
+  const [loading, setLoading] = useState(true); // ✅ added
+  const referralLink = referralCode
+    ? `https://lumexzz.netlify.app/login?ref=${referralCode}&tab=signup`
+    : "";
 
   useEffect(() => {
     const loadUserData = async () => {
+      setLoading(true);
       const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('referral_code, total_referrals, balance')
-          .eq('user_id', session.user.id)
-          .single();
-          
-        if (profile) {
-          setReferralCode(profile.referral_code);
-          setTotalReferrals(profile.total_referrals || 0);
-          
-          // ✅ Calculate referral earnings
-          const earnings = (profile.total_referrals || 0) * 5000;
-          setTotalEarnings(earnings);
-
-          // ✅ Combine referral + dashboard base balance
-          const currentBalance = profile.balance || 0;
-          const syncedBalance = Math.max(currentBalance, 5000) + earnings;
-
-          // ✅ Prevent balance drop & sync properly
-          if (profile.balance < syncedBalance) {
-            await supabase
-              .from('profiles')
-              .update({ balance: syncedBalance })
-              .eq('user_id', session.user.id);
-          }
-
-          // ✅ Keep in localStorage for dashboard sync
-          localStorage.setItem("latestBalance", syncedBalance.toString());
-        }
+      if (!session) {
+        setLoading(false);
+        return;
       }
+
+      const { data: profile, error } = await supabase
+        .from("profiles")
+        .select("referral_code, total_referrals, balance, last_referral_count")
+        .eq("user_id", session.user.id)
+        .single();
+
+      if (error || !profile) {
+        console.error("Profile fetch error:", error);
+        setLoading(false);
+        return;
+      }
+
+      let userReferralCode = profile.referral_code;
+
+      // 🔹 Auto-generate referral code if missing
+      if (!userReferralCode) {
+        userReferralCode = session.user.id.slice(0, 6).toUpperCase();
+        await supabase
+          .from("profiles")
+          .update({ referral_code: userReferralCode })
+          .eq("user_id", session.user.id);
+      }
+
+      setReferralCode(userReferralCode);
+
+      const totalRefs = profile.total_referrals || 0;
+      const lastCount = profile.last_referral_count || 0;
+      const balance = profile.balance || 0;
+
+      const newRefs = totalRefs - lastCount;
+
+      // 🔹 Update only if new referrals are detected
+      if (newRefs > 0) {
+        const addedAmount = newRefs * 5000;
+        const updatedBalance = balance + addedAmount;
+
+        await supabase
+          .from("profiles")
+          .update({
+            balance: updatedBalance,
+            last_referral_count: totalRefs, // mark counted
+          })
+          .eq("user_id", session.user.id);
+      }
+
+      setTotalEarnings(totalRefs * 5000);
+      setTotalReferrals(totalRefs);
+      setLoading(false);
     };
+
     loadUserData();
   }, []);
 
@@ -65,8 +92,21 @@ const InviteEarn = () => {
 
   const shareOnTelegram = () => {
     const message = `🎉 Join me on LUMEXZZ WIN and start earning! Get your bonus when you sign up: ${referralLink}`;
-    window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(message)}`, "_blank");
+    window.open(
+      `https://t.me/share/url?url=${encodeURIComponent(
+        referralLink
+      )}&text=${encodeURIComponent(message)}`,
+      "_blank"
+    );
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen text-white">
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen relative overflow-hidden p-4 max-w-md mx-auto">
@@ -88,7 +128,9 @@ const InviteEarn = () => {
           <div className="flex flex-col items-center space-y-4">
             <Gift className="w-12 h-12 text-gold" />
             <div className="text-center">
-              <div className="text-3xl font-bold">₦{totalEarnings.toLocaleString()}</div>
+              <div className="text-3xl font-bold">
+                ₦{totalEarnings.toLocaleString()}
+              </div>
               <div className="text-sm opacity-90">Total Earnings</div>
             </div>
             <div className="flex justify-between w-full text-center">
@@ -104,37 +146,23 @@ const InviteEarn = () => {
           </div>
         </div>
 
-        {/* How it Works */}
-        <div className="bg-black/60 rounded-2xl p-6 mb-6 border border-purple-700/40">
-          <h2 className="text-lg font-semibold text-white mb-4">How it Works</h2>
-          <div className="space-y-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                1
-              </div>
-              <span className="text-sm text-white/80">Share your referral link with friends</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                2
-              </div>
-              <span className="text-sm text-white/80">They sign up using your link</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                3
-              </div>
-              <span className="text-sm text-white/80">You earn ₦5,000 for each successful referral automatically</span>
-            </div>
-          </div>
-        </div>
-
         {/* Referral Link */}
         <div className="bg-black/60 rounded-2xl p-6 border border-purple-700/40">
-          <h2 className="text-lg font-semibold text-white mb-4">Your Referral Link</h2>
+          <h2 className="text-lg font-semibold text-white mb-4">
+            Your Referral Link
+          </h2>
           <div className="flex space-x-2 mb-4">
-            <Input value={referralLink} readOnly className="flex-1 bg-white/10 text-white border-purple-700/50" />
-            <Button onClick={copyToClipboard} size="icon" variant="outline" className="border-gold text-gold">
+            <Input
+              value={referralLink || "No referral link yet"}
+              readOnly
+              className="flex-1 bg-white/10 text-white border-purple-700/50"
+            />
+            <Button
+              onClick={copyToClipboard}
+              size="icon"
+              variant="outline"
+              className="border-gold text-gold"
+            >
               <Copy className="w-4 h-4" />
             </Button>
           </div>
