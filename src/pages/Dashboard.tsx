@@ -35,7 +35,7 @@ const Dashboard = () => {
   const [lastCheckin, setLastCheckin] = useState<number | null>(null);
   const [canCheckin, setCanCheckin] = useState(true);
 
-  // ✅ Check auth, load profile, and restore states
+  // ✅ Check auth and load profile
 useEffect(() => {
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -58,7 +58,7 @@ useEffect(() => {
         setProfile(profileData);
 
         // ✅ Prevent reset glitch — keep existing balance if already higher than 5000
-        setBalance((prevBalance: number) => {
+        setBalance(prevBalance => {
           if (typeof prevBalance === "number" && prevBalance > 5000) {
             return prevBalance;
           } else {
@@ -66,44 +66,53 @@ useEffect(() => {
           }
         });
       }
-
-      // ✅ Restore claiming timer state
-      const claimState = localStorage.getItem("claimingState");
-      const lastClaimTime = localStorage.getItem("lastClaimTime");
-
-      if (claimState === "active" && lastClaimTime) {
-        const elapsed = Math.floor((Date.now() - parseInt(lastClaimTime)) / 1000);
-        const remaining = (2 * 60) - elapsed; // 2 minutes
-
-        if (remaining > 0) {
-          setCountdown(remaining);
-          setTimerActive(true);
-          setClaimingStarted(true);
-        } else {
-          setCountdown(0);
-          setTimerActive(false);
-          setClaimingStarted(true);
-        }
-      }
-
-      // ✅ Check last check-in
-      const lastCheckinTime = localStorage.getItem("lastCheckin");
-      if (lastCheckinTime) {
-        const lastTime = parseInt(lastCheckinTime);
-        setLastCheckin(lastTime);
-        const now = Date.now();
-        const timeSinceCheckin = now - lastTime;
-        const twentyFourHours = 24 * 60 * 60 * 1000;
-        setCanCheckin(timeSinceCheckin >= twentyFourHours);
-      }
     } catch (error) {
       console.error("Error loading profile:", error);
     }
   };
 
   checkAuth();
+}, [navigate]);
 
-  // ✅ Auth listener
+        // Check claiming state
+        const claimState = localStorage.getItem("claimingState");
+        const lastClaimTime = localStorage.getItem("lastClaimTime");
+
+        if (claimState === "active" && lastClaimTime) {
+          const elapsed = Math.floor((Date.now() - parseInt(lastClaimTime)) / 1000);
+          const remaining = (2 * 60) - elapsed; // now using 2 minutes
+
+          if (remaining > 0) {
+            setCountdown(remaining);
+            setTimerActive(true);
+            setClaimingStarted(true);
+          } else {
+            // Time to claim bonus
+            setCountdown(0);
+            setTimerActive(false);
+            setClaimingStarted(true);
+          }
+        }
+
+        // Check last check-in time
+        const lastCheckinTime = localStorage.getItem("lastCheckin");
+        if (lastCheckinTime) {
+          const lastTime = parseInt(lastCheckinTime);
+          setLastCheckin(lastTime);
+          const now = Date.now();
+          const timeSinceCheckin = now - lastTime;
+          const twentyFourHours = 24 * 60 * 60 * 1000;
+          setCanCheckin(timeSinceCheckin >= twentyFourHours);
+        }
+      }
+    } catch (err) {
+      console.error("Error loading profile:", err);
+    }
+  };
+
+  checkAuth();
+
+  // Auth state listener
   const { data: { subscription } } = supabase.auth.onAuthStateChange(
     (event, session) => {
       if (event === "SIGNED_OUT" || !session) {
@@ -112,11 +121,12 @@ useEffect(() => {
     }
   );
 
-  // Cleanup
   return () => {
+    // cleanup subscription
     subscription?.unsubscribe();
   };
 }, [navigate]);
+
 
   useEffect(() => {
     if (user) {
