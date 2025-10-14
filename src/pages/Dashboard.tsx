@@ -35,7 +35,7 @@ const Dashboard = () => {
   const [lastCheckin, setLastCheckin] = useState<number | null>(null);
   const [canCheckin, setCanCheckin] = useState(true);
 
-  // ✅ Check auth and load profile
+  // Check auth and load profile
 useEffect(() => {
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -56,24 +56,8 @@ useEffect(() => {
 
       if (profileData) {
         setProfile(profileData);
-
-        // ✅ Prevent reset glitch — keep existing balance if already higher than 5000
-        setBalance((prevBalance: number) => {
-          if (typeof prevBalance === "number" && prevBalance > 5000) {
-            return prevBalance;
-          } else {
-            return profileData.balance || 5000;
-          }
-        });
-      }
-    } catch (error) {
-      console.error("Error loading profile:", error);
-    }
-  };
-
-  checkAuth();
-}, [navigate]);
-
+        // Only set initial balance if not already set by local state (avoid overwriting)
+        setBalance(prev => (typeof prev === "number" && prev !== 5000 ? prev : (profileData.balance || 5000)));
 
         // Check claiming state
         const claimState = localStorage.getItem("claimingState");

@@ -11,34 +11,54 @@ const InviteEarn = () => {
   const [referralCode, setReferralCode] = useState("");
   const [totalReferrals, setTotalReferrals] = useState(0);
   const [totalEarnings, setTotalEarnings] = useState(0);
-  const referralLink = referralCode ? `https://lumexzz.netlify.app/login?ref=${referralCode}&tab=signup` : "";
+  const referralLink = referralCode
+    ? `https://lumexzz.netlify.app/login?ref=${referralCode}&tab=signup`
+    : "";
 
   useEffect(() => {
     const loadUserData = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         const { data: profile } = await supabase
-          .from('profiles')
-          .select('referral_code, total_referrals, balance')
-          .eq('user_id', session.user.id)
+          .from("profiles")
+          .select("referral_code, total_referrals, balance, last_referral_count")
+          .eq("user_id", session.user.id)
           .single();
-          
+
         if (profile) {
           setReferralCode(profile.referral_code);
           setTotalReferrals(profile.total_referrals || 0);
+
+          // ✅ Calculate earnings based on total referrals
           const earnings = (profile.total_referrals || 0) * 5000;
           setTotalEarnings(earnings);
-          
-          const expectedBalance = 5000 + earnings;
-          if (profile.balance !== expectedBalance) {
+
+          const currentBalance = profile.balance || 0;
+          const lastReferralCount = profile.last_referral_count || 0;
+
+          // ✅ Only update balance if there are new referrals
+          if (profile.total_referrals > lastReferralCount) {
+            const newReferrals = profile.total_referrals - lastReferralCount;
+            const addedAmount = newReferrals * 5000;
+            const newBalance = currentBalance + addedAmount;
+
             await supabase
-              .from('profiles')
-              .update({ balance: expectedBalance })
-              .eq('user_id', session.user.id);
+              .from("profiles")
+              .update({
+                balance: newBalance,
+                last_referral_count: profile.total_referrals, // keep track to avoid double add
+              })
+              .eq("user_id", session.user.id);
+
+            localStorage.setItem("latestBalance", newBalance.toString());
+          } else {
+            // ✅ Just keep balance in sync locally if no new referrals
+            localStorage.setItem("latestBalance", currentBalance.toString());
           }
         }
       }
     };
+
     loadUserData();
   }, []);
 
@@ -56,7 +76,12 @@ const InviteEarn = () => {
 
   const shareOnTelegram = () => {
     const message = `🎉 Join me on LUMEXZZ WIN and start earning! Get your bonus when you sign up: ${referralLink}`;
-    window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(message)}`, "_blank");
+    window.open(
+      `https://t.me/share/url?url=${encodeURIComponent(
+        referralLink
+      )}&text=${encodeURIComponent(message)}`,
+      "_blank"
+    );
   };
 
   return (
@@ -79,7 +104,9 @@ const InviteEarn = () => {
           <div className="flex flex-col items-center space-y-4">
             <Gift className="w-12 h-12 text-gold" />
             <div className="text-center">
-              <div className="text-3xl font-bold">₦{totalEarnings.toLocaleString()}</div>
+              <div className="text-3xl font-bold">
+                ₦{totalEarnings.toLocaleString()}
+              </div>
               <div className="text-sm opacity-90">Total Earnings</div>
             </div>
             <div className="flex justify-between w-full text-center">
@@ -97,35 +124,54 @@ const InviteEarn = () => {
 
         {/* How it Works */}
         <div className="bg-black/60 rounded-2xl p-6 mb-6 border border-purple-700/40">
-          <h2 className="text-lg font-semibold text-white mb-4">How it Works</h2>
+          <h2 className="text-lg font-semibold text-white mb-4">
+            How it Works
+          </h2>
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
                 1
               </div>
-              <span className="text-sm text-white/80">Share your referral link with friends</span>
+              <span className="text-sm text-white/80">
+                Share your referral link with friends
+              </span>
             </div>
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
                 2
               </div>
-              <span className="text-sm text-white/80">They sign up using your link</span>
+              <span className="text-sm text-white/80">
+                They sign up using your link
+              </span>
             </div>
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
                 3
               </div>
-              <span className="text-sm text-white/80">You earn ₦5,000 for each successful referral automatically</span>
+              <span className="text-sm text-white/80">
+                You earn ₦5,000 for each successful referral automatically
+              </span>
             </div>
           </div>
         </div>
 
         {/* Referral Link */}
         <div className="bg-black/60 rounded-2xl p-6 border border-purple-700/40">
-          <h2 className="text-lg font-semibold text-white mb-4">Your Referral Link</h2>
+          <h2 className="text-lg font-semibold text-white mb-4">
+            Your Referral Link
+          </h2>
           <div className="flex space-x-2 mb-4">
-            <Input value={referralLink} readOnly className="flex-1 bg-white/10 text-white border-purple-700/50" />
-            <Button onClick={copyToClipboard} size="icon" variant="outline" className="border-gold text-gold">
+            <Input
+              value={referralLink}
+              readOnly
+              className="flex-1 bg-white/10 text-white border-purple-700/50"
+            />
+            <Button
+              onClick={copyToClipboard}
+              size="icon"
+              variant="outline"
+              className="border-gold text-gold"
+            >
               <Copy className="w-4 h-4" />
             </Button>
           </div>
