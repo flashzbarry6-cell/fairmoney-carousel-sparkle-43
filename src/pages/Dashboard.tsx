@@ -47,6 +47,7 @@ useEffect(() => {
     setUser(session.user);
 
     try {
+      // Load user profile from Supabase
       const { data: profileData } = await supabase
         .from("profiles")
         .select("*")
@@ -56,6 +57,7 @@ useEffect(() => {
       if (profileData) {
         setProfile(profileData);
 
+        // ✅ Fix: Keep balance from localStorage or state instead of resetting
         const savedBalance = localStorage.getItem("latestBalance");
         if (savedBalance) {
           setBalance(parseFloat(savedBalance));
@@ -74,14 +76,12 @@ useEffect(() => {
   checkAuth();
 }, [navigate]);
 
-
-// ✅ Keep balance persistent across navigation
+  // ✅ Keep balance persistent across navigation
 useEffect(() => {
   if (balance) {
     localStorage.setItem("latestBalance", balance.toString());
   }
 }, [balance]);
-
 
   useEffect(() => {
     if (user) {
