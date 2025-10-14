@@ -35,53 +35,74 @@ const Dashboard = () => {
   const [lastCheckin, setLastCheckin] = useState<number | null>(null);
   const [canCheckin, setCanCheckin] = useState(true);
 
-  // ✅ Check auth and load profile (fixed balance reset)
-useEffect(() => {
-  const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate("/login");
-      return;
-    }
+  // Check auth and load profile
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate("/login");
+        return;
+      }
 
-    setUser(session.user);
-
-    try {
+      setUser(session.user);
+      
+      // Load user profile
       const { data: profileData } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("user_id", session.user.id)
+        .from('profiles')
+        .select('*')
+        .eq('user_id', session.user.id)
         .single();
-
+        
       if (profileData) {
         setProfile(profileData);
+        setBalance(profileData.balance || 5000);
+        
+        // Check claiming state
+        const claimState = localStorage.getItem('claimingState');
+        const lastClaimTime = localStorage.getItem('lastClaimTime');
+        
+        if (claimState === 'active' && lastClaimTime) {
+          const elapsed = Math.floor((Date.now() - parseInt(lastClaimTime)) / 1000);
+          const remaining = (5 * 60) - elapsed;
+          
+          if (remaining > 0) {
+            setCountdown(remaining);
+            setTimerActive(true);
+            setClaimingStarted(true);
+          } else {
+            // Time to claim bonus
+            setCountdown(0);
+            setTimerActive(false);
+            setClaimingStarted(true);
+          }
+        }
 
-        const savedBalance = localStorage.getItem("latestBalance");
-        if (savedBalance) {
-          setBalance(parseFloat(savedBalance));
-        } else if (profileData.balance) {
-          setBalance(profileData.balance);
-          localStorage.setItem("latestBalance", profileData.balance.toString());
-        } else {
-          setBalance(5000);
+        // Check last check-in time
+        const lastCheckinTime = localStorage.getItem('lastCheckin');
+        if (lastCheckinTime) {
+          const lastTime = parseInt(lastCheckinTime);
+          setLastCheckin(lastTime);
+          const now = Date.now();
+          const timeSinceCheckin = now - lastTime;
+          const twentyFourHours = 24 * 60 * 60 * 1000;
+          setCanCheckin(timeSinceCheckin >= twentyFourHours);
         }
       }
-    } catch (error) {
-      console.error("Error loading profile:", error);
-    }
-  };
+    };
 
-  checkAuth();
-}, [navigate]);
+    checkAuth();
 
+    // Auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === 'SIGNED_OUT' || !session) {
+          navigate("/login");
+        }
+      }
+    );
 
-// ✅ Keep balance persistent across navigation
-useEffect(() => {
-  if (balance) {
-    localStorage.setItem("latestBalance", balance.toString());
-  }
-}, [balance]);
-
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
   useEffect(() => {
     if (user) {
@@ -114,25 +135,7 @@ useEffect(() => {
     }
   }, [user]);
 
-  // Auto-add ₦5000 every 2 minutes
-
-  // ✅ Sync local balance updates with Supabase
-const syncBalanceToSupabase = async (newBalance: number) => {
-  try {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return;
-
-    const { error } = await supabase
-      .from("profiles")
-      .update({ balance: newBalance })
-      .eq("user_id", session.user.id);
-
-    if (error) console.error("Balance sync error:", error);
-  } catch (err) {
-    console.error("Sync error:", err);
-  }
-};
-  
+  // Auto-add ₦5000 every 5 minutes
   useEffect(() => {
     if (!user) return;
 
@@ -163,25 +166,11 @@ const syncBalanceToSupabase = async (newBalance: number) => {
       }
     };
 
-    // Run auto-bonus every 2 minutes
-    const interval = setInterval(autoBonus, 2 * 60 * 1000);
+    // Run auto-bonus every 5 minutes
+    const interval = setInterval(autoBonus, 5 * 60 * 1000);
     
     return () => clearInterval(interval);
   }, [user, balance, toast]);
-
-
-  // ✅ Step 2 — Listen for task rewards and update balance instantly
-useEffect(() => {
-  const handleBalanceUpdate = (event: CustomEvent) => {
-    const newBalance = event.detail;
-    setBalance(newBalance);
-    syncBalanceToSupabase(newBalance); // ensures backend matches
-  };
-
-  window.addEventListener("balanceUpdated", handleBalanceUpdate);
-  return () => window.removeEventListener("balanceUpdated", handleBalanceUpdate);
-}, []);
-
 
   // Countdown timer effect with auto-claim
   useEffect(() => {
@@ -249,7 +238,7 @@ useEffect(() => {
       });
       
       // Restart timer for next claim
-      setCountdown(2 * 60);
+      setCountdown(5 * 60);
       setTimerActive(true);
       localStorage.setItem('lastClaimTime', Date.now().toString());
       
@@ -268,7 +257,7 @@ useEffect(() => {
   const handleStartClaiming = () => {
     setClaimingStarted(true);
     setTimerActive(true);
-    setCountdown(2 * 60);
+    setCountdown(5 * 60);
     localStorage.setItem('claimingState', 'active');
     localStorage.setItem('lastClaimTime', Date.now().toString());
   };
@@ -291,7 +280,7 @@ useEffect(() => {
         variant: "destructive"
       });
       return;
-    }  
+    }
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -329,13 +318,6 @@ useEffect(() => {
       });
     }
   };
-
-// ✅ Keep balance persistent across navigation
-useEffect(() => {
-  if (balance) {
-    localStorage.setItem("latestBalance", balance.toString());
-  }
-}, [balance]);
 
   const services = [
     { icon: Users, label: "Support", bgClass: "bg-primary/10", route: "/support" },
