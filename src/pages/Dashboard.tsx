@@ -438,14 +438,7 @@ useEffect(() => {
             <span className="text-sm opacity-90">Available Balance</span>
           </div>
           <div className="flex items-center space-x-2">
-            <Button
-              onClick={() => setShowTransactionHistory(true)}
-              size="sm"
-              className="bg-gold hover:bg-gold-dark text-black font-semibold h-7 text-xs px-2"
-            >
-              <History className="w-3 h-3 mr-1" />
-              History
-            </Button>
+            
             <button
               onClick={() => setShowBalance(!showBalance)}
               className="hover:bg-white/20 rounded-full p-1 transition-colors"
@@ -464,7 +457,7 @@ useEffect(() => {
           <Link to="/upgrade-account">
             <Button
               size="sm"
-              className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-semibold h-7 text-xs px-3"
+              className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-semibold h-8 text-sm px-4"
             >
               Upgrade
             </Button>
@@ -479,7 +472,7 @@ useEffect(() => {
           <Link to="/withdrawal-amount">
             <Button
               size="sm"
-              className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold h-7 text-xs px-3"
+              className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold h-8 text-sm px-4"
             >
               Withdraw
             </Button>
