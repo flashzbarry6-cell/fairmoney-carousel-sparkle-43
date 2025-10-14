@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 const InviteEarn = () => {
@@ -13,9 +13,12 @@ const InviteEarn = () => {
   const [totalEarnings, setTotalEarnings] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  const referralLink = referralCode
-    ? `https://lumexzz.netlify.app/login?ref=${referralCode}&tab=signup`
-    : "";
+  // ✅ Make referral link reactive
+  const referralLink = useMemo(() => {
+    return referralCode
+      ? `https://lumexzz.netlify.app/login?ref=${referralCode}&tab=signup`
+      : "";
+  }, [referralCode]);
 
   useEffect(() => {
     const loadUserData = async () => {
