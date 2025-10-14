@@ -54,21 +54,17 @@ useEffect(() => {
         .eq("user_id", session.user.id)
         .single();
 
-    if (profileData) {
+     if (profileData) {
   setProfile(profileData);
 
-  // ✅ Prevent resetting balance to ₦5000
-  setBalance(prevBalance => {
-    if (typeof prevBalance === "number" && prevBalance > 5000) {
-      // Keep existing balance if already loaded
-      return prevBalance;
-    } else {
-      // Otherwise use saved balance from profile or fallback to ₦5000
-      return profileData.balance || 5000;
-    }
-  });
+  // ✅ Keep previous balance from localStorage or Supabase (no reset)
+  const storedBalance = localStorage.getItem("latestBalance");
+  if (storedBalance) {
+    setBalance(Number(storedBalance));
+  } else {
+    setBalance(profileData.balance ?? 0);
+  }
 }
-
 
         // Check claiming state
         const claimState = localStorage.getItem("claimingState");
