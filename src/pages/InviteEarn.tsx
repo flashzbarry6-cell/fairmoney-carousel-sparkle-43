@@ -25,8 +25,21 @@ const InviteEarn = () => {
           .single();
 
         if (profile) {
-          setReferralCode(profile.referral_code);
-          setTotalReferrals(profile.total_referrals || 0);
+         if (profile) {
+  let userReferralCode = profile.referral_code;
+
+  // 🧠 Auto-generate a referral code if user doesn’t have one
+  if (!userReferralCode) {
+    userReferralCode = session.user.id.slice(0, 6).toUpperCase(); // short unique code
+    await supabase
+      .from("profiles")
+      .update({ referral_code: userReferralCode })
+      .eq("user_id", session.user.id);
+  }
+
+  setReferralCode(userReferralCode);
+  setTotalReferrals(profile.total_referrals || 0);
+
 
           const totalReferrals = profile.total_referrals || 0;
           const earnings = totalReferrals * 5000;
