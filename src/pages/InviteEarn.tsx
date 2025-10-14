@@ -11,88 +11,52 @@ const InviteEarn = () => {
   const [referralCode, setReferralCode] = useState("");
   const [totalReferrals, setTotalReferrals] = useState(0);
   const [totalEarnings, setTotalEarnings] = useState(0);
-  const [loading, setLoading] = useState(true);
-
-  const referralLink = referralCode
-    ? `https://lumexzz.netlify.app/login?ref=${referralCode}&tab=signup`
-    : "";
+  const referralLink = referralCode ? `https://lumexzz.netlify.app/login?ref=${referralCode}&tab=signup` : "";
 
   useEffect(() => {
     const loadUserData = async () => {
-      setLoading(true);
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         const { data: profile } = await supabase
-          .from("profiles")
-          .select("referral_code, total_referrals, balance, last_referral_count")
-          .eq("user_id", session.user.id)
+          .from('profiles')
+          .select('referral_code, total_referrals, balance')
+          .eq('user_id', session.user.id)
           .single();
-
+          
         if (profile) {
-          let userReferralCode = profile.referral_code;
-
-          // 🧠 Auto-generate referral code if missing
-          if (!userReferralCode) {
-            userReferralCode = session.user.id.slice(0, 6).toUpperCase();
-            await supabase
-              .from("profiles")
-              .update({ referral_code: userReferralCode })
-              .eq("user_id", session.user.id);
-
-            toast({
-              description: "Referral link created successfully!",
-            });
-          }
-
-          setReferralCode(userReferralCode);
+          setReferralCode(profile.referral_code);
           setTotalReferrals(profile.total_referrals || 0);
-
-          const totalReferrals = profile.total_referrals || 0;
-          const earnings = totalReferrals * 5000;
+          const earnings = (profile.total_referrals || 0) * 5000;
           setTotalEarnings(earnings);
-
-          const lastReferralCount = profile.last_referral_count || 0;
-
-          // ✅ Only update balance when new referrals are added
-          if (totalReferrals > lastReferralCount) {
-            const newReferrals = totalReferrals - lastReferralCount;
-            const addedAmount = newReferrals * 5000;
-            const newBalance = profile.balance + addedAmount;
-
+          
+          const expectedBalance = 5000 + earnings;
+          if (profile.balance !== expectedBalance) {
             await supabase
-              .from("profiles")
-              .update({
-                balance: newBalance,
-                last_referral_count: totalReferrals,
-              })
-              .eq("user_id", session.user.id);
+              .from('profiles')
+              .update({ balance: expectedBalance })
+              .eq('user_id', session.user.id);
           }
         }
       }
-      setLoading(false);
     };
     loadUserData();
   }, []);
 
   const copyToClipboard = () => {
-    if (!referralLink) return;
     navigator.clipboard.writeText(referralLink);
-    toast({ description: "Referral link copied to clipboard!" });
+    toast({
+      description: "Referral link copied to clipboard!",
+    });
   };
 
   const shareOnWhatsApp = () => {
-    if (!referralLink) return;
     const message = `🎉 Join me on LUMEXZZ WIN and start earning! Get your bonus when you sign up: ${referralLink}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank");
   };
 
   const shareOnTelegram = () => {
-    if (!referralLink) return;
     const message = `🎉 Join me on LUMEXZZ WIN and start earning! Get your bonus when you sign up: ${referralLink}`;
-    window.open(
-      `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(message)}`,
-      "_blank"
-    );
+    window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(message)}`, "_blank");
   };
 
   return (
@@ -135,64 +99,50 @@ const InviteEarn = () => {
         <div className="bg-black/60 rounded-2xl p-6 mb-6 border border-purple-700/40">
           <h2 className="text-lg font-semibold text-white mb-4">How it Works</h2>
           <div className="space-y-4">
-            {[
-              "Share your referral link with friends",
-              "They sign up using your link",
-              "You earn ₦5,000 for each successful referral automatically",
-            ].map((step, i) => (
-              <div key={i} className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                  {i + 1}
-                </div>
-                <span className="text-sm text-white/80">{step}</span>
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                1
               </div>
-            ))}
+              <span className="text-sm text-white/80">Share your referral link with friends</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                2
+              </div>
+              <span className="text-sm text-white/80">They sign up using your link</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                3
+              </div>
+              <span className="text-sm text-white/80">You earn ₦5,000 for each successful referral automatically</span>
+            </div>
           </div>
         </div>
 
         {/* Referral Link */}
         <div className="bg-black/60 rounded-2xl p-6 border border-purple-700/40">
           <h2 className="text-lg font-semibold text-white mb-4">Your Referral Link</h2>
-
-          {loading ? (
-            <p className="text-white/70 text-sm">Loading your referral link...</p>
-          ) : (
-            <>
-              <div className="flex space-x-2 mb-4">
-                <Input
-                  value={referralLink || "No referral link available"}
-                  readOnly
-                  className="flex-1 bg-white/10 text-white border-purple-700/50"
-                />
-                <Button
-                  onClick={copyToClipboard}
-                  size="icon"
-                  variant="outline"
-                  className="border-gold text-gold"
-                >
-                  <Copy className="w-4 h-4" />
-                </Button>
-              </div>
-
-              <Button
-                onClick={shareOnWhatsApp}
-                disabled={!referralLink}
-                className="w-full mb-3 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-black font-semibold"
-              >
-                <Share className="w-4 h-4 mr-2" />
-                Share on WhatsApp
-              </Button>
-
-              <Button
-                onClick={shareOnTelegram}
-                disabled={!referralLink}
-                className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-black font-semibold"
-              >
-                <Share className="w-4 h-4 mr-2" />
-                Share on Telegram
-              </Button>
-            </>
-          )}
+          <div className="flex space-x-2 mb-4">
+            <Input value={referralLink} readOnly className="flex-1 bg-white/10 text-white border-purple-700/50" />
+            <Button onClick={copyToClipboard} size="icon" variant="outline" className="border-gold text-gold">
+              <Copy className="w-4 h-4" />
+            </Button>
+          </div>
+          <Button
+            onClick={shareOnWhatsApp}
+            className="w-full mb-3 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-black font-semibold"
+          >
+            <Share className="w-4 h-4 mr-2" />
+            Share on WhatsApp
+          </Button>
+          <Button
+            onClick={shareOnTelegram}
+            className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-black font-semibold"
+          >
+            <Share className="w-4 h-4 mr-2" />
+            Share on Telegram
+          </Button>
         </div>
       </div>
     </div>
