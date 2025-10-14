@@ -35,7 +35,7 @@ const Dashboard = () => {
   const [lastCheckin, setLastCheckin] = useState<number | null>(null);
   const [canCheckin, setCanCheckin] = useState(true);
 
-  // ✅ Check auth and load profile
+  // Check auth and load profile
 useEffect(() => {
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -54,25 +54,21 @@ useEffect(() => {
         .eq("user_id", session.user.id)
         .single();
 
-      if (profileData) {
-        setProfile(profileData);
+    if (profileData) {
+  setProfile(profileData);
 
-        // ✅ Prevent reset glitch — keep existing balance if already higher than 5000
-        setBalance(prevBalance => {
-          if (typeof prevBalance === "number" && prevBalance > 5000) {
-            return prevBalance;
-          } else {
-            return profileData.balance || 5000;
-          }
-        });
-      }
-    } catch (error) {
-      console.error("Error loading profile:", error);
+  // ✅ Prevent resetting balance to ₦5000
+  setBalance(prevBalance => {
+    if (typeof prevBalance === "number" && prevBalance > 5000) {
+      // Keep existing balance if already loaded
+      return prevBalance;
+    } else {
+      // Otherwise use saved balance from profile or fallback to ₦5000
+      return profileData.balance || 5000;
     }
-  };
+  });
+}
 
-  checkAuth();
-}, [navigate]);
 
         // Check claiming state
         const claimState = localStorage.getItem("claimingState");
