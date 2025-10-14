@@ -27,11 +27,20 @@ const WithdrawalAmount = () => {
           .eq("user_id", session.user.id)
           .single();
 
-        if (profile) {
-          setBalance(profile.balance || 0);
-          setTotalReferrals(profile.total_referrals || 0);
-          setReferralCode(profile.referral_code || "");
+        let userReferralCode = profile?.referral_code;
+
+        // 🔹 Auto-generate referral code if missing
+        if (!userReferralCode) {
+          userReferralCode = session.user.id.slice(0, 6).toUpperCase();
+          await supabase
+            .from("profiles")
+            .update({ referral_code: userReferralCode })
+            .eq("user_id", session.user.id);
         }
+
+        setReferralCode(userReferralCode);
+        setBalance(profile?.balance || 0);
+        setTotalReferrals(profile?.total_referrals || 0);
       }
     };
 
@@ -70,10 +79,10 @@ const WithdrawalAmount = () => {
     navigate("/withdraw-bank-selection", { state: { amount: withdrawalAmount } });
   };
 
-  // ✅ FIXED REFERRAL LINK HERE
+  // ✅ FIXED REFERRAL LINK TO MATCH INVITE & EARN PAGE
   const handleRefer = async () => {
     if (referralCode) {
-      const referralUrl = `https://lumexzz.netlify.app/login?tab=signup&ref=${referralCode}`;
+      const referralUrl = `https://lumexzz.netlify.app/login?ref=${referralCode}&tab=signup`;
       const message = `🎉 Join me on LUMEXZZ WIN and start earning! Get your bonus when you sign up: ${referralUrl}`;
 
       if (navigator.share) {
