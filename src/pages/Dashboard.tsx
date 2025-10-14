@@ -35,7 +35,7 @@ const Dashboard = () => {
   const [lastCheckin, setLastCheckin] = useState<number | null>(null);
   const [canCheckin, setCanCheckin] = useState(true);
 
-  // ✅ Check auth and load profile (fixed balance reset)
+  // ✅ Check auth, load profile, and restore states
 useEffect(() => {
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -47,7 +47,7 @@ useEffect(() => {
     setUser(session.user);
 
     try {
-      // Load user profile from Supabase
+      // Load user profile
       const { data: profileData } = await supabase
         .from("profiles")
         .select("*")
@@ -57,16 +57,44 @@ useEffect(() => {
       if (profileData) {
         setProfile(profileData);
 
-        // ✅ Fix: Keep balance from localStorage or state instead of resetting
-        const savedBalance = localStorage.getItem("latestBalance");
-        if (savedBalance) {
-          setBalance(parseFloat(savedBalance));
-        } else if (profileData.balance) {
-          setBalance(profileData.balance);
-          localStorage.setItem("latestBalance", profileData.balance.toString());
+        // ✅ Prevent reset glitch — keep existing balance if already higher than 5000
+        setBalance((prevBalance: number) => {
+          if (typeof prevBalance === "number" && prevBalance > 5000) {
+            return prevBalance;
+          } else {
+            return profileData.balance || 5000;
+          }
+        });
+      }
+
+      // ✅ Restore claiming timer state
+      const claimState = localStorage.getItem("claimingState");
+      const lastClaimTime = localStorage.getItem("lastClaimTime");
+
+      if (claimState === "active" && lastClaimTime) {
+        const elapsed = Math.floor((Date.now() - parseInt(lastClaimTime)) / 1000);
+        const remaining = (2 * 60) - elapsed; // 2 minutes
+
+        if (remaining > 0) {
+          setCountdown(remaining);
+          setTimerActive(true);
+          setClaimingStarted(true);
         } else {
-          setBalance(5000);
+          setCountdown(0);
+          setTimerActive(false);
+          setClaimingStarted(true);
         }
+      }
+
+      // ✅ Check last check-in
+      const lastCheckinTime = localStorage.getItem("lastCheckin");
+      if (lastCheckinTime) {
+        const lastTime = parseInt(lastCheckinTime);
+        setLastCheckin(lastTime);
+        const now = Date.now();
+        const timeSinceCheckin = now - lastTime;
+        const twentyFourHours = 24 * 60 * 60 * 1000;
+        setCanCheckin(timeSinceCheckin >= twentyFourHours);
       }
     } catch (error) {
       console.error("Error loading profile:", error);
@@ -74,14 +102,21 @@ useEffect(() => {
   };
 
   checkAuth();
-}, [navigate]);
 
-  // ✅ Keep balance persistent across navigation
-useEffect(() => {
-  if (balance) {
-    localStorage.setItem("latestBalance", balance.toString());
-  }
-}, [balance]);
+  // ✅ Auth listener
+  const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    (event, session) => {
+      if (event === "SIGNED_OUT" || !session) {
+        navigate("/login");
+      }
+    }
+  );
+
+  // Cleanup
+  return () => {
+    subscription?.unsubscribe();
+  };
+}, [navigate]);
 
   useEffect(() => {
     if (user) {
