@@ -30,18 +30,25 @@ const InviteEarn = () => {
         if (profile) {
           setReferralCode(profile.referral_code);
           setTotalReferrals(profile.total_referrals || 0);
+
+          // ✅ Calculate referral earnings
           const earnings = (profile.total_referrals || 0) * 5000;
           setTotalEarnings(earnings);
 
-          // ✅ FIXED: Prevents balance from being reset or reduced
-          const expectedEarnings = 5000 + earnings;
-          if (profile.balance < expectedEarnings) {
-            const newBalance = expectedEarnings;
+          // ✅ Sync referral earnings with dashboard balance
+          const dashboardBase = profile.balance || 0;
+          const newTotalBalance = Math.max(dashboardBase, 5000) + earnings;
+
+          // ✅ Prevent balance drop — only increase if needed
+          if (profile.balance < newTotalBalance) {
             await supabase
               .from("profiles")
-              .update({ balance: newBalance })
+              .update({ balance: newTotalBalance })
               .eq("user_id", session.user.id);
           }
+
+          // ✅ Keep synced locally for dashboard reference
+          localStorage.setItem("latestBalance", newTotalBalance.toString());
         }
       }
     };
