@@ -26,16 +26,25 @@ const InviteEarn = () => {
         if (profile) {
           setReferralCode(profile.referral_code);
           setTotalReferrals(profile.total_referrals || 0);
+          
+          // ✅ Calculate referral earnings
           const earnings = (profile.total_referrals || 0) * 5000;
           setTotalEarnings(earnings);
-          
-          const expectedBalance = 5000 + earnings;
-          if (profile.balance !== expectedBalance) {
+
+          // ✅ Combine referral + dashboard base balance
+          const currentBalance = profile.balance || 0;
+          const syncedBalance = Math.max(currentBalance, 5000) + earnings;
+
+          // ✅ Prevent balance drop & sync properly
+          if (profile.balance < syncedBalance) {
             await supabase
               .from('profiles')
-              .update({ balance: expectedBalance })
+              .update({ balance: syncedBalance })
               .eq('user_id', session.user.id);
           }
+
+          // ✅ Keep in localStorage for dashboard sync
+          localStorage.setItem("latestBalance", syncedBalance.toString());
         }
       }
     };
