@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
-
+import SpinWin from "@/pages/SpinWin";
 import Dashboard from "./pages/Dashboard";
 import Support from "./pages/Support";
 import LoanApplication from "./pages/LoanApplication";
@@ -63,6 +63,7 @@ const App = () => (
           <Route path="/tv-recharge" element={<TVRecharge />} />
           <Route path="/buy-data" element={<BuyData />} />
           <Route path="/betting" element={<Betting />} />
+          <Route path="/spin-win" element={<SpinWin />} />
           <Route path="/withdraw" element={<Withdraw />} />
           <Route path="/withdrawal-amount" element={<WithdrawalAmount />} />
           <Route path="/referral-requirement" element={<ReferralRequirement />} />
