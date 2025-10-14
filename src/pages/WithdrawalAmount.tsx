@@ -70,9 +70,10 @@ const WithdrawalAmount = () => {
     navigate("/withdraw-bank-selection", { state: { amount: withdrawalAmount } });
   };
 
+  // ✅ FIXED REFERRAL LINK HERE
   const handleRefer = async () => {
     if (referralCode) {
-      const referralUrl = `https://lumexzz.netlify.app/login?ref=REF94D97212&tab=signup=${referralCode}`;
+      const referralUrl = `https://lumexzz.netlify.app/login?tab=signup&ref=${referralCode}`;
       const message = `🎉 Join me on LUMEXZZ WIN and start earning! Get your bonus when you sign up: ${referralUrl}`;
 
       if (navigator.share) {
@@ -93,7 +94,6 @@ const WithdrawalAmount = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden flex flex-col items-center p-3 max-w-md mx-auto">
-      {/* Injected CSS so preview/build can't fail due to a missing external file */}
       <style>{`
         @keyframes gradientMove {
           0% { background-position: 0% 50%; }
@@ -107,12 +107,9 @@ const WithdrawalAmount = () => {
         }
       `}</style>
 
-      {/* Smooth animated black & purple background (non-blinking) */}
       <div className="absolute inset-0 animated-bg opacity-95"></div>
 
-      {/* Content container */}
       <div className="relative z-10 w-full">
-        {/* Header */}
         <div className="flex items-center mb-6 pt-2">
           <Link to="/dashboard" className="mr-3">
             <ArrowLeft className="w-6 h-6 text-white" />
@@ -121,7 +118,6 @@ const WithdrawalAmount = () => {
         </div>
 
         <div className="space-y-4">
-          {/* Balance Display */}
           <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-purple-700/40">
             <p className="text-sm text-gray-300 mb-1">Available Balance</p>
             <p className={`text-3xl font-bold ${balanceColor}`}>
@@ -129,7 +125,6 @@ const WithdrawalAmount = () => {
             </p>
           </div>
 
-          {/* Withdrawal Amount Input */}
           <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-purple-700/40">
             <label className="block text-sm font-medium text-gray-200 mb-2">
               Enter Amount
@@ -147,7 +142,6 @@ const WithdrawalAmount = () => {
               />
             </div>
 
-            {/* Quick Amount Buttons */}
             <div className="grid grid-cols-4 gap-2 mt-4">
               {quickAmounts.map((amt) => (
                 <Button
@@ -163,7 +157,6 @@ const WithdrawalAmount = () => {
             </div>
           </div>
 
-          {/* Withdrawal Requirements */}
           <div className="bg-gradient-to-r from-purple-800/50 to-black/50 border border-purple-600 rounded-2xl p-4">
             <h3 className="font-semibold text-yellow-300 mb-3">
               Withdrawal Requirements:
@@ -184,7 +177,6 @@ const WithdrawalAmount = () => {
             </div>
           </div>
 
-          {/* Referrals Progress */}
           <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-purple-700/40">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm text-gray-300">Referrals Progress</span>
@@ -207,7 +199,6 @@ const WithdrawalAmount = () => {
             </Button>
           </div>
 
-          {/* Cash Out Button */}
           <Button
             onClick={handleContinue}
             disabled={!isRequirementsMet}
