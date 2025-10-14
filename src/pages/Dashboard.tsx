@@ -457,7 +457,7 @@ useEffect(() => {
           <Link to="/upgrade-account">
             <Button
               size="sm"
-              className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-semibold h-8 text-sm px-4"
+              className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-semibold h-9 text-sm px-5"
             >
               Upgrade
             </Button>
@@ -472,7 +472,7 @@ useEffect(() => {
           <Link to="/withdrawal-amount">
             <Button
               size="sm"
-              className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold h-8 text-sm px-4"
+              className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold h-9 text-sm px-5"
             >
               Withdraw
             </Button>
