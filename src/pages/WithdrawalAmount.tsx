@@ -47,6 +47,58 @@ const WithdrawalAmount = () => {
     loadBalance();
   }, []);
 
+  // 🟣 LIVE REFERRAL + BALANCE UPDATE
+  useEffect(() => {
+    let subscription;
+    const setupRealtime = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) return;
+
+      subscription = supabase
+        .channel("realtime-referral-balance")
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "profiles",
+            filter: `user_id=eq.${session.user.id}`,
+          },
+          (payload) => {
+            const newProfile = payload.new;
+            if (!newProfile) return;
+
+            // Only update when data changes
+            if (
+              newProfile.total_referrals !== totalReferrals ||
+              newProfile.balance !== balance
+            ) {
+              setBalance(newProfile.balance || 0);
+              setTotalReferrals(newProfile.total_referrals || 0);
+
+              const addedReferrals =
+                (newProfile.total_referrals || 0) - totalReferrals;
+              if (addedReferrals > 0) {
+                const addedAmount = addedReferrals * 5000;
+                toast({
+                  title: "New Referral Added!",
+                  description: `₦${addedAmount.toLocaleString()} added to your balance.`,
+                });
+              }
+            }
+          }
+        )
+        .subscribe();
+    };
+
+    setupRealtime();
+    return () => {
+      if (subscription) supabase.removeChannel(subscription);
+    };
+  }, [balance, totalReferrals, toast]);
+
   const handleContinue = () => {
     const withdrawalAmount = parseFloat(amount);
     if (!amount || withdrawalAmount <= 0) {
@@ -110,7 +162,7 @@ const WithdrawalAmount = () => {
           100% { background-position: 0% 50%; }
         }
         .animated-bg {
-          background: linear-gradient( -45deg, #000000 0%, #1e0536 25%, #4b0082 50%, #1e0536 75%, #000000 100% );
+          background: linear-gradient(-45deg, #000000 0%, #1e0536 25%, #4b0082 50%, #1e0536 75%, #000000 100%);
           background-size: 400% 400%;
           animation: gradientMove 15s ease infinite;
         }
