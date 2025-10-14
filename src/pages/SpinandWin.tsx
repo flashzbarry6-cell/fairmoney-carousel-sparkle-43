@@ -74,3 +74,5 @@ export default function SpinWin() {
     </div>
   );
 }
+export default function SpinAndWin() {
+
