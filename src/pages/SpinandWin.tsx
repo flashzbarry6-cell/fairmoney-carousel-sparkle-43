@@ -2,7 +2,7 @@ import { ArrowLeft, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
-export default function SpinWin() {
+export default function SpinAndWin() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-purple-950 to-black flex flex-col items-center justify-center text-center p-6 relative overflow-hidden">
       
@@ -74,5 +74,3 @@ export default function SpinWin() {
     </div>
   );
 }
-export default function SpinAndWin() {
-
