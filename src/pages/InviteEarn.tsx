@@ -17,23 +17,35 @@ const InviteEarn = () => {
     const loadUserData = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
+        // ✅ Fetch profile and sync referral-based balance only if new referrals are added
         const { data: profile } = await supabase
           .from('profiles')
-          .select('referral_code, total_referrals, balance')
+          .select('referral_code, total_referrals, balance, last_referral_count')
           .eq('user_id', session.user.id)
           .single();
-          
+
         if (profile) {
           setReferralCode(profile.referral_code);
           setTotalReferrals(profile.total_referrals || 0);
-          const earnings = (profile.total_referrals || 0) * 5000;
+
+          const totalReferrals = profile.total_referrals || 0;
+          const earnings = totalReferrals * 5000;
           setTotalEarnings(earnings);
-          
-          const expectedBalance = 5000 + earnings;
-          if (profile.balance !== expectedBalance) {
+
+          const lastReferralCount = profile.last_referral_count || 0;
+
+          // 🧠 Only update balance when new referrals are detected
+          if (totalReferrals > lastReferralCount) {
+            const newReferrals = totalReferrals - lastReferralCount;
+            const addedAmount = newReferrals * 5000;
+            const newBalance = profile.balance + addedAmount;
+
             await supabase
               .from('profiles')
-              .update({ balance: expectedBalance })
+              .update({
+                balance: newBalance,
+                last_referral_count: totalReferrals,
+              })
               .eq('user_id', session.user.id);
           }
         }
