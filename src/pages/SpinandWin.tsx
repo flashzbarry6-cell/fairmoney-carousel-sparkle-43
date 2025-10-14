@@ -8,7 +8,10 @@ export default function SpinAndWin() {
       
       {/* 🔙 Back Button */}
       <div className="absolute top-4 left-4 z-20">
-        <Link to="/dashboard" className="text-purple-300 hover:text-purple-400 flex items-center space-x-1 text-sm">
+        <Link
+          to="/dashboard"
+          className="text-purple-300 hover:text-purple-400 flex items-center space-x-1 text-sm"
+        >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
         </Link>
@@ -62,7 +65,6 @@ export default function SpinAndWin() {
             transition={{ duration: 2, repeat: Infinity }}
           >
             🎯 Coming Soon...
-            {/* ✨ Shimmer overlay */}
             <motion.div
               className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
               animate={{ x: ["-100%", "100%"] }}
