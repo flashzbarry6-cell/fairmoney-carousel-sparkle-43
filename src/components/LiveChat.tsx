@@ -40,7 +40,7 @@ export const LiveChat = () => {
   return (
     <>
       {/* Chat FAB */}
-      <div className="fixed bottom-6 right-6 z-40">
+      <div className="fixed bottom-16 right-6 z-40">
         <button
           onClick={() => setIsOpen(true)}
           className="w-14 h-14 bg-primary rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-transform animate-bounce"
