@@ -16,7 +16,7 @@ export const JoinGroupNotification = ({ onClose, onGetStarted }: JoinGroupNotifi
     setHasJoinedGroup(true);
     setShowWarning(false);
     setShowProceed(true);
-    // Open Telegram or WhatsApp Channel
+    // Open WhatsApp or Telegram Channel
     window.open("https://whatsapp.com/channel/0029Vb6eAwH9mrGTeNSKVh1q", "_blank");
   };
 
