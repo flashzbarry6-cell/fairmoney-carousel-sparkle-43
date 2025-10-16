@@ -601,10 +601,10 @@ useEffect(() => {
       </div>
 
       {/* Lumexzz Info Section */}
-      <div className="bg-gradient-to-br from-black via-purple-950 to-purple rounded-2xl p-6 mb-6 mx-2 border border-purple-500/30">
+      <div className="bg-gradient-to-br from-white via-purple-950 to-purple rounded-2xl p-6 mb-6 mx-2 border border-purple-500/30">
         <div className="text-center mb-4">
           <h2 className="text-2xl font-bold text-gold mb-2">GO Lumexzz?</h2>
-          <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-black-400 mx-auto mb-4"></div>
+          <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-white-400 mx-auto mb-4"></div>
         </div>
 
         <div className="space-y-3 mb-6">
