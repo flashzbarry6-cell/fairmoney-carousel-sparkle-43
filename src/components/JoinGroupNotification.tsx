@@ -1,124 +1,174 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 
-export default function JoinGroupNotification() {
-  const navigate = useNavigate();
+export default function JoinGroupNotification({ onComplete }: { onComplete: () => void }) {
   const [hasJoined, setHasJoined] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
-  const [showStep, setShowStep] = useState<"join" | "secure" | "welcome">("join");
+  const [flowStep, setFlowStep] = useState(0);
 
-  // Simulate join action
-  const handleJoin = () => {
-    setHasJoined(true);
-    setShowWarning(false);
-  };
+  useEffect(() => {
+    if (flowStep === 3) {
+      const timer = setTimeout(() => {
+        onComplete();
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [flowStep, onComplete]);
 
-  // Handle proceed logic
   const handleProceed = () => {
     if (!hasJoined) {
       setShowWarning(true);
-      return;
+    } else {
+      setFlowStep(1);
     }
+  };
 
-    // Step flow animation
-    setShowStep("secure");
-    setTimeout(() => setShowStep("welcome"), 3000);
-    setTimeout(() => navigate("/dashboard"), 6000);
+  const handleJoin = () => {
+    window.open("https://t.me/+Z93EW8PWHoQzNGU8", "_blank");
+    setHasJoined(true);
+  };
+
+  const handleNextFlow = () => {
+    if (flowStep === 1) setFlowStep(2);
+    else if (flowStep === 2) setFlowStep(3);
   };
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-black via-purple-950 to-black flex items-center justify-center z-50">
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-gradient-to-br from-black via-purple-950 to-black text-white overflow-hidden">
+      {/* Background Animation */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        className="relative text-center p-8 rounded-3xl shadow-lg border border-purple-600 bg-black/60 backdrop-blur-lg w-[90%] max-w-sm"
-      >
-        {showStep === "join" && (
-          <>
-            <h2 className="text-2xl font-bold text-purple-300 mb-4">
-              Join Our Community
-            </h2>
-            <p className="text-gray-400 mb-6">
-              Connect with Lumexzz members for updates, support, and bonuses.
-            </p>
+        className="absolute w-96 h-96 bg-purple-600/20 rounded-full blur-3xl top-10 left-10"
+        animate={{ opacity: [0.3, 0.6, 0.3], scale: [1, 1.3, 1] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute w-96 h-96 bg-purple-900/30 rounded-full blur-3xl bottom-0 right-0"
+        animate={{ opacity: [0.2, 0.5, 0.2], scale: [1, 1.2, 1] }}
+        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+      />
 
-            {showWarning && (
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-red-500 font-semibold mb-4"
-              >
-                ⚠️ Please join the community first before proceeding.
-              </motion.p>
-            )}
+      {/* Step 0 — Join View */}
+      {flowStep === 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="bg-black/60 p-8 rounded-2xl shadow-xl text-center max-w-sm w-full backdrop-blur-lg"
+        >
+          <h2 className="text-2xl font-bold mb-4 text-purple-300">Join Our Community</h2>
+          <p className="text-gray-400 text-sm mb-6">
+            Join our Telegram channel to stay updated and unlock your dashboard access.
+          </p>
 
-            <div className="space-y-4">
-              {!hasJoined && (
+          {showWarning && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-red-500 mb-3 font-semibold"
+            >
+              Please join the channel first before proceeding.
+            </motion.p>
+          )}
+
+          <div className="flex flex-col gap-3">
+            {!hasJoined ? (
+              <>
                 <Button
                   onClick={handleJoin}
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-full"
+                  className="w-full bg-gradient-to-r from-purple-700 to-purple-500 text-white rounded-full py-3"
                 >
                   Join Community Channel
                 </Button>
-              )}
-
+                {!showWarning && (
+                  <Button
+                    onClick={handleProceed}
+                    className="w-full bg-gradient-to-r from-gray-800 to-gray-700 text-white rounded-full py-3"
+                  >
+                    Proceed
+                  </Button>
+                )}
+              </>
+            ) : (
               <Button
-                onClick={handleProceed}
-                className={`w-full font-semibold py-3 rounded-full ${
-                  hasJoined
-                    ? "bg-gold hover:bg-yellow-500 text-black"
-                    : "bg-purple-900 text-gray-400"
-                }`}
+                onClick={() => setFlowStep(1)}
+                className="w-full bg-gradient-to-r from-purple-700 to-purple-500 text-white rounded-full py-3"
               >
-                {hasJoined ? "Proceed" : "Proceed"}
+                Proceed
               </Button>
-            </div>
-          </>
-        )}
+            )}
+          </div>
+        </motion.div>
+      )}
 
-        {showStep === "secure" && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+      {/* Step 1 — Secure and Safe */}
+      {flowStep === 1 && (
+        <motion.div
+          key="safe"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6 }}
+          className="bg-black/60 p-8 rounded-2xl text-center max-w-sm w-full backdrop-blur-lg"
+        >
+          <h2 className="text-2xl font-bold mb-4 text-purple-300">Secure & Safe Transactions</h2>
+          <p className="text-gray-400 text-sm mb-6">
+            We prioritize your security. Every transaction is encrypted and monitored for safety.
+          </p>
+          <Button
+            onClick={handleNextFlow}
+            className="w-full bg-gradient-to-r from-purple-700 to-purple-500 text-white rounded-full py-3"
           >
-            <h2 className="text-2xl font-bold text-purple-300 mb-3">
-              🔒 Secure & Safe Transactions
-            </h2>
-            <p className="text-gray-400 mb-6">
-              Your funds and data are protected by Lumexzz’s advanced system.
-            </p>
-            <Button
-              onClick={() => setShowStep("welcome")}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-full"
-            >
-              Continue
-            </Button>
-          </motion.div>
-        )}
+            Proceed
+          </Button>
+        </motion.div>
+      )}
 
-        {showStep === "welcome" && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
+      {/* Step 2 — Welcome Screen */}
+      {flowStep === 2 && (
+        <motion.div
+          key="welcome"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6 }}
+          className="bg-black/60 p-8 rounded-2xl text-center max-w-sm w-full backdrop-blur-lg"
+        >
+          <motion.h2
+            className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-purple-300 to-purple-500 mb-4"
+            animate={{ scale: [1, 1.1, 1], opacity: [1, 0.8, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
           >
-            <motion.h2
-              className="text-3xl font-extrabold text-purple-400 mb-4"
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ repeat: Infinity, duration: 1.5 }}
-            >
-              🎉 Welcome to Lumexzz Win!
-            </motion.h2>
-            <p className="text-gray-300 mb-4">
-              Congratulations on joining the winning community!
-            </p>
-          </motion.div>
-        )}
-      </motion.div>
+            🎉 Welcome to Lumexzz Win!
+          </motion.h2>
+          <p className="text-gray-400 mb-6 text-sm">
+            Congratulations! You’re now part of our community.
+          </p>
+          <Button
+            onClick={handleNextFlow}
+            className="w-full bg-gradient-to-r from-purple-700 to-purple-500 text-white rounded-full py-3"
+          >
+            Proceed to Dashboard
+          </Button>
+        </motion.div>
+      )}
+
+      {/* Step 3 — Final Transition */}
+      {flowStep === 3 && (
+        <motion.div
+          key="final"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6 }}
+          className="text-center"
+        >
+          <motion.h2
+            className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-purple-300 to-purple-500 mb-2"
+            animate={{ opacity: [1, 0.5, 1], scale: [1, 1.05, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            🎊 Welcome to Lumexzz Win!
+          </motion.h2>
+        </motion.div>
+      )}
     </div>
   );
 }
