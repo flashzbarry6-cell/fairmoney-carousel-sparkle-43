@@ -1,79 +1,141 @@
-import { X, Users, CheckCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
 
-interface JoinGroupNotificationProps {
-  onClose: () => void;
-  onGetStarted: () => void;
-}
+export default function JoinGroupNotification({
+  showGroupModal,
+  setShowGroupModal,
+}: {
+  showGroupModal: boolean;
+  setShowGroupModal: (v: boolean) => void;
+}) {
+  const [hasJoined, setHasJoined] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1); // flow: 1 = join/proceed, 2 = secure info, 3 = welcome
+  const [show, setShow] = useState(showGroupModal);
 
-export const JoinGroupNotification = ({ onClose, onGetStarted }: JoinGroupNotificationProps) => {
-  const [hasJoinedGroup, setHasJoinedGroup] = useState(false);
+  useEffect(() => {
+    setShow(showGroupModal);
+  }, [showGroupModal]);
 
-  const handleJoinCommunity = () => {
-    setHasJoinedGroup(true);
-    // Open WhatsApp Channel
-    window.open("https://whatsapp.com/channel/0029Vb6eAwH9mrGTeNSKVh1q", "_blank");
+  const handleJoin = () => {
+    window.open("https://t.me/+Z93EW8PWHoQzNGU8", "_blank");
+    setHasJoined(true);
+    setShowError(false);
   };
 
+  const handleProceed = () => {
+    if (!hasJoined) {
+      setShowError(true);
+      return;
+    }
+
+    // move to next step
+    if (currentStep < 3) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      // close modal after final step
+      setTimeout(() => {
+        setShowGroupModal(false);
+      }, 3000);
+    }
+  };
+
+  if (!show) return null;
+
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="fairmoney-gradient rounded-3xl p-8 text-white max-w-sm w-full relative animate-in slide-in-from-bottom-4 duration-300">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 p-1 hover:bg-white/20 rounded-full transition-colors"
-        >
-          <X className="w-5 h-5" />
-        </button>
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 z-50 p-4">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="bg-gradient-to-br from-black via-purple-950 to-black p-6 rounded-3xl shadow-lg max-w-sm w-full text-center border border-purple-700/50 relative overflow-hidden"
+      >
+        {/* Animated purple glow */}
+        <motion.div
+          className="absolute inset-0 bg-purple-700/10 blur-3xl"
+          animate={{ opacity: [0.3, 0.6, 0.3], scale: [1, 1.2, 1] }}
+          transition={{ duration: 6, repeat: Infinity }}
+        />
 
-        <div className="text-center">
-          {/* Users Icon */}
-          <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Users className="w-10 h-10 text-white" />
-          </div>
+        {currentStep === 1 && (
+          <>
+            <h2 className="text-xl font-bold text-purple-300 mb-4">
+              Join Our Community
+            </h2>
+            <p className="text-gray-400 mb-6 text-sm">
+              Stay connected and receive the latest updates and rewards.
+            </p>
 
-          {/* Title */}
-          <h2 className="text-2xl font-bold mb-4">Join Our Community!</h2>
+            {showError && (
+              <p className="text-red-500 text-xs mb-3 font-medium">
+                ⚠️ Please join the channel first before proceeding.
+              </p>
+            )}
 
-          {/* Description */}
-          <p className="text-sm opacity-90 mb-8 leading-relaxed">
-            Join our WhatsApp Channel to get updates, tips, and connect with other users of FairMonie Pay.
-          </p>
+            <div className="space-y-4">
+              <button
+                onClick={handleJoin}
+                className={`w-full py-3 rounded-full font-semibold transition ${
+                  hasJoined
+                    ? "bg-purple-600 hover:bg-purple-700 text-white"
+                    : "bg-gradient-to-r from-purple-700 to-purple-500 text-white hover:opacity-90"
+                }`}
+              >
+                {hasJoined ? "✅ Proceed" : "💬 Join Community Channel"}
+              </button>
 
-          {/* Action Buttons */}
-          <div className="space-y-3">
-            <Button
-              onClick={handleJoinCommunity}
-              className={`w-full font-semibold py-4 rounded-full text-lg transition-all ${
-                hasJoinedGroup
-                  ? "bg-green-500 hover:bg-green-600 text-white"
-                  : "bg-white text-primary hover:bg-white/90"
-              }`}
-            >
-              {hasJoinedGroup ? (
-                <div className="flex items-center justify-center space-x-2">
-                  <CheckCircle className="w-5 h-5" />
-                  <span>Joined Channel!</span>
-                </div>
-              ) : (
-                "Join Community"
+              {!hasJoined && (
+                <button
+                  onClick={handleProceed}
+                  className="w-full bg-gray-800 text-gray-200 hover:bg-gray-700 py-3 rounded-full font-semibold"
+                >
+                  Proceed
+                </button>
               )}
-            </Button>
+            </div>
+          </>
+        )}
 
-            <Button
-              onClick={hasJoinedGroup ? onGetStarted : () => {}}
-              disabled={!hasJoinedGroup}
-              className={`w-full font-semibold py-4 rounded-full text-lg transition-all ${
-                hasJoinedGroup
-                  ? "bg-blue-500 hover:bg-blue-600 text-white"
-                  : "bg-gray-400 text-gray-600 cursor-not-allowed"
-              }`}
+        {currentStep === 2 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center"
+          >
+            <h2 className="text-xl font-bold text-purple-300 mb-2">
+              🔒 Secure & Safe Transactions
+            </h2>
+            <p className="text-gray-400 mb-6 text-sm">
+              Enjoy a seamless experience with our verified and trusted system.
+            </p>
+            <button
+              onClick={handleProceed}
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-full"
             >
-              Proceed to Dashboard
-            </Button>
-          </div>
-        </div>
-      </div>
+              Proceed
+            </button>
+          </motion.div>
+        )}
+
+        {currentStep === 3 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center"
+          >
+            <motion.h2
+              className="text-2xl font-extrabold text-purple-300 mb-3"
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 0.8, repeat: Infinity }}
+            >
+              🎉 Welcome to Lumexzz Win!
+            </motion.h2>
+            <p className="text-gray-400 text-sm">
+              Get ready to earn and grow with our amazing community!
+            </p>
+          </motion.div>
+        )}
+      </motion.div>
     </div>
   );
-};
+}
