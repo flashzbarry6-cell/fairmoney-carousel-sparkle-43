@@ -91,3 +91,6 @@ export const JoinGroupNotification = ({ onClose, onGetStarted }: JoinGroupNotifi
     </div>
   );
 };
+
+// ✅ Add this line to fix the GitHub Pages error
+export default JoinGroupNotification;
