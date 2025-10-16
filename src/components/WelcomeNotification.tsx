@@ -18,8 +18,8 @@ export const WelcomeNotification = ({ onClose, onJoinCommunity }: WelcomeNotific
   }, []);
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center p-4 z-50 bg-gradient-to-br from-black via-purple-900 to-black animate-gradient-x bg-[length:400%_400%]">
-      <div className="rounded-3xl p-8 text-white max-w-sm w-full relative shadow-2xl border border-purple-600/30 animate-in slide-in-from-bottom-4 duration-300">
+    <div className="fixed inset-0 flex items-center justify-center p-4 z-50 bg-black/60 backdrop-blur-sm">
+      <div className="rounded-3xl p-8 text-white max-w-sm w-full relative shadow-2xl border border-purple-600/30 bg-gradient-to-br from-black via-purple-900 to-black animate-gradient-x bg-[length:400%_400%] animate-in slide-in-from-bottom-4 duration-300">
         <div className="text-center">
           {/* Gift Icon */}
           <div className="w-20 h-20 bg-purple-700/40 rounded-full flex items-center justify-center mx-auto mb-6 shadow-md">
@@ -54,5 +54,4 @@ export const WelcomeNotification = ({ onClose, onJoinCommunity }: WelcomeNotific
   );
 };
 
-// ✅ Keep export for consistency
 export default WelcomeNotification;
