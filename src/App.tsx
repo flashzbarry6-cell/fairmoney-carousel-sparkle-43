@@ -63,7 +63,7 @@ const App = () => (
           <Route path="/tv-recharge" element={<TVRecharge />} />
           <Route path="/buy-data" element={<BuyData />} />
           <Route path="/betting" element={<Betting />} />
-         <Route path="/spin-and-win" element={<SpinAndWin />} />
+          <Route path="/spin-and-win" element={<SpinAndWin />} />
           <Route path="/withdraw" element={<Withdraw />} />
           <Route path="/withdrawal-amount" element={<WithdrawalAmount />} />
           <Route path="/referral-requirement" element={<ReferralRequirement />} />
