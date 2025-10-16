@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { WelcomeNotification } from "@/components/WelcomeNotification";
 import { PaymentNotification } from "@/components/PaymentNotification";
-import JoinGroupNotification from "@/components/JoinGroupNotification";
+import { JoinGroupNotification } from "@/components/JoinGroupNotification";
 import { LiveChat } from "@/components/LiveChat";
 import { TransactionHistory } from "@/components/TransactionHistory";
 import { BottomCarousel } from "@/components/BottomCarousel";
