@@ -16,7 +16,7 @@ export const JoinGroupNotification = ({ onClose, onGetStarted }: JoinGroupNotifi
     setHasJoinedGroup(true);
     setShowWarning(false);
     setShowProceed(true);
-    // Open WhatsApp or Telegram Channel
+    // ✅ Open WhatsApp Group directly
     window.open("https://whatsapp.com/channel/0029Vb6eAwH9mrGTeNSKVh1q", "_blank");
   };
 
@@ -30,8 +30,8 @@ export const JoinGroupNotification = ({ onClose, onGetStarted }: JoinGroupNotifi
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center p-4 z-50 bg-gradient-to-br from-black via-purple-900 to-black animate-gradient-x bg-[length:400%_400%]">
-      <div className="rounded-3xl p-8 text-white max-w-sm w-full relative shadow-2xl border border-purple-600/30 animate-in slide-in-from-bottom-4 duration-300">
+    <div className="fixed inset-0 flex items-center justify-center p-4 z-50 bg-black/60 backdrop-blur-sm">
+      <div className="rounded-3xl p-8 text-white max-w-sm w-full relative shadow-2xl border border-purple-600/30 bg-gradient-to-br from-black via-purple-900 to-black animate-gradient-x bg-[length:400%_400%] animate-in slide-in-from-bottom-4 duration-300">
         <div className="text-center">
           {/* Users Icon */}
           <div className="w-20 h-20 bg-purple-700/40 rounded-full flex items-center justify-center mx-auto mb-6 shadow-md">
@@ -43,7 +43,7 @@ export const JoinGroupNotification = ({ onClose, onGetStarted }: JoinGroupNotifi
 
           {/* Description */}
           <p className="text-sm opacity-90 mb-6 leading-relaxed">
-            Join our WhatsApp Channel to get updates, tips, and connect with other users of FairMonie Pay.
+            Join our WhatsApp Group to get updates, tips, and connect with other users of FairMonie Pay.
           </p>
 
           {/* Warning Text */}
