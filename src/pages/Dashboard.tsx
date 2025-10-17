@@ -573,7 +573,7 @@ useEffect(() => {
       <BottomCarousel />
 
       {/* Task and Check-in Buttons */}
-      <div className="grid grid-cols-2 gap-1 mb-6 px-2 mt-0">
+      <div className="grid grid-cols-2 gap-1 mb-2 px-2 mt-0">
         <Link to="/activity">
           <div className="bg-gradient-to-br from-purple-900 to-purple-700 rounded-2xl p-4 border border-purple-500/30 hover:scale-105 transition-transform">
             <div className="flex items-center gap-2 mb-2">
