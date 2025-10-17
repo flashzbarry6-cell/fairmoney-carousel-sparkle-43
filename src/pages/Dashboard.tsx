@@ -510,22 +510,32 @@ useEffect(() => {
         </Button>
       </div>
 
-      {/* Referral Link Section (Updated, same as Withdraw Amount page) */}
+     {/* ✅ Referral Link Section (Fixed for Dashboard) */}
 {profile?.referral_code && (
   <div className="bg-gradient-to-br from-gray-900 to-black border border-gold/20 rounded-2xl p-3 mb-4">
     <div className="flex items-center justify-between mb-2">
       <span className="text-sm font-medium text-gray-400">Your Referral Link</span>
-      <span className="text-sm text-gray-400">Referrals: {profile.total_referrals || 0}</span>
+      <span className="text-sm text-gray-400">
+        Referrals: {profile.total_referrals || 0}
+      </span>
     </div>
+
     <div className="flex items-center space-x-2">
       <div className="flex-1 bg-black/50 rounded-lg p-3 border border-gold/30">
-        <span className="font-bold text-gold text-sm break-all">
-          {`${window.location.origin}/register?ref=${profile.referral_code}`}
-        </span>
+        <a
+          href={`https://lumexzz.netlify.app/register?ref=${profile.referral_code}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-bold text-gold text-sm break-all hover:underline"
+        >
+          https://lumexzz.netlify.app/register?ref={profile.referral_code}
+        </a>
       </div>
+
       <Button
         onClick={() => {
-          navigator.clipboard.writeText(`${window.location.origin}/register?ref=${profile.referral_code}`);
+          const referralLink = `https://lumexzz.netlify.app/register?ref=${profile.referral_code}`;
+          navigator.clipboard.writeText(referralLink);
         }}
         size="icon"
         className="bg-gold hover:bg-gold-dark text-black border-0"
