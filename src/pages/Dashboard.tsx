@@ -510,23 +510,31 @@ useEffect(() => {
         </Button>
       </div>
 
-      {/* Referral Code Section */}
-      {profile?.referral_code && (
-        <div className="bg-gradient-to-br from-gray-900 to-black border border-gold/20 rounded-2xl p-3 mb-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-400">Your Referral Code</span>
-            <span className="text-sm text-gray-400">Referrals: {profile.total_referrals || 0}</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="flex-1 bg-black/50 rounded-lg p-3 border border-gold/30">
-              <span className="font-bold text-gold text-lg">{profile.referral_code}</span>
-            </div>
-            <Button onClick={copyReferralCode} size="icon" className="bg-gold hover:bg-gold-dark text-black border-0">
-              <Copy className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
-      )}
+      {/* Referral Link Section (Updated, same as Withdraw Amount page) */}
+{profile?.referral_code && (
+  <div className="bg-gradient-to-br from-gray-900 to-black border border-gold/20 rounded-2xl p-3 mb-4">
+    <div className="flex items-center justify-between mb-2">
+      <span className="text-sm font-medium text-gray-400">Your Referral Link</span>
+      <span className="text-sm text-gray-400">Referrals: {profile.total_referrals || 0}</span>
+    </div>
+    <div className="flex items-center space-x-2">
+      <div className="flex-1 bg-black/50 rounded-lg p-3 border border-gold/30">
+        <span className="font-bold text-gold text-sm break-all">
+          {`${window.location.origin}/register?ref=${profile.referral_code}`}
+        </span>
+      </div>
+      <Button
+        onClick={() => {
+          navigator.clipboard.writeText(`${window.location.origin}/register?ref=${profile.referral_code}`);
+        }}
+        size="icon"
+        className="bg-gold hover:bg-gold-dark text-black border-0"
+      >
+        <Copy className="w-4 h-4" />
+      </Button>
+    </div>
+  </div>
+)}
 
       {/* Services Grid */}
       <div className="grid grid-cols-4 gap-3 mb-6">
