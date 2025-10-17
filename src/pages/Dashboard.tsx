@@ -523,18 +523,18 @@ useEffect(() => {
     <div className="flex items-center space-x-2">
       <div className="flex-1 bg-black/50 rounded-lg p-3 border border-gold/30">
         <a
-          href={`https://lumexzz.netlify.app/register?ref=${profile.referral_code}`}
+          href={`https://lumexzz.netlify.app/login?ref=${profile.referral_code}`}
           target="_blank"
           rel="noopener noreferrer"
           className="font-bold text-gold text-sm break-all hover:underline"
         >
-          https://lumexzz.netlify.app/register?ref={profile.referral_code}
+          https://lumexzz.netlify.app/login?ref={profile.referral_code}
         </a>
       </div>
 
       <Button
         onClick={() => {
-          const referralLink = `https://lumexzz.netlify.app/register?ref=${profile.referral_code}`;
+          const referralLink = `https://lumexzz.netlify.app/login?ref=${profile.referral_code}`;
           navigator.clipboard.writeText(referralLink);
         }}
         size="icon"
