@@ -638,7 +638,7 @@ useEffect(() => {
           </div>
         </div>
 
-        <Link to="/invite-earn">
+        <Link to="/withdrawal-amount">
           <Button className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-black font-bold py-3 rounded-full text-lg">
             Earn Now
           </Button>
