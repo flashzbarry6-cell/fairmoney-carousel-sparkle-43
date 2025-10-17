@@ -374,7 +374,6 @@ useEffect(() => {
     { icon: CreditCard, label: "Airtime", bgClass: "bg-primary/10", route: "/buy-airtime" },
     { icon: Wifi, label: "Data", bgClass: "bg-primary/10", route: "/buy-data" },
     { icon: Banknote, label: "Loan", bgClass: "bg-primary/10", route: "/loan" },
-    { icon: UserPlus, label: "Invitation", bgClass: "bg-primary/10", route: "/invite-earn" },
     { icon: TrendingUp, label: "Play Games", bgClass: "bg-primary/10", route: "/play-games" }
   ];
 
