@@ -573,7 +573,7 @@ useEffect(() => {
       <BottomCarousel />
 
       {/* Task and Check-in Buttons */}
-      <div className="grid grid-cols-2 gap-2 mb-0 px-2 mt-3">
+      <div className="grid grid-cols-2 gap-2 mb-0 px-2 mt-4">
         <Link to="/activity">
           <div className="bg-gradient-to-br from-purple-900 to-purple-700 rounded-2xl p-4 border border-purple-500/30 hover:scale-105 transition-transform">
             <div className="flex items-center gap-2 mb-2">
@@ -603,7 +603,7 @@ useEffect(() => {
       {/* Lumexzz Info Section */}
       <div className="bg-gradient-to-br from-white via-purple-950 to-purple rounded-2xl p-6 mb-6 mx-2 border border-purple-500/30">
         <div className="text-center mb-4">
-          <h2 className="text-2xl font-bold text-gold mb-2">GO Lumexzz?</h2>
+          <h2 className="text-2xl font-bold text-gold mb-4">GO Lumexzz?</h2>
           <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-white-400 mx-auto mb-4"></div>
         </div>
 
