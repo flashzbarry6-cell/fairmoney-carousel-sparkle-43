@@ -20,31 +20,36 @@ export const BottomCarousel = () => {
 
   return (
     <div className="w-full max-w-xl mx-auto px-0 mt-0 mb-0">
-      {/* Increased from max-w-lg to max-w-xl for slightly wider view */}
-      <div className="relative h-40 overflow-hidden rounded-xl border-2 border-yellow-400/30 shadow-lg">
+      {/* Clean edges and smoother animation */}
+      <div className="relative h-40 overflow-hidden rounded-2xl bg-black">
         <div
-          className="flex transition-transform duration-700 ease-in-out h-full"
-          style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+          className="flex transition-transform duration-700 ease-in-out h-full will-change-transform"
+          style={{
+            transform: `translate3d(-${currentSlide * 100}%, 0, 0)`,
+          }}
         >
           {banners.map((banner, index) => (
-            <div key={index} className="min-w-full h-full flex-shrink-0">
+            <div key={index} className="w-full h-full flex-shrink-0">
               <img
                 src={banner}
                 alt={`Advertisement ${index + 1}`}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover select-none pointer-events-none"
+                draggable={false}
                 onError={(e) => {
-                  console.log(`Failed to load image: ${banner}`);
+                  console.warn(`Failed to load image: ${banner}`);
                   e.currentTarget.style.display = "none";
                 }}
               />
             </div>
           ))}
         </div>
+
+        {/* Dot indicators */}
         <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
           {banners.map((_, index) => (
             <button
               key={index}
-              className={`w-2 h-40 rounded-full transition-all duration-300 ${
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${
                 index === currentSlide ? "bg-yellow-400 scale-110" : "bg-yellow-400/40"
               }`}
               onClick={() => setCurrentSlide(index)}
