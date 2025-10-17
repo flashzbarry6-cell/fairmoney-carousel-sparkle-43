@@ -21,7 +21,7 @@ export const BottomCarousel = () => {
   return (
     <div className="w-full max-w-xl mx-auto px-0 mt-6 mb-20">
       {/* Increased from max-w-lg to max-w-xl for slightly wider view */}
-      <div className="relative h-40 overflow-hidden rounded-xl border-2 border-yellow-400/30 shadow-lg">
+      <div className="relative h-56 overflow-hidden rounded-xl border-2 border-yellow-400/30 shadow-lg">
         <div
           className="flex transition-transform duration-700 ease-in-out h-full"
           style={{ transform: `translateX(-${currentSlide * 100}%)` }}
@@ -44,7 +44,7 @@ export const BottomCarousel = () => {
           {banners.map((_, index) => (
             <button
               key={index}
-              className={`w-2 h-8 rounded-full transition-all duration-300 ${
+              className={`w-2 h-56 rounded-full transition-all duration-300 ${
                 index === currentSlide ? "bg-yellow-400 scale-110" : "bg-yellow-400/40"
               }`}
               onClick={() => setCurrentSlide(index)}
