@@ -573,7 +573,7 @@ useEffect(() => {
       <BottomCarousel />
 
       {/* Task and Check-in Buttons */}
-      <div className="grid grid-cols-2 gap-2 mb-6 px-1 mt-1">
+      <div className="grid grid-cols-2 gap-2 mb-6 px-2 mt-2">
         <Link to="/activity">
           <div className="bg-gradient-to-br from-purple-900 to-purple-700 rounded-2xl p-4 border border-purple-500/30 hover:scale-105 transition-transform">
             <div className="flex items-center gap-2 mb-2">
@@ -590,7 +590,7 @@ useEffect(() => {
             !canCheckin ? 'opacity-50 cursor-not-allowed' : ''
           }`}
         >
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-2 mb-3">
             <TrendingUp className="w-6 h-6 text-yellow-400" />
             <h3 className="text-white font-semibold">Check-in</h3>
           </div>
