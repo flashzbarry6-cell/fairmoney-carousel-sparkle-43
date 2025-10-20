@@ -1,4 +1,4 @@
-import { ArrowLeft, AlertTriangle, X } from "lucide-react";
+ import { ArrowLeft, AlertTriangle, X } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
