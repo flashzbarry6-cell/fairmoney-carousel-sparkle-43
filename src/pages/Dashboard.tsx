@@ -453,7 +453,7 @@ useEffect(() => {
         
         {/* Timer and Buttons Row */}
         <div className="flex items-center justify-between mb-2">
-          <Link to="/upgrade-account">
+          <Link to="/upgrade">
             <Button
               size="sm"
               className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-semibold h-11 text-sm px-7"
