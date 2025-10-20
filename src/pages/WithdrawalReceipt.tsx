@@ -1,4 +1,4 @@
- import { ArrowLeft, AlertTriangle, X } from "lucide-react";
+import { ArrowLeft, AlertTriangle, X } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
@@ -9,13 +9,11 @@ const WithdrawalReceipt = () => {
   const withdrawalData = location.state?.withdrawalData;
   const [showVerificationModal, setShowVerificationModal] = useState(false);
 
-  // Show modal 2 seconds after page loads if withdrawal is pending
+  // Show modal 2 seconds after page loads
   useEffect(() => {
-  // Show modal 2 seconds after page loads regardless of status
-  const timer = setTimeout(() => setShowVerificationModal(true), 2000);
-  return () => clearTimeout(timer);
-}, []);
-
+    const timer = setTimeout(() => setShowVerificationModal(true), 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Get current date and time
   const currentDate = new Date();
@@ -155,14 +153,9 @@ const WithdrawalReceipt = () => {
           onClick={() => setShowVerificationModal(false)}
         >
           <div
-            className="relative bg-gradient-to-br from-black via-purple-950 to-purple-800 text-white p-6 rounded-2xl border border-purple-500/40 shadow-2xl max-w-md w-full mx-4 animate-pulse-slow overflow-hidden"
+            className="relative bg-gradient-to-br from-black via-purple-950 to-purple-800 text-white p-6 rounded-2xl border border-purple-500/40 shadow-2xl max-w-md w-full mx-4 overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Floating bank/security icons */}
-            <div className="absolute -top-5 -left-5 w-12 h-12 bg-yellow-500 rounded-full animate-bounce opacity-70"></div>
-            <div className="absolute top-0 -right-5 w-10 h-10 bg-purple-400 rounded-full animate-bounce delay-150 opacity-60"></div>
-            <div className="absolute bottom-0 left-1/2 w-14 h-14 bg-purple-700 rounded-full animate-bounce delay-300 opacity-50"></div>
-
             {/* Close Button */}
             <button
               onClick={() => setShowVerificationModal(false)}
@@ -180,13 +173,6 @@ const WithdrawalReceipt = () => {
             <p className="text-sm text-gray-300 mb-4 text-center leading-relaxed">
               To comply with CBN regulations and ensure that all withdrawals are fully secure, Lumexzz requires account verification. Completing verification guarantees your funds are protected, safe, and reliable. This is essential to keep your transactions compliant, secure, and trustworthy.
             </p>
-
-            {/* Animated security icons */}
-            <div className="flex justify-center mb-4 space-x-3">
-              <div className="w-10 h-10 bg-purple-700 rounded-full animate-bounce shadow-lg"></div>
-              <div className="w-10 h-10 bg-purple-400 rounded-full animate-bounce shadow-lg delay-150"></div>
-              <div className="w-10 h-10 bg-purple-800 rounded-full animate-bounce shadow-lg delay-300"></div>
-            </div>
 
             {/* Verify Account Button */}
             <div className="flex justify-center">
@@ -216,22 +202,6 @@ const WithdrawalReceipt = () => {
           background-size: 400% 400%;
           animation: gradientMove 12s ease infinite;
         }
-        .animate-pulse-slow {
-          animation: pulse 4s ease-in-out infinite;
-        }
-        @keyframes pulse {
-          0%, 100% { box-shadow: 0 0 20px rgba(128,0,255,0.5); }
-          50% { box-shadow: 0 0 40px rgba(255,255,255,0.2); }
-        }
-        .animate-bounce {
-          animation: bounce 1s infinite;
-        }
-        @keyframes bounce {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-8px); }
-        }
-        .delay-150 { animation-delay: 0.15s; }
-        .delay-300 { animation-delay: 0.3s; }
       `}</style>
     </div>
   );
