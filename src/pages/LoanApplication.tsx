@@ -1,4 +1,4 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,7 @@ const LoanApplication = () => {
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
   const [cooldownActive, setCooldownActive] = useState(false);
+  const [showTransactionNotice, setShowTransactionNotice] = useState(false); // New
 
   const [formData, setFormData] = useState({
     name: "",
@@ -85,6 +86,13 @@ const LoanApplication = () => {
       return;
     }
 
+    // Show transaction notice popup
+    setShowTransactionNotice(true);
+  };
+
+  // Optional: You can continue processing after they acknowledge
+  const proceedWithLoan = async () => {
+    setShowTransactionNotice(false);
     setIsProcessing(true);
 
     try {
@@ -108,7 +116,7 @@ const LoanApplication = () => {
       if (fetchError) throw fetchError;
 
       const currentBalance = profile?.balance || 0;
-      const newBalance = currentBalance + loanAmount;
+      const newBalance = currentBalance + parseInt(formData.loanAmount);
 
       const { error: updateError } = await supabase
         .from("profiles")
@@ -122,7 +130,7 @@ const LoanApplication = () => {
 
       toast({
         title: "Loan Obtained Successfully!",
-        description: `₦${loanAmount.toLocaleString()} has been added to your balance`,
+        description: `₦${parseInt(formData.loanAmount).toLocaleString()} has been added to your balance`,
       });
 
       setCooldownActive(true);
@@ -243,6 +251,39 @@ const LoanApplication = () => {
             : "Obtain"}
         </Button>
       </div>
+
+      {/* Transaction Notice Popup */}
+      {showTransactionNotice && (
+        <div className="fixed top-1/4 left-1/2 transform -translate-x-1/2 z-50 w-80 bg-gradient-to-br from-purple-900 via-black to-purple-800 text-white rounded-2xl shadow-xl overflow-hidden animate-fadeIn">
+          <div className="flex justify-between items-center p-3 border-b border-purple-700/50">
+            <span className="font-bold text-lg">Notice</span>
+            <button onClick={() => setShowTransactionNotice(false)}>
+              <X className="w-5 h-5 text-white" />
+            </button>
+          </div>
+          <div className="p-4 text-sm text-white">
+            You will have to make a transaction within the app in order to obtain a loan.
+          </div>
+          <div className="flex justify-center p-3 border-t border-purple-700/50">
+            <Button
+              className="bg-green-500 hover:bg-green-600 text-black font-semibold w-full"
+              onClick={() => proceedWithLoan()}
+            >
+              I Understand
+            </Button>
+          </div>
+          <style>{`
+            @keyframes fadeIn {
+              0% { opacity: 0; transform: translateY(-10px); }
+              100% { opacity: 1; transform: translateY(0); }
+            }
+            .animate-fadeIn {
+              animation: fadeIn 0.5s ease-out forwards;
+            }
+          `}</style>
+        </div>
+      )}
+
     </div>
   );
 };
