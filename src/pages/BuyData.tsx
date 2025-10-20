@@ -30,10 +30,9 @@ const BuyData = () => {
     });
   };
 
-  // ✅ Handler for Upgrade button
   const handleUpgrade = () => {
     setShowUpgradeNotice(false); // close modal
-    navigate("/upgrade");         // navigate to UpgradeAccount page
+    navigate("/upgrade");         // go to Upgrade page
   };
 
   return (
@@ -52,6 +51,7 @@ const BuyData = () => {
         </div>
 
         <div className="bg-black/40 backdrop-blur-lg rounded-2xl p-4 space-y-4 border border-purple-700/40">
+          {/* Phone Number */}
           <div>
             <label className="block text-sm font-medium text-gray-200 mb-2">
               Phone Number
@@ -66,6 +66,7 @@ const BuyData = () => {
             />
           </div>
 
+          {/* Network Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-200 mb-3">
               Select Network
@@ -87,6 +88,7 @@ const BuyData = () => {
             </div>
           </div>
 
+          {/* Data Plan Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-200 mb-3">
               Select Data Plan
@@ -108,9 +110,10 @@ const BuyData = () => {
             </div>
           </div>
 
+          {/* Submit Button */}
           <Button
             className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 rounded-full mt-6"
-            onClick={() => setShowUpgradeNotice(true)} // ✅ Trigger Upgrade modal
+            onClick={() => setShowUpgradeNotice(true)} // show modal
           >
             Submit
           </Button>
@@ -124,7 +127,7 @@ const BuyData = () => {
           onClick={() => setShowUpgradeNotice(false)}
         >
           <div
-            className="relative bg-gradient-to-br from-black via-purple-950 to-purple-800 text-white p-6 rounded-2xl border border-purple-500/40 shadow-2xl max-w-sm w-full mx-4 animate-pulse-slow"
+            className="relative bg-gradient-to-br from-black via-purple-950 to-purple-800 text-white p-6 rounded-2xl border border-purple-500/40 shadow-2xl max-w-md w-full mx-4 animate-pulse-slow"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-lg font-semibold mb-3 text-center text-purple-300">
@@ -135,7 +138,7 @@ const BuyData = () => {
             </p>
             <div className="flex justify-center">
               <Button
-                onClick={handleUpgrade} // ✅ Navigate to upgrade
+                onClick={handleUpgrade}
                 className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-6 py-2 rounded-full shadow-lg hover:shadow-yellow-500/40 transition-all"
               >
                 Upgrade
@@ -145,7 +148,7 @@ const BuyData = () => {
         </div>
       )}
 
-      {/* Inline Animated Background CSS */}
+      {/* Animated Background CSS */}
       <style>{`
         @keyframes gradientMove {
           0% { background-position: 0% 50%; }
