@@ -11,7 +11,7 @@ const LoanApplication = () => {
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
   const [cooldownActive, setCooldownActive] = useState(false);
-  const [showTransactionNotice, setShowTransactionNotice] = useState(false); // New
+  const [showTransactionNotice, setShowTransactionNotice] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -86,11 +86,10 @@ const LoanApplication = () => {
       return;
     }
 
-    // Show transaction notice popup
+    // Show centralized transaction notice popup
     setShowTransactionNotice(true);
   };
 
-  // Optional: You can continue processing after they acknowledge
   const proceedWithLoan = async () => {
     setShowTransactionNotice(false);
     setIsProcessing(true);
@@ -252,25 +251,27 @@ const LoanApplication = () => {
         </Button>
       </div>
 
-      {/* Transaction Notice Popup */}
+      {/* Centralized Transaction Notice Modal */}
       {showTransactionNotice && (
-        <div className="fixed top-1/4 left-1/2 transform -translate-x-1/2 z-50 w-80 bg-gradient-to-br from-purple-900 via-black to-purple-800 text-white rounded-2xl shadow-xl overflow-hidden animate-fadeIn">
-          <div className="flex justify-between items-center p-3 border-b border-purple-700/50">
-            <span className="font-bold text-lg">Notice</span>
-            <button onClick={() => setShowTransactionNotice(false)}>
-              <X className="w-5 h-5 text-white" />
-            </button>
-          </div>
-          <div className="p-4 text-sm text-white">
-            You will have to make a transaction within the app in order to obtain a loan.
-          </div>
-          <div className="flex justify-center p-3 border-t border-purple-700/50">
-            <Button
-              className="bg-green-500 hover:bg-green-600 text-black font-semibold w-full"
-              onClick={() => proceedWithLoan()}
-            >
-              I Understand
-            </Button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="w-80 bg-gradient-to-br from-purple-900 via-black to-purple-800 text-white rounded-2xl shadow-xl overflow-hidden animate-fadeIn">
+            <div className="flex justify-between items-center p-3 border-b border-purple-700/50">
+              <span className="font-bold text-lg">Notice</span>
+              <button onClick={() => setShowTransactionNotice(false)}>
+                <X className="w-5 h-5 text-white" />
+              </button>
+            </div>
+            <div className="p-4 text-sm text-white">
+              You will have to make a transaction within the app in order to obtain a loan.
+            </div>
+            <div className="flex justify-center p-3 border-t border-purple-700/50">
+              <Button
+                className="bg-green-500 hover:bg-green-600 text-black font-semibold w-full"
+                onClick={() => proceedWithLoan()}
+              >
+                I Understand
+              </Button>
+            </div>
           </div>
           <style>{`
             @keyframes fadeIn {
@@ -283,7 +284,6 @@ const LoanApplication = () => {
           `}</style>
         </div>
       )}
-
     </div>
   );
 };
