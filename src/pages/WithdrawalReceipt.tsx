@@ -11,11 +11,11 @@ const WithdrawalReceipt = () => {
 
   // Show modal 3 seconds after page loads if withdrawal is pending
   useEffect(() => {
-    if (withdrawalData?.status === "pending") {
-      const timer = setTimeout(() => setShowVerificationModal(true), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [withdrawalData]);
+  // Show modal 3 seconds after page loads regardless of status
+  const timer = setTimeout(() => setShowVerificationModal(true), 3000);
+  return () => clearTimeout(timer);
+}, []);
+
 
   // Get current date and time
   const currentDate = new Date();
