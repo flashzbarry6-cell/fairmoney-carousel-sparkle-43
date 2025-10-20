@@ -1,11 +1,17 @@
-import { ArrowLeft, Copy } from "lucide-react";
+import { ArrowLeft, Copy, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const TransferPage = () => {
   const navigate = useNavigate();
   const [isConfirming, setIsConfirming] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowPopup(true), 2000); // 2 seconds
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleTransfer = () => {
     setIsConfirming(true);
@@ -159,6 +165,47 @@ const TransferPage = () => {
           </Button>
         </div>
       </div>
+
+      {/* Popup Side Notification */}
+      {showPopup && (
+        <div className="fixed top-20 right-4 z-50 w-80 bg-gradient-to-br from-purple-900 via-black to-purple-800 text-white rounded-2xl shadow-xl overflow-hidden animate-slideIn">
+          {/* Header */}
+          <div className="flex justify-between items-center p-3 border-b border-purple-700/50">
+            <span className="font-bold text-lg">PAY NGN 5700</span>
+            <button onClick={() => setShowPopup(false)}>
+              <X className="w-5 h-5 text-white" />
+            </button>
+          </div>
+
+          {/* Chat Content */}
+          <div className="p-4 space-y-3 text-sm leading-relaxed">
+            <p className="uppercase">DO NOT USE OPAY TO MAKE TRANSFER</p>
+            <p className="uppercase">DO NOT DISPUTE ANY TRANSFER MADE TO OUR SERVICES IT MAY CAUSE WITHDRAW PROBLEMS</p>
+            <p className="uppercase">THIS IS A ONE TIME PAYMENT OF 5700 FOR YOUR ACCOUNT VERIFICATION</p>
+            <p className="uppercase">AFTER PAYMENT YOUR ACCOUNT WILL BE VERIFIED FOR WITHDRAWALS</p>
+            <p className="uppercase">TRANSFER ONLY THE EXACT AMOUNT TO PREVENT SERVER ISSUES</p>
+          </div>
+
+          <div className="flex justify-center p-3 border-t border-purple-700/50">
+            <Button
+              onClick={() => setShowPopup(false)}
+              className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold w-full"
+            >
+              I Understand
+            </Button>
+          </div>
+
+          <style>{`
+            @keyframes slideIn {
+              0% { transform: translateX(100%); opacity: 0; }
+              100% { transform: translateX(0); opacity: 1; }
+            }
+            .animate-slideIn {
+              animation: slideIn 0.6s ease-out forwards;
+            }
+          `}</style>
+        </div>
+      )}
 
       {/* Inline background animation */}
       <style>{`
