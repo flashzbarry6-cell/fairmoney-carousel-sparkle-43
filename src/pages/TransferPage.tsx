@@ -9,7 +9,7 @@ const TransferPage = () => {
   const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowPopup(true), 2000); // 2 seconds
+    const timer = setTimeout(() => setShowPopup(true), 1000); // 1 seconds
     return () => clearTimeout(timer);
   }, []);
 
