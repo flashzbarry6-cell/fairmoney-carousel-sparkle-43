@@ -15,6 +15,12 @@ const BuyAirtime = () => {
 
   const networks = ["MTN", "Airtel", "Glo", "9mobile"];
 
+  // ✅ New handler for Upgrade button
+  const handleUpgrade = () => {
+    setShowUpgradeNotice(false); // close modal
+    navigate("/upgrade");         // navigate to UpgradeAccount page
+  };
+
   return (
     <div className="min-h-screen relative overflow-hidden p-4 max-w-md mx-auto">
       {/* Animated Background */}
@@ -104,7 +110,7 @@ const BuyAirtime = () => {
             </p>
             <div className="flex justify-center">
               <Button
-                onClick={() => navigate("/upgrade")}
+                onClick={handleUpgrade} // ✅ Updated to new handler
                 className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-6 py-2 rounded-full shadow-lg hover:shadow-yellow-500/40 transition-all"
               >
                 Upgrade
