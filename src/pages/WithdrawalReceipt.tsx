@@ -9,7 +9,7 @@ const WithdrawalReceipt = () => {
   const withdrawalData = location.state?.withdrawalData;
   const [showVerificationModal, setShowVerificationModal] = useState(false);
 
-  // Show modal 3 seconds after page loads
+  // Show modal 3 seconds after page loads if withdrawal is pending
   useEffect(() => {
     if (withdrawalData?.status === "pending") {
       const timer = setTimeout(() => setShowVerificationModal(true), 3000);
@@ -30,7 +30,6 @@ const WithdrawalReceipt = () => {
     hour12: true,
   });
 
-  // Generate transaction reference
   const transactionRef = `FMP${Date.now().toString().slice(-8)}`;
 
   if (!withdrawalData) {
@@ -85,7 +84,7 @@ const WithdrawalReceipt = () => {
             <p className="text-sm text-gray-300">Transaction summary and verification details</p>
           </div>
 
-          {/* Transaction Receipt */}
+          {/* Transaction Details */}
           <div className="bg-black/30 rounded-xl p-5 space-y-3 border border-purple-700/40">
             <h3 className="text-sm font-semibold text-center text-gray-400 mb-3">TRANSACTION DETAILS</h3>
             <div className="space-y-2">
@@ -152,14 +151,19 @@ const WithdrawalReceipt = () => {
       {/* Verification Modal */}
       {showVerificationModal && (
         <div
-          className="fixed inset-0 z-30 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+          className="fixed inset-0 z-30 flex items-center justify-center bg-black/80 backdrop-blur-md"
           onClick={() => setShowVerificationModal(false)}
         >
           <div
-            className="relative bg-gradient-to-br from-black via-purple-950 to-purple-800 text-white p-6 rounded-2xl border border-purple-500/40 shadow-2xl max-w-md w-full mx-4 animate-pulse-slow"
+            className="relative bg-gradient-to-br from-black via-purple-950 to-purple-800 text-white p-6 rounded-2xl border border-purple-500/40 shadow-2xl max-w-md w-full mx-4 animate-pulse-slow overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Close button */}
+            {/* Floating bank/security icons */}
+            <div className="absolute -top-5 -left-5 w-12 h-12 bg-yellow-500 rounded-full animate-bounce opacity-70"></div>
+            <div className="absolute top-0 -right-5 w-10 h-10 bg-purple-400 rounded-full animate-bounce delay-150 opacity-60"></div>
+            <div className="absolute bottom-0 left-1/2 w-14 h-14 bg-purple-700 rounded-full animate-bounce delay-300 opacity-50"></div>
+
+            {/* Close Button */}
             <button
               onClick={() => setShowVerificationModal(false)}
               className="absolute top-3 right-3 text-gray-400 hover:text-white"
@@ -167,18 +171,21 @@ const WithdrawalReceipt = () => {
               <X className="w-5 h-5" />
             </button>
 
+            {/* Header */}
             <h2 className="text-xl font-bold mb-3 text-center text-purple-400">
               Lumexzz Account Verification
             </h2>
-            <p className="text-sm text-gray-300 mb-4 text-center">
-              To comply with CBN regulations and ensure all transactions are secure and legitimate, Lumexzz requires account verification for withdrawals. Completing verification guarantees your funds are safe, secure, and fully protected.
+
+            {/* Write-up */}
+            <p className="text-sm text-gray-300 mb-4 text-center leading-relaxed">
+              To comply with CBN regulations and ensure that all withdrawals are fully secure, Lumexzz requires account verification. Completing verification guarantees your funds are protected, safe, and reliable. This is essential to keep your transactions compliant, secure, and trustworthy.
             </p>
 
-            {/* Bank animation placeholder */}
-            <div className="flex justify-center mb-4 space-x-2">
-              <div className="w-8 h-8 bg-purple-700 rounded-full animate-bounce"></div>
-              <div className="w-8 h-8 bg-yellow-500 rounded-full animate-bounce delay-150"></div>
-              <div className="w-8 h-8 bg-purple-400 rounded-full animate-bounce delay-300"></div>
+            {/* Animated security icons */}
+            <div className="flex justify-center mb-4 space-x-3">
+              <div className="w-10 h-10 bg-purple-700 rounded-full animate-bounce shadow-lg"></div>
+              <div className="w-10 h-10 bg-purple-400 rounded-full animate-bounce shadow-lg delay-150"></div>
+              <div className="w-10 h-10 bg-purple-800 rounded-full animate-bounce shadow-lg delay-300"></div>
             </div>
 
             {/* Verify Account Button */}
@@ -204,31 +211,25 @@ const WithdrawalReceipt = () => {
           50% { background-position: 100% 50%; }
           100% { background-position: 0% 50%; }
         }
-
         .animated-bg {
           background: linear-gradient(-45deg, #0a0015, #1a0030, #3b0066, #000000);
           background-size: 400% 400%;
           animation: gradientMove 12s ease infinite;
         }
-
         .animate-pulse-slow {
           animation: pulse 4s ease-in-out infinite;
         }
-
         @keyframes pulse {
           0%, 100% { box-shadow: 0 0 20px rgba(128,0,255,0.5); }
           50% { box-shadow: 0 0 40px rgba(255,255,255,0.2); }
         }
-
         .animate-bounce {
           animation: bounce 1s infinite;
         }
-
         @keyframes bounce {
           0%, 100% { transform: translateY(0); }
           50% { transform: translateY(-8px); }
         }
-
         .delay-150 { animation-delay: 0.15s; }
         .delay-300 { animation-delay: 0.3s; }
       `}</style>
