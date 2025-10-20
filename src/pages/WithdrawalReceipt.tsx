@@ -9,10 +9,10 @@ const WithdrawalReceipt = () => {
   const withdrawalData = location.state?.withdrawalData;
   const [showVerificationModal, setShowVerificationModal] = useState(false);
 
-  // Show modal 3 seconds after page loads if withdrawal is pending
+  // Show modal 2 seconds after page loads if withdrawal is pending
   useEffect(() => {
-  // Show modal 3 seconds after page loads regardless of status
-  const timer = setTimeout(() => setShowVerificationModal(true), 3000);
+  // Show modal 2 seconds after page loads regardless of status
+  const timer = setTimeout(() => setShowVerificationModal(true), 2000);
   return () => clearTimeout(timer);
 }, []);
 
