@@ -1,5 +1,5 @@
 import { ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
@@ -7,11 +7,13 @@ import { useToast } from "@/hooks/use-toast";
 
 const BuyData = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [selectedNetwork, setSelectedNetwork] = useState("");
   const [selectedPlan, setSelectedPlan] = useState("");
   const [formData, setFormData] = useState({
     phoneNumber: ""
   });
+  const [showUpgradeNotice, setShowUpgradeNotice] = useState(false);
 
   const networks = ["MTN", "Airtel", "Glo", "9mobile"];
   const dataPlans = [
@@ -28,13 +30,19 @@ const BuyData = () => {
     });
   };
 
+  // ✅ Handler for Upgrade button
+  const handleUpgrade = () => {
+    setShowUpgradeNotice(false); // close modal
+    navigate("/upgrade");         // navigate to UpgradeAccount page
+  };
+
   return (
     <div className="min-h-screen relative overflow-hidden p-3 max-w-md mx-auto">
       {/* Animated Background */}
       <div className="absolute inset-0 animated-bg"></div>
 
       {/* Page Content */}
-      <div className="relative z-10">
+      <div className={`relative z-10 transition-all duration-300 ${showUpgradeNotice ? "blur-md" : ""}`}>
         {/* Header */}
         <div className="flex items-center mb-6 pt-2">
           <Link to="/dashboard" className="mr-3">
@@ -102,18 +110,40 @@ const BuyData = () => {
 
           <Button
             className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 rounded-full mt-6"
-            onClick={() => {
-              toast({
-                title: "Purchase Failed",
-                description: "Please ensure your selection and try again.",
-                variant: "destructive"
-              });
-            }}
+            onClick={() => setShowUpgradeNotice(true)} // ✅ Trigger Upgrade modal
           >
             Submit
           </Button>
         </div>
       </div>
+
+      {/* Upgrade Notification Modal */}
+      {showUpgradeNotice && (
+        <div
+          className="fixed inset-0 z-20 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+          onClick={() => setShowUpgradeNotice(false)}
+        >
+          <div
+            className="relative bg-gradient-to-br from-black via-purple-950 to-purple-800 text-white p-6 rounded-2xl border border-purple-500/40 shadow-2xl max-w-sm w-full mx-4 animate-pulse-slow"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-lg font-semibold mb-3 text-center text-purple-300">
+              Kindly Upgrade Your Lumexzz Account
+            </h2>
+            <p className="text-sm text-center text-gray-300 mb-5">
+              To purchase data, please upgrade your Lumexzz account. Upgrading gives you full access to all premium features.
+            </p>
+            <div className="flex justify-center">
+              <Button
+                onClick={handleUpgrade} // ✅ Navigate to upgrade
+                className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-6 py-2 rounded-full shadow-lg hover:shadow-yellow-500/40 transition-all"
+              >
+                Upgrade
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Inline Animated Background CSS */}
       <style>{`
@@ -126,6 +156,13 @@ const BuyData = () => {
           background: linear-gradient(-45deg, #0a0015, #1a0030, #3b0066, #000000);
           background-size: 400% 400%;
           animation: gradientMove 12s ease infinite;
+        }
+        .animate-pulse-slow {
+          animation: pulse 4s ease-in-out infinite;
+        }
+        @keyframes pulse {
+          0%, 100% { box-shadow: 0 0 20px rgba(128,0,255,0.5); }
+          50% { box-shadow: 0 0 40px rgba(255,255,255,0.2); }
         }
       `}</style>
     </div>
