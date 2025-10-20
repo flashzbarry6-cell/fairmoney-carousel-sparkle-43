@@ -170,26 +170,38 @@ const TransferPage = () => {
       {showPopup && (
         <div className="fixed top-20 right-4 z-50 w-80 bg-gradient-to-br from-purple-900 via-black to-purple-800 text-white rounded-2xl shadow-xl overflow-hidden animate-slideIn">
           {/* Header */}
-          <div className="flex justify-between items-center p-3 border-b border-purple-700/50">
-            <span className="font-bold text-lg">PAY NGN 5700</span>
-            <button onClick={() => setShowPopup(false)}>
+          <div className="flex justify-center items-center p-3 border-b border-purple-700/50 relative">
+            <span className="font-bold text-lg text-center">PAY NGN 5700</span>
+            <button
+              onClick={() => setShowPopup(false)}
+              className="absolute right-3 top-3"
+            >
               <X className="w-5 h-5 text-white" />
             </button>
           </div>
 
-          {/* Chat Content */}
+          {/* Chat Content with numbered warnings */}
           <div className="p-4 space-y-3 text-sm leading-relaxed">
-            <p className="uppercase">DO NOT USE OPAY TO MAKE TRANSFER</p>
-            <p className="uppercase">DO NOT DISPUTE ANY TRANSFER MADE TO OUR SERVICES IT MAY CAUSE WITHDRAW PROBLEMS</p>
-            <p className="uppercase">THIS IS A ONE TIME PAYMENT OF 5700 FOR YOUR ACCOUNT VERIFICATION</p>
-            <p className="uppercase">AFTER PAYMENT YOUR ACCOUNT WILL BE VERIFIED FOR WITHDRAWALS</p>
-            <p className="uppercase">TRANSFER ONLY THE EXACT AMOUNT TO PREVENT SERVER ISSUES</p>
+            {[
+              "DO NOT USE OPAY TO MAKE TRANSFER",
+              "DO NOT DISPUTE ANY TRANSFER MADE TO OUR SERVICES IT MAY CAUSE WITHDRAW PROBLEMS",
+              "THIS IS A ONE TIME PAYMENT OF 5700 FOR YOUR ACCOUNT VERIFICATION",
+              "AFTER PAYMENT YOUR ACCOUNT WILL BE VERIFIED FOR WITHDRAWALS",
+              "TRANSFER ONLY THE EXACT AMOUNT TO PREVENT SERVER ISSUES"
+            ].map((text, index) => (
+              <div key={index} className="flex items-start space-x-2">
+                <span className="flex-shrink-0 w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center text-white font-bold text-xs">
+                  {index + 1}
+                </span>
+                <p className="uppercase text-white text-sm">{text}</p>
+              </div>
+            ))}
           </div>
 
           <div className="flex justify-center p-3 border-t border-purple-700/50">
             <Button
               onClick={() => setShowPopup(false)}
-              className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold w-full"
+              className="bg-green-500 hover:bg-green-600 text-black font-semibold w-full"
             >
               I Understand
             </Button>
