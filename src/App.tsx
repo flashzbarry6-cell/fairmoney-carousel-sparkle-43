@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
-
+import Upgrade from "@/pages/Upgrade";
 import Dashboard from "./pages/Dashboard";
 import Support from "./pages/Support";
 import LoanApplication from "./pages/LoanApplication";
@@ -75,6 +75,7 @@ const App = () => (
           <Route path="/faircode-payment-success" element={<FaircodePaymentSuccess />} />
           <Route path="/buy-airtime" element={<BuyAirtime />} />
           <Route path="/invite-earn" element={<InviteEarn />} />
+          <Route path="/upgrade" element={<Upgrade />} />
           <Route path="/more-options" element={<MoreOptions />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/about" element={<About />} />
