@@ -85,12 +85,12 @@ const Support = () => {
                   Chat directly with our support via WhatsApp
                 </p>
                 <a
-                  href="https://wa.me/2349135877170"
+                  href="https://wa.me/2349023475704"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-purple-400 hover:underline"
                 >
-                  +234 913 587 7170
+                  +234 902 347 5704
                 </a>
               </div>
             </div>
