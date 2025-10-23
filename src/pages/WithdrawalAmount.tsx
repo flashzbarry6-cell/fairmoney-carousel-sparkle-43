@@ -134,7 +134,7 @@ const WithdrawalAmount = () => {
   // ✅ FIXED REFERRAL LINK TO MATCH INVITE & EARN PAGE
   const handleRefer = async () => {
     if (referralCode) {
-      const referralUrl = `https://lumexzz.netlify.app/login?ref=${referralCode}&tab=signup`;
+      const referralUrl = `https://lumexzzwin.netlify.app/login?ref=${referralCode}&tab=signup`;
       const message = `🎉 Join me on LUMEXZZ WIN and start earning! Get your bonus when you sign up: ${referralUrl}`;
 
       if (navigator.share) {
