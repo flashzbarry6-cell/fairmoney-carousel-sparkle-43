@@ -7,7 +7,7 @@ const UpgradeAccount = () => {
   const plans = [
     {
       name: "Bronze",
-      price: 10000,
+      price: 5000,
       icon: Crown,
       color: "from-amber-700 to-amber-900",
       features: [
