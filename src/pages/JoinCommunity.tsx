@@ -1,13 +1,10 @@
 import { Users, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-interface JoinGroupNotificationProps {
-  onClose: () => void;
-  onGetStarted: () => void;
-}
-
-export const JoinGroupNotification = ({ onClose, onGetStarted }: JoinGroupNotificationProps) => {
+const JoinCommunity = () => {
+  const navigate = useNavigate();
   const [hasJoinedGroup, setHasJoinedGroup] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
   const [showProceed, setShowProceed] = useState(true);
@@ -16,7 +13,7 @@ export const JoinGroupNotification = ({ onClose, onGetStarted }: JoinGroupNotifi
     setHasJoinedGroup(true);
     setShowWarning(false);
     setShowProceed(true);
-    // Open WhatsApp or Telegram Channel
+    // Open WhatsApp Channel
     window.open("https://whatsapp.com/channel/0029Vb6eAwH9mrGTeNSKVh1q", "_blank");
   };
 
@@ -26,7 +23,7 @@ export const JoinGroupNotification = ({ onClose, onGetStarted }: JoinGroupNotifi
       setShowProceed(false);
       return;
     }
-    onGetStarted();
+    navigate("/dashboard");
   };
 
   return (
@@ -92,5 +89,4 @@ export const JoinGroupNotification = ({ onClose, onGetStarted }: JoinGroupNotifi
   );
 };
 
-// ✅ Add this line to fix the GitHub Pages error
-export default JoinGroupNotification;
+export default JoinCommunity;

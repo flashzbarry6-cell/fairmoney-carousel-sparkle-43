@@ -27,20 +27,22 @@ const WithdrawalAmount = () => {
           .eq("user_id", session.user.id)
           .single();
 
-        let userReferralCode = profile?.referral_code;
+        if (profile) {
+          let userReferralCode = profile.referral_code;
 
-        // 🔹 Auto-generate referral code if missing
-        if (!userReferralCode) {
-          userReferralCode = session.user.id.slice(0, 6).toUpperCase();
-          await supabase
-            .from("profiles")
-            .update({ referral_code: userReferralCode })
-            .eq("user_id", session.user.id);
+          // Auto-generate referral code if missing
+          if (!userReferralCode) {
+            userReferralCode = session.user.id.slice(0, 6).toUpperCase();
+            await supabase
+              .from("profiles")
+              .update({ referral_code: userReferralCode })
+              .eq("user_id", session.user.id);
+          }
+
+          setReferralCode(userReferralCode);
+          setBalance(profile.balance || 0);
+          setTotalReferrals(profile.total_referrals || 0);
         }
-
-        setReferralCode(userReferralCode);
-        setBalance(profile?.balance || 0);
-        setTotalReferrals(profile?.total_referrals || 0);
       }
     };
 
@@ -67,7 +69,7 @@ const WithdrawalAmount = () => {
             filter: `user_id=eq.${session.user.id}`,
           },
           (payload) => {
-            const newProfile = payload.new;
+            const newProfile = payload.new as any;
             if (!newProfile) return;
 
             // Only update when data changes

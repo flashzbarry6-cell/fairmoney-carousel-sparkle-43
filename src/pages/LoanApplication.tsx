@@ -27,18 +27,7 @@ const LoanApplication = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("last_loan_time")
-        .eq("user_id", session.user.id)
-        .single();
-
-      if (profile?.last_loan_time) {
-        const lastLoan = new Date(profile.last_loan_time);
-        const now = new Date();
-        const diffDays = (now.getTime() - lastLoan.getTime()) / (1000 * 60 * 60 * 24);
-        if (diffDays < 7) setCooldownActive(true);
-      }
+      // Loan cooldown check removed - feature not implemented in database
     };
     checkCooldown();
   }, []);
@@ -120,8 +109,7 @@ const LoanApplication = () => {
       const { error: updateError } = await supabase
         .from("profiles")
         .update({
-          balance: newBalance,
-          last_loan_time: new Date().toISOString()
+          balance: newBalance
         })
         .eq("user_id", session.user.id);
 
