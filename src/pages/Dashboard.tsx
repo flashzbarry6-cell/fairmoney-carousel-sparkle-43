@@ -629,8 +629,8 @@ useEffect(() => {
               <Shield className="w-5 h-5 text-gold" />
             </div>
             <div>
-              <h3 className="text-white font-semibold mb-1">safe and Secure</h3>
-              <p className="text-white-200 text-sm">Bank-level encryption protects your transactions and personal data</p>
+              <h3 className="text-green-500 font-semibold mb-1">safe and Secure</h3>
+              <p className="text-white text-sm">Bank-level encryption protects your transactions and personal data</p>
             </div>
           </div>
 
@@ -639,8 +639,8 @@ useEffect(() => {
               <TrendingUp className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 className="text-white font-semibold mb-1">Lightning Fast</h3>
-              <p className="text-white-200 text-sm">fast withdrawals and secure transactions in seconds</p>
+              <h3 className="text-green-500 font-semibold mb-1">Lightning Fast</h3>
+              <p className="text-white text-sm">fast withdrawals and secure transactions in seconds</p>
             </div>
           </div>
 
@@ -649,8 +649,8 @@ useEffect(() => {
               <Users className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 className="text-white font-semibold mb-1">sure% Reliable</h3>
-              <p className="text-white-200 text-sm">24/7 trusted and guaranteed service uptime</p>
+              <h3 className="text-green-500 font-semibold mb-1">sure% Reliable</h3>
+              <p className="text-white text-sm">24/7 trusted and guaranteed service uptime</p>
             </div>
           </div>
         </div>

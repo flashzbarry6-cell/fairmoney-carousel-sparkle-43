@@ -34,6 +34,7 @@ import Investment from "./pages/Investment";
 import InvestmentPayment from "./pages/InvestmentPayment";
 import Activity from "./pages/Activity";
 import PlayGames from "./pages/PlayGames";
+import SpinAndWin from "./pages/SpinAndWin";
 import UpgradeProcessing from "./pages/UpgradeProcessing";
 import UpgradePaymentMethod from "./pages/UpgradePaymentMethod";
 import UpgradeBankTransfer from "./pages/UpgradeBankTransfer";
@@ -60,6 +61,7 @@ const App = () => (
           <Route path="/investment-payment" element={<InvestmentPayment />} />
           <Route path="/activity" element={<Activity />} />
           <Route path="/play-games" element={<PlayGames />} />
+          <Route path="/spin-win" element={<SpinAndWin />} />
           <Route path="/tv-recharge" element={<TVRecharge />} />
           <Route path="/buy-data" element={<BuyData />} />
           <Route path="/betting" element={<Betting />} />
