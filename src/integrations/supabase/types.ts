@@ -22,6 +22,7 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          last_referal_count: number | null
           referral_code: string
           referred_by: string | null
           total_referrals: number | null
@@ -35,6 +36,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          last_referal_count?: number | null
           referral_code?: string
           referred_by?: string | null
           total_referrals?: number | null
@@ -48,6 +50,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          last_referal_count?: number | null
           referral_code?: string
           referred_by?: string | null
           total_referrals?: number | null
