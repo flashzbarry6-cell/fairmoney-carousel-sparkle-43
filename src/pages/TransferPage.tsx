@@ -125,7 +125,7 @@ const TransferPage = () => {
             <div className="flex flex-col bg-black/30 rounded-xl p-4 border border-purple-700/40 space-y-3">
               <div className="flex justify-between items-center border-b border-purple-700/40 pb-2">
                 <span className="text-sm text-gray-400">Bank:</span>
-                <span className="font-semibold text-white">KOLOMONI MFB</span>
+                <span className="font-semibold text-white">KOLOMONI</span>
               </div>
 
               <div className="flex justify-between items-center border-b border-purple-700/40 pb-2">
