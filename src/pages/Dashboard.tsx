@@ -382,7 +382,56 @@ useEffect(() => {
   }
 
   return (
-    <div className="min-h-screen bg-black p-2 max-w-md mx-auto pb-32">
+    <div className="min-h-screen bg-black p-2 max-w-md mx-auto pb-32 relative overflow-hidden">
+      {/* Animated Purple Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Moving Purple Lights */}
+        <div className="absolute w-96 h-96 bg-purple-600/30 rounded-full blur-3xl animate-pulse" 
+          style={{ 
+            top: '-10%', 
+            left: '-20%',
+            animation: 'float 8s ease-in-out infinite'
+          }} 
+        />
+        <div className="absolute w-80 h-80 bg-purple-500/20 rounded-full blur-3xl animate-pulse" 
+          style={{ 
+            bottom: '-15%', 
+            right: '-15%',
+            animation: 'float 10s ease-in-out infinite reverse',
+            animationDelay: '2s'
+          }} 
+        />
+        <div className="absolute w-72 h-72 bg-purple-700/25 rounded-full blur-3xl animate-pulse" 
+          style={{ 
+            top: '30%', 
+            right: '-10%',
+            animation: 'float 12s ease-in-out infinite',
+            animationDelay: '4s'
+          }} 
+        />
+        
+        {/* Animated Bank Icons */}
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-10 text-purple-500/10 animate-bounce" style={{ animationDuration: '3s' }}>
+            <CreditCard className="w-16 h-16" />
+          </div>
+          <div className="absolute top-40 right-16 text-purple-600/10 animate-bounce" style={{ animationDuration: '4s', animationDelay: '1s' }}>
+            <Banknote className="w-20 h-20" />
+          </div>
+          <div className="absolute bottom-32 left-20 text-purple-400/10 animate-bounce" style={{ animationDuration: '5s', animationDelay: '2s' }}>
+            <Shield className="w-14 h-14" />
+          </div>
+          <div className="absolute top-60 right-8 text-purple-500/10 animate-bounce" style={{ animationDuration: '3.5s', animationDelay: '0.5s' }}>
+            <Calculator className="w-12 h-12" />
+          </div>
+          <div className="absolute bottom-60 right-24 text-purple-600/10 animate-bounce" style={{ animationDuration: '4.5s', animationDelay: '1.5s' }}>
+            <Wifi className="w-18 h-18" />
+          </div>
+        </div>
+      </div>
+      
+      {/* Main Content - On Top */}
+      <div className="relative z-10">
       {/* Header */}
       <div className="flex items-center justify-between mb-3 pt-2">
         <div className="flex items-center space-x-3">
@@ -733,6 +782,7 @@ useEffect(() => {
           </div>
         </div>
       )}
+      </div> {/* End Main Content */}
     </div>
   );
 };
