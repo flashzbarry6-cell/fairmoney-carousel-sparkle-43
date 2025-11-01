@@ -520,23 +520,24 @@ useEffect(() => {
       </span>
     </div>
 
-    <div className="flex items-center space-x-2">
-      <div className="flex-1 bg-black/50 rounded-lg p-3 border border-gold/30">
-        <a
-          href={`https://lumexzzwin.netlify.app/login?ref=${profile.referral_code}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-bold text-gold text-sm break-all hover:underline"
-        >
-          https://lumexzzwin.netlify.app/login?ref={profile.referral_code}
-        </a>
-      </div>
+   <div className="flex items-center space-x-2">
+  <div className="flex-1 bg-black/50 rounded-lg p-3 border border-gold/30">
+    <a
+      href={`https://lumexzzz.netlify.app/login?tab=signup&ref=${profile.referral_code}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="font-bold text-gold text-sm break-all hover:underline"
+    >
+      https://lumexzzz.netlify.app/login?tab=signup&ref={profile.referral_code}
+    </a>
+  </div>
+</div>
 
-      <Button
-        onClick={() => {
-          const referralLink = `https://lumexzzwin.netlify.app/login?ref=${profile.referral_code}`;
-          navigator.clipboard.writeText(referralLink);
-        }}
+     <Button
+  onClick={() => {
+    const referralLink = `https://lumexzzz.netlify.app/login?tab=signup&ref=${profile.referral_code}`;
+    navigator.clipboard.writeText(referralLink);
+  }}
         size="icon"
         className="bg-gold hover:bg-gold-dark text-black border-0"
       >
