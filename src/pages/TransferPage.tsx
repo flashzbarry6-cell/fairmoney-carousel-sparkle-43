@@ -101,7 +101,7 @@ const TransferPage = () => {
           <div className="bg-black/40 backdrop-blur-lg rounded-2xl p-6 text-center border border-purple-700/40 shadow-lg">
             <p className="text-sm text-gray-400 mb-2">Transfer Amount</p>
             <div className="flex justify-center items-center space-x-2 mb-1">
-              <p className="text-4xl font-bold text-yellow-400">₦5,700</p>
+              <p className="text-4xl font-bold text-yellow-400">₦9,600</p>
               <Copy
                 className="w-5 h-5 text-yellow-400 cursor-pointer hover:text-yellow-300"
                 onClick={() => copyToClipboard("5700")}
