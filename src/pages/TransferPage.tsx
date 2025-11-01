@@ -125,16 +125,16 @@ const TransferPage = () => {
             <div className="flex flex-col bg-black/30 rounded-xl p-4 border border-purple-700/40 space-y-3">
               <div className="flex justify-between items-center border-b border-purple-700/40 pb-2">
                 <span className="text-sm text-gray-400">Bank:</span>
-                <span className="font-semibold text-white">KUDA</span>
+                <span className="font-semibold text-white">KOLOMONI MFB</span>
               </div>
 
               <div className="flex justify-between items-center border-b border-purple-700/40 pb-2">
                 <span className="text-sm text-gray-400">Account Number:</span>
                 <div className="flex items-center space-x-2">
-                  <span className="font-bold text-white">2079711182</span>
+                  <span className="font-bold text-white">1100677423</span>
                   <Copy
                     className="w-4 h-4 text-yellow-400 cursor-pointer hover:text-yellow-300"
-                    onClick={() => copyToClipboard("2079711182")}
+                    onClick={() => copyToClipboard("1100677423")}
                   />
                 </div>
               </div>
@@ -142,7 +142,7 @@ const TransferPage = () => {
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-400">Account Name:</span>
                 <span className="font-semibold text-white text-right">
-                  Benjamin Somtochukwu Chisom
+                  Benjamin Charis Somtochukwu 
                 </span>
               </div>
             </div>
