@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Bank {
   name: string;
@@ -25,6 +26,8 @@ const WithdrawBankSelection = () => {
   });
   const [banks, setBanks] = useState<Bank[]>([]);
   const [isLoadingBanks, setIsLoadingBanks] = useState(true);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verificationError, setVerificationError] = useState("");
 
   // Fetch banks from Paystack API
   useEffect(() => {
@@ -76,9 +79,46 @@ const WithdrawBankSelection = () => {
     }
   };
 
-  const handleAccountNameChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, accountName: value }));
-  };
+  // Verify account name when account number and bank code are available
+  useEffect(() => {
+    const verifyAccount = async () => {
+      if (formData.accountNumber.length === 10 && formData.bankCode) {
+        setIsVerifying(true);
+        setVerificationError("");
+        setFormData((prev) => ({ ...prev, accountName: "" }));
+
+        try {
+          const { data, error } = await supabase.functions.invoke("verify-bank", {
+            body: {
+              account_number: formData.accountNumber,
+              bank_code: formData.bankCode,
+            },
+          });
+
+          if (error) throw error;
+
+          if (data.success && data.account_name) {
+            setFormData((prev) => ({ ...prev, accountName: data.account_name }));
+            setVerificationError("");
+          } else {
+            setVerificationError("Invalid account number");
+            setFormData((prev) => ({ ...prev, accountName: "" }));
+          }
+        } catch (error) {
+          console.error("Error verifying account:", error);
+          setVerificationError("Failed to verify account. Please try again.");
+          setFormData((prev) => ({ ...prev, accountName: "" }));
+        } finally {
+          setIsVerifying(false);
+        }
+      } else {
+        setFormData((prev) => ({ ...prev, accountName: "" }));
+        setVerificationError("");
+      }
+    };
+
+    verifyAccount();
+  }, [formData.accountNumber, formData.bankCode]);
 
   const handleCashout = () => {
     if (!formData.accountNumber || !formData.bankName || !formData.accountName) {
@@ -165,19 +205,27 @@ const WithdrawBankSelection = () => {
             </Select>
           </div>
 
-          {/* Account Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-200 mb-2">
-              Account Name
-            </label>
-            <Input
-              type="text"
-              placeholder="Enter your account name"
-              value={formData.accountName}
-              onChange={(e) => handleAccountNameChange(e.target.value)}
-              className="w-full bg-black/20 text-white border border-purple-700"
-            />
-          </div>
+          {/* Account Name Display */}
+          {(isVerifying || formData.accountName || verificationError) && (
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-200">
+                Account Name
+              </label>
+              {isVerifying && (
+                <p className="text-sm text-gray-400 animate-pulse">
+                  Fetching account name...
+                </p>
+              )}
+              {verificationError && !isVerifying && (
+                <p className="text-sm text-red-400">{verificationError}</p>
+              )}
+              {formData.accountName && !isVerifying && (
+                <div className="bg-black/20 text-white border border-purple-700 rounded-md px-3 py-2">
+                  <p className="text-sm">{formData.accountName}</p>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Golden Cash Out Button */}
           <Button
