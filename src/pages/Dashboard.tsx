@@ -577,17 +577,17 @@ useEffect(() => {
     <div className="flex items-center space-x-2">
       <div className="flex-1 bg-black/50 rounded-lg p-3 border border-gold/30">
         <a
-          href={`https://lumexzzz.netlify.app/login?tab=signup&ref=${profile.referral_code}`}
+          href={`https://lumexzzwin.vercel.app/login?tab=signup&ref=${profile.referral_code}`}
           target="_blank"
           rel="noopener noreferrer"
           className="font-bold text-gold text-sm break-all hover:underline"
         >
-          https://lumexzzz.netlify.app/login?tab=signup&ref={profile.referral_code}
+          https://lumexzzwin.vercel.app/login?tab=signup&ref={profile.referral_code}
         </a>
       </div>
       <Button
         onClick={() => {
-          const referralLink = `https://lumexzzz.netlify.app/login?tab=signup&ref=${profile.referral_code}`;
+          const referralLink = `https://lumexzzwin.vercel.app/login?tab=signup&ref=${profile.referral_code}`;
           navigator.clipboard.writeText(referralLink);
         }}
         size="icon"
