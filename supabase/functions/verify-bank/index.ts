@@ -80,6 +80,24 @@ serve(async (req) => {
     const paystackKey = (Deno.env.get('PAYSTACK_SECRET_KEY') || '').trim();
     const flutterwaveKey = (Deno.env.get('FLUTTERWAVE_SECRET_KEY') || '').trim();
 
+    // Test mode fallback - use test bank code 001 for verification
+    const isTestMode = paystackKey && paystackKey.startsWith('sk_test_');
+    
+    if (isTestMode && bank_code !== '001') {
+      // In test mode, use bank code 001 for verification
+      console.log('Test mode detected, using bank code 001 for verification');
+      const testResult = await verifyWithPaystack(account_number, '001', paystackKey);
+      if (testResult.success) {
+        return new Response(JSON.stringify({
+          success: true,
+          account_name: testResult.account_name,
+          account_number: account_number,
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
     // Try Paystack first (supports most Nigerian banks)
     if (paystackKey) {
       const paystackResult = await verifyWithPaystack(account_number, bank_code, paystackKey);
