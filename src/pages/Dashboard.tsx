@@ -305,7 +305,7 @@ useEffect(() => {
 
   const copyReferralCode = () => {
   if (profile?.referral_code) {
-    const referralUrl = `https://lumexzzz.netlify.app/login?tab=signup&ref=${profile.referral_code}`;
+    const referralUrl = `https://lumexzzwin.vercel.app/login?tab=signup&ref=${profile.referral_code}`;
     navigator.clipboard.writeText(referralUrl);
     toast({
       description: "Referral link copied to clipboard!",
