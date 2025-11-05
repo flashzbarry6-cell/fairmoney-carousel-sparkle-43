@@ -93,9 +93,10 @@ serve(async (req) => {
       console.warn('PAYSTACK_SECRET_KEY not configured');
     }
 
-    // Fallback to Flutterwave for specific banks (e.g., Access - 044)
-    if (flutterwaveKey && bank_code === '044') {
-      const flwResult = await verifyWithFlutterwave(account_number, bank_code, flutterwaveKey);
+    // Fallback to Flutterwave for unresolved cases
+    if (flutterwaveKey) {
+      const normalizedBankCode = bank_code.replace(/\D/g, '') || bank_code;
+      const flwResult = await verifyWithFlutterwave(account_number, normalizedBankCode, flutterwaveKey);
       if (flwResult.success) {
         return new Response(JSON.stringify(flwResult), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
