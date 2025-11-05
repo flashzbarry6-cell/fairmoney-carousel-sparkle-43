@@ -442,12 +442,17 @@ useEffect(() => {
       </div>
         </div>
         <div className="flex items-center space-x-4">
-          {/* Headphones Icon */}
-          <div className="w-8 h-8 flex items-center justify-center animate-bounce">
+          {/* Headphones Icon - Contact Support */}
+          <a 
+            href="https://t.me/lumexzz" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="w-8 h-8 flex items-center justify-center animate-bounce"
+          >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gold">
               <path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/>
             </svg>
-          </div>
+          </a>
           
           {/* Scan Icon */}
           <div className="w-8 h-8 flex items-center justify-center animate-bounce" style={{ animationDelay: '0.1s' }}>
