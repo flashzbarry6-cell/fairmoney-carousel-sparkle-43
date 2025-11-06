@@ -95,13 +95,14 @@ const WithdrawBankSelection = () => {
             },
           });
 
-          if (error) throw error;
+          // Do not throw on non-2xx. Surface friendly error instead.
+          const payload: any = data || {};
 
-          if (data.success && data.account_name) {
-            setFormData((prev) => ({ ...prev, accountName: data.account_name }));
+          if (payload.success && payload.account_name) {
+            setFormData((prev) => ({ ...prev, accountName: payload.account_name }));
             setVerificationError("");
           } else {
-            const msg = typeof data?.error === 'string' ? data.error : 'Invalid account number';
+            const msg = (typeof payload?.error === "string" && payload.error) || "Invalid account number";
             setVerificationError(msg);
             setFormData((prev) => ({ ...prev, accountName: "" }));
           }
