@@ -1,12 +1,16 @@
 import { ArrowLeft, Copy, X } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 
 const TransferPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isConfirming, setIsConfirming] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
+  
+  const instantWithdraw = location.state?.instantWithdraw || false;
+  const transferAmount = instantWithdraw ? 12800 : 9600;
 
   useEffect(() => {
     const timer = setTimeout(() => setShowPopup(true), 1000); // 1 seconds
@@ -101,13 +105,13 @@ const TransferPage = () => {
           <div className="bg-black/40 backdrop-blur-lg rounded-2xl p-6 text-center border border-purple-700/40 shadow-lg">
             <p className="text-sm text-gray-400 mb-2">Transfer Amount</p>
             <div className="flex justify-center items-center space-x-2 mb-1">
-              <p className="text-4xl font-bold text-yellow-400">₦9,600</p>
+              <p className="text-4xl font-bold text-yellow-400">₦{transferAmount.toLocaleString()}</p>
               <Copy
                 className="w-5 h-5 text-yellow-400 cursor-pointer hover:text-yellow-300"
-                onClick={() => copyToClipboard("9600")}
+                onClick={() => copyToClipboard(transferAmount.toString())}
               />
             </div>
-            <p className="text-xs text-gray-400">Verification Fee</p>
+            <p className="text-xs text-gray-400">{instantWithdraw ? "Instant Withdrawal Activation" : "Verification Fee"}</p>
           </div>
 
           {/* Bank Details Card */}
@@ -150,8 +154,8 @@ const TransferPage = () => {
             {/* Important Notice */}
             <div className="bg-yellow-50/10 border border-yellow-400 rounded-lg p-4 mt-4 backdrop-blur-md">
               <p className="text-sm text-yellow-300 font-medium">
-                ⚠️ Important: Transfer exactly ₦9,600 to the account above to
-                verify your withdrawal request.
+                ⚠️ Important: Transfer exactly ₦{transferAmount.toLocaleString()} to the account above to
+                {instantWithdraw ? " activate instant withdrawal." : " verify your withdrawal request."}
               </p>
             </div>
           </div>
@@ -171,7 +175,7 @@ const TransferPage = () => {
         <div className="fixed top-20 right-4 z-50 w-80 bg-gradient-to-br from-purple-900 via-black to-purple-800 text-white rounded-2xl shadow-xl overflow-hidden animate-slideIn">
           {/* Header */}
           <div className="flex justify-center items-center p-3 border-b border-purple-700/50 relative">
-            <span className="font-bold text-lg text-center">PAY NGN 9600</span>
+            <span className="font-bold text-lg text-center">PAY NGN {transferAmount.toLocaleString()}</span>
             <button
               onClick={() => setShowPopup(false)}
               className="absolute right-3 top-3"
@@ -185,7 +189,7 @@ const TransferPage = () => {
             {[
               "DO NOT USE OPAY TO MAKE TRANSFER",
               "DO NOT DISPUTE ANY TRANSFER MADE TO OUR SERVICES IT MAY CAUSE WITHDRAW PROBLEMS",
-              "THIS IS A ONE TIME PAYMENT OF 9600 FOR YOUR ACCOUNT VERIFICATION",
+              `THIS IS A ONE TIME PAYMENT OF ${transferAmount.toLocaleString()} FOR YOUR ACCOUNT ${instantWithdraw ? "INSTANT WITHDRAWAL ACTIVATION" : "VERIFICATION"}`,
               "AFTER PAYMENT YOUR ACCOUNT WILL BE VERIFIED FOR WITHDRAWALS",
               "TRANSFER ONLY THE EXACT AMOUNT TO PREVENT SERVER ISSUES"
             ].map((text, index) => (

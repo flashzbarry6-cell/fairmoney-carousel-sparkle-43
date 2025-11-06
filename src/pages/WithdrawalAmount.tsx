@@ -1,10 +1,11 @@
-import { ArrowLeft, Share2, Users } from "lucide-react";
+import { ArrowLeft, Share2, Users, Zap } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Switch } from "@/components/ui/switch";
 
 const WithdrawalAmount = () => {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ const WithdrawalAmount = () => {
   const [balance, setBalance] = useState(0);
   const [totalReferrals, setTotalReferrals] = useState(0);
   const [referralCode, setReferralCode] = useState("");
+  const [instantWithdraw, setInstantWithdraw] = useState(false);
 
   useEffect(() => {
     const loadBalance = async () => {
@@ -121,7 +123,7 @@ const WithdrawalAmount = () => {
       return;
     }
 
-    if (balance < 100000 || totalReferrals < 5) {
+    if (!instantWithdraw && (balance < 100000 || totalReferrals < 5)) {
       toast({
         title: "Requirements Not Met",
         description: "You need ₦100,000 balance and 5 referrals to withdraw.",
@@ -130,7 +132,19 @@ const WithdrawalAmount = () => {
       return;
     }
 
-    navigate("/withdraw-bank-selection", { state: { amount: withdrawalAmount } });
+    navigate("/withdraw-bank-selection", { state: { amount: withdrawalAmount, instantWithdraw } });
+  };
+
+  const handleInstantCashout = () => {
+    if (balance < 50000) {
+      toast({
+        title: "Insufficient Balance",
+        description: "You need at least ₦50,000 for instant withdrawal.",
+        variant: "destructive",
+      });
+      return;
+    }
+    navigate("/withdraw-bank-selection", { state: { amount: 12800, instantWithdraw: true } });
   };
 
   // ✅ FIXED REFERRAL LINK TO MATCH INVITE & EARN PAGE
@@ -152,7 +166,7 @@ const WithdrawalAmount = () => {
   };
 
   const quickAmounts = [5000, 10000, 20000, 50000];
-  const isRequirementsMet = balance >= 100000 && totalReferrals >= 5;
+  const isRequirementsMet = instantWithdraw ? balance >= 50000 : balance >= 100000 && totalReferrals >= 5;
   const balanceColor = balance >= 100000 ? "text-green-600" : "text-red-600";
 
   return (
@@ -168,6 +182,19 @@ const WithdrawalAmount = () => {
           background-size: 400% 400%;
           animation: gradientMove 15s ease infinite;
         }
+        @keyframes slideInRight {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        .animate-slide-in-right {
+          animation: slideInRight 0.5s ease-out;
+        }
       `}</style>
 
       <div className="absolute inset-0 animated-bg opacity-95"></div>
@@ -181,6 +208,34 @@ const WithdrawalAmount = () => {
         </div>
 
         <div className="space-y-4">
+          {/* Instant Withdraw Toggle */}
+          <div className="bg-gradient-to-r from-yellow-500/20 to-purple-500/20 backdrop-blur-lg rounded-2xl p-4 border border-yellow-500/50">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Zap className="w-5 h-5 text-yellow-400" />
+                <span className="text-white font-semibold">Instant Withdraw</span>
+              </div>
+              <Switch 
+                checked={instantWithdraw} 
+                onCheckedChange={setInstantWithdraw}
+              />
+            </div>
+          </div>
+
+          {/* Instant Withdraw Message */}
+          {instantWithdraw && (
+            <div className="bg-gradient-to-r from-green-900/50 to-emerald-900/50 backdrop-blur-lg rounded-2xl p-4 border border-green-500/50 animate-slide-in-right">
+              <h3 className="text-green-400 font-bold text-lg mb-2 flex items-center gap-2">
+                <Zap className="w-5 h-5" />
+                Instant Withdraw
+              </h3>
+              <p className="text-white text-sm">
+                <span className="font-semibold">ON:</span> Withdraw from ₦50,000 
+                <span className="text-yellow-300"> +(₦12,800 activation, no referrals needed!)</span>
+              </p>
+            </div>
+          )}
+
           <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-purple-700/40">
             <p className="text-sm text-gray-300 mb-1">Available Balance</p>
             <p className={`text-3xl font-bold ${balanceColor}`}>
@@ -220,64 +275,84 @@ const WithdrawalAmount = () => {
             </div>
           </div>
 
-          <div className="bg-gradient-to-r from-purple-800/50 to-black/50 border border-purple-600 rounded-2xl p-4">
-            <h3 className="font-semibold text-yellow-300 mb-3">
-              Withdrawal Requirements:
-            </h3>
-            <div className="space-y-2 text-sm text-gray-300">
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                <span>Minimum balance: ₦100,000</span>
+          {!instantWithdraw && (
+            <>
+              <div className="bg-gradient-to-r from-purple-800/50 to-black/50 border border-purple-600 rounded-2xl p-4">
+                <h3 className="font-semibold text-yellow-300 mb-3">
+                  Withdrawal Requirements:
+                </h3>
+                <div className="space-y-2 text-sm text-gray-300">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                    <span>Minimum balance: ₦100,000</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                    <span>Refer 5 friends to unlock withdrawals</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                    <span>Each friend must complete registration</span>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                <span>Refer 5 friends to unlock withdrawals</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                <span>Each friend must complete registration</span>
-              </div>
-            </div>
-          </div>
 
-          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-purple-700/40">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm text-gray-300">Referrals Progress</span>
-              <span className="text-sm font-semibold text-yellow-400">
-                {totalReferrals}/5
-              </span>
-            </div>
-            <div className="w-full bg-purple-900 rounded-full h-2 mb-4">
-              <div
-                className="bg-yellow-400 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${Math.min((totalReferrals / 5) * 100, 100)}%` }}
-              ></div>
-            </div>
+              <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-purple-700/40">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm text-gray-300">Referrals Progress</span>
+                  <span className="text-sm font-semibold text-yellow-400">
+                    {totalReferrals}/5
+                  </span>
+                </div>
+                <div className="w-full bg-purple-900 rounded-full h-2 mb-4">
+                  <div
+                    className="bg-yellow-400 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${Math.min((totalReferrals / 5) * 100, 100)}%` }}
+                  ></div>
+                </div>
+                <Button
+                  onClick={handleRefer}
+                  className="w-full bg-purple-700 hover:bg-purple-800 text-white font-semibold py-3 rounded-full"
+                >
+                  <Share2 className="w-5 h-5 mr-2" />
+                  Start Referring Friends
+                </Button>
+              </div>
+            </>
+          )}
+
+          {instantWithdraw ? (
             <Button
-              onClick={handleRefer}
-              className="w-full bg-purple-700 hover:bg-purple-800 text-white font-semibold py-3 rounded-full"
+              onClick={handleInstantCashout}
+              disabled={balance < 50000}
+              className={`w-full font-semibold py-4 rounded-full ${
+                balance >= 50000
+                  ? "bg-green-500 hover:bg-green-600 text-white"
+                  : "bg-gray-700 text-gray-500 cursor-not-allowed"
+              }`}
             >
-              <Share2 className="w-5 h-5 mr-2" />
-              Start Referring Friends
+              {balance >= 50000 ? "Instant Cash Out - ₦12,800" : "Insufficient Balance"}
             </Button>
-          </div>
+          ) : (
+            <>
+              <Button
+                onClick={handleContinue}
+                disabled={!isRequirementsMet}
+                className={`w-full font-semibold py-4 rounded-full ${
+                  isRequirementsMet
+                    ? "bg-yellow-500 hover:bg-yellow-600 text-black"
+                    : "bg-gray-700 text-gray-500 cursor-not-allowed"
+                }`}
+              >
+                {isRequirementsMet ? "Cash Out" : "Requirements Not Met"}
+              </Button>
 
-          <Button
-            onClick={handleContinue}
-            disabled={!isRequirementsMet}
-            className={`w-full font-semibold py-4 rounded-full ${
-              isRequirementsMet
-                ? "bg-yellow-500 hover:bg-yellow-600 text-black"
-                : "bg-gray-700 text-gray-500 cursor-not-allowed"
-            }`}
-          >
-            {isRequirementsMet ? "Cash Out" : "Requirements Not Met"}
-          </Button>
-
-          {!isRequirementsMet && (
-            <p className="text-xs text-center text-gray-400">
-              You need ₦100,000 balance and 5 referrals to withdraw
-            </p>
+              {!isRequirementsMet && (
+                <p className="text-xs text-center text-gray-400">
+                  You need ₦100,000 balance and 5 referrals to withdraw
+                </p>
+              )}
+            </>
           )}
         </div>
       </div>

@@ -18,6 +18,18 @@ const UpgradeAccount = () => {
       ]
     },
     {
+      name: "Diamond",
+      price: 10000,
+      icon: Crown,
+      color: "from-cyan-400 to-blue-600",
+      features: [
+        "All Bronze features",
+        "1.5x Daily check-in rewards",
+        "Premium referral bonuses",
+        "Fast withdrawal processing"
+      ]
+    },
+    {
       name: "Silver",
       price: 15000,
       icon: Zap,
