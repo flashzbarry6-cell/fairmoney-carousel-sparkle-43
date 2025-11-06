@@ -101,7 +101,8 @@ const WithdrawBankSelection = () => {
             setFormData((prev) => ({ ...prev, accountName: data.account_name }));
             setVerificationError("");
           } else {
-            setVerificationError("Invalid account number");
+            const msg = typeof data?.error === 'string' ? data.error : 'Invalid account number';
+            setVerificationError(msg);
             setFormData((prev) => ({ ...prev, accountName: "" }));
           }
         } catch (error) {
@@ -196,8 +197,8 @@ const WithdrawBankSelection = () => {
                 />
               </SelectTrigger>
               <SelectContent>
-                {banks.map((bank) => (
-                  <SelectItem key={bank.code} value={bank.name}>
+                {banks.map((bank, idx) => (
+                  <SelectItem key={`${bank.code}-${idx}`} value={bank.name}>
                     {bank.name}
                   </SelectItem>
                 ))}

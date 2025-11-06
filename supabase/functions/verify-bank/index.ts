@@ -88,15 +88,15 @@ serve(async (req) => {
 
     if (!account_number || !bank_code) {
       return new Response(
-        JSON.stringify({ error: 'Account number and bank code are required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ success: false, error: 'Account number and bank code are required' }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     if (!/^\d{10}$/.test(account_number)) {
       return new Response(
-        JSON.stringify({ error: 'Invalid account number format' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ success: false, error: 'Invalid account number format' }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
@@ -147,13 +147,13 @@ serve(async (req) => {
 
     return new Response(
       JSON.stringify({ success: false, error: lastError || 'Could not verify account' }),
-      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
     console.error('Error in verify-bank function:', error);
     return new Response(
       JSON.stringify({ success: false, error: 'Could not verify account' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });
