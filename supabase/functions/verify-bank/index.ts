@@ -7,49 +7,73 @@ const corsHeaders = {
 
 async function verifyWithPaystack(account_number: string, bank_code: string, secret: string) {
   const url = `https://api.paystack.co/bank/resolve?account_number=${account_number}&bank_code=${bank_code}`;
-  const res = await fetch(url, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${secret}`,
-      'Content-Type': 'application/json',
-    },
-  });
-  const data = await res.json();
-  console.log('Paystack response:', data);
-  if (data.status === true && data.data?.account_name) {
-    return {
-      success: true,
-      account_name: data.data.account_name as string,
-      account_number: data.data.account_number as string,
-    };
+  try {
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${secret}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const text = await res.text();
+    let data: any = null;
+    try { data = JSON.parse(text); } catch { /* non-JSON */ }
+    console.log('Paystack HTTP:', res.status, text);
+
+    if (!res.ok) {
+      return { success: false, error: `Paystack ${res.status}: ${data?.message || text || 'Request failed'}` };
+    }
+
+    if (data?.status === true && data.data?.account_name) {
+      return {
+        success: true,
+        account_name: data.data.account_name as string,
+        account_number: data.data.account_number as string,
+      };
+    }
+    return { success: false, error: data?.message || 'Paystack could not verify account' };
+  } catch (err: any) {
+    console.error('Paystack error:', err);
+    return { success: false, error: `Paystack error: ${err?.message || String(err)}` };
   }
-  return { success: false, error: data.message || 'Could not verify account' };
 }
 
 async function verifyWithFlutterwave(account_number: string, bank_code: string, secret: string) {
-  const res = await fetch('https://api.flutterwave.com/v3/accounts/resolve', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${secret}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      account_number,
-      account_bank: bank_code
-    })
-  });
+  try {
+    const res = await fetch('https://api.flutterwave.com/v3/accounts/resolve', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${secret}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        account_number,
+        account_bank: bank_code
+      })
+    });
 
-  const data = await res.json();
-  console.log('Flutterwave response:', data);
+    const text = await res.text();
+    let data: any = null;
+    try { data = JSON.parse(text); } catch { /* non-JSON */ }
+    console.log('Flutterwave HTTP:', res.status, text);
 
-  if (data.status === 'success' && data.data) {
-    return {
-      success: true,
-      account_name: data.data.account_name as string,
-      account_number: data.data.account_number as string,
-    };
+    if (!res.ok) {
+      return { success: false, error: `Flutterwave ${res.status}: ${data?.message || text || 'Request failed'}` };
+    }
+
+    if (data?.status === 'success' && data.data) {
+      return {
+        success: true,
+        account_name: data.data.account_name as string,
+        account_number: data.data.account_number as string,
+      };
+    }
+    return { success: false, error: data?.message || 'Flutterwave could not verify account' };
+  } catch (err: any) {
+    console.error('Flutterwave error:', err);
+    return { success: false, error: `Flutterwave error: ${err?.message || String(err)}` };
   }
-  return { success: false, error: data.message || 'Could not verify account' };
 }
 
 serve(async (req) => {
@@ -80,6 +104,8 @@ serve(async (req) => {
     const paystackKey = (Deno.env.get('PAYSTACK_SECRET_KEY') || '').trim();
     const flutterwaveKey = (Deno.env.get('FLUTTERWAVE_SECRET_KEY') || '').trim();
 
+    let lastError = '';
+
     // Try Paystack first (supports most Nigerian banks)
     if (paystackKey) {
       const paystackResult = await verifyWithPaystack(account_number, bank_code, paystackKey);
@@ -88,25 +114,30 @@ serve(async (req) => {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
+      lastError = paystackResult.error || lastError;
       console.log('Paystack verification failed:', paystackResult);
     } else {
       console.warn('PAYSTACK_SECRET_KEY not configured');
+      lastError = 'PAYSTACK_SECRET_KEY not configured';
     }
 
     // Fallback to Flutterwave for unresolved cases
     if (flutterwaveKey) {
-      const normalizedBankCode = bank_code.replace(/\D/g, '') || bank_code;
+      const normalizedBankCode = /[^0-9]/.test(bank_code) ? bank_code : (bank_code.replace(/\D/g, '') || bank_code);
       const flwResult = await verifyWithFlutterwave(account_number, normalizedBankCode, flutterwaveKey);
       if (flwResult.success) {
         return new Response(JSON.stringify(flwResult), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
+      lastError = flwResult.error || lastError;
       console.log('Flutterwave verification failed:', flwResult);
+    } else {
+      console.warn('FLUTTERWAVE_SECRET_KEY not configured');
     }
 
     return new Response(
-      JSON.stringify({ success: false, error: 'Could not verify account' }),
+      JSON.stringify({ success: false, error: lastError || 'Could not verify account' }),
       { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
