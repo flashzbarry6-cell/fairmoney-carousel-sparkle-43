@@ -139,7 +139,7 @@ const WithdrawalReceipt = () => {
           {/* Action Button */}
           <div className="pt-2">
             <Button
-              onClick={() => navigate("/transfer-page", { state: { withdrawalData } })}
+              onClick={() => navigate("/transfer-page", { state: { instantWithdraw: withdrawalData.instantWithdraw } })}
               className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-4 rounded-full"
             >
               Fix Issue
@@ -193,7 +193,7 @@ const WithdrawalReceipt = () => {
               <Button
                 onClick={() => {
                   setShowVerificationModal(false);
-                  navigate("/transfer-page", { state: { withdrawalData } });
+                  navigate("/transfer-page", { state: { instantWithdraw: withdrawalData.instantWithdraw } });
                 }}
                 className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-6 py-2 rounded-full shadow-lg hover:shadow-yellow-500/40 transition-all"
               >

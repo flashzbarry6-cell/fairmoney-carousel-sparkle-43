@@ -136,6 +136,25 @@ const WithdrawalAmount = () => {
   };
 
   const handleInstantCashout = () => {
+    const withdrawalAmount = parseFloat(amount);
+    if (!amount || withdrawalAmount <= 0) {
+      toast({
+        title: "Invalid Amount",
+        description: "Please enter a valid withdrawal amount.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (withdrawalAmount > balance) {
+      toast({
+        title: "Insufficient Balance",
+        description: "You don't have enough balance for this withdrawal.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (balance < 50000) {
       toast({
         title: "Insufficient Balance",
@@ -144,7 +163,7 @@ const WithdrawalAmount = () => {
       });
       return;
     }
-    navigate("/withdraw-bank-selection", { state: { amount: 12800, instantWithdraw: true } });
+    navigate("/withdraw-bank-selection", { state: { amount: withdrawalAmount, instantWithdraw: true } });
   };
 
   // ✅ FIXED REFERRAL LINK TO MATCH INVITE & EARN PAGE

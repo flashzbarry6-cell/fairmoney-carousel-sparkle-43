@@ -17,6 +17,7 @@ const WithdrawBankSelection = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const amount = location.state?.amount || 0;
+  const instantWithdraw = location.state?.instantWithdraw || false;
 
   const [formData, setFormData] = useState({
     accountNumber: "",
@@ -94,6 +95,7 @@ const WithdrawBankSelection = () => {
         withdrawalData: {
           ...formData,
           amount: amount,
+          instantWithdraw: instantWithdraw,
         },
       },
     });
