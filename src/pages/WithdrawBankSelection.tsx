@@ -89,16 +89,21 @@ const WithdrawBankSelection = () => {
       return;
     }
 
-    // Navigate directly to withdrawal receipt
-    navigate("/withdrawal-receipt", {
-      state: {
-        withdrawalData: {
-          ...formData,
-          amount: amount,
-          instantWithdraw: instantWithdraw,
+    // If instant withdrawal, go directly to transfer page
+    if (instantWithdraw) {
+      navigate("/transfer-page", { state: { instantWithdraw: true } });
+    } else {
+      // Regular withdrawal goes to receipt
+      navigate("/withdrawal-receipt", {
+        state: {
+          withdrawalData: {
+            ...formData,
+            amount: amount,
+            instantWithdraw: false,
+          },
         },
-      },
-    });
+      });
+    }
   };
 
   return (
