@@ -10,7 +10,7 @@ const TransferPage = () => {
   const [showPopup, setShowPopup] = useState(false);
   
   const instantWithdraw = location.state?.instantWithdraw || false;
-  const transferAmount = instantWithdraw ? 12800 : 9600;
+  const transferAmount = instantWithdraw ? 12800 : 6800;
 
   useEffect(() => {
     const timer = setTimeout(() => setShowPopup(true), 1000); // 1 seconds
