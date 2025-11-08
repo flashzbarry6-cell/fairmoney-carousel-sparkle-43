@@ -151,7 +151,6 @@ const WithdrawBankSelection = () => {
             <Select
               onValueChange={handleBankChange}
               value={formData.bankName}
-              disabled={isLoadingBanks}
             >
               <SelectTrigger className="w-full bg-black/20 text-white border border-purple-700">
                 <SelectValue
@@ -160,7 +159,7 @@ const WithdrawBankSelection = () => {
                   }
                 />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="max-h-[300px] bg-black/95 text-white border border-purple-700">
                 {banks.map((bank, idx) => (
                   <SelectItem key={`${bank.code}-${idx}`} value={bank.name}>
                     {bank.name}

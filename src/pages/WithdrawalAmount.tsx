@@ -239,21 +239,12 @@ const WithdrawalAmount = () => {
                 onCheckedChange={setInstantWithdraw}
               />
             </div>
-          </div>
-
-          {/* Instant Withdraw Message */}
-          {instantWithdraw && (
-            <div className="bg-gradient-to-r from-green-900/50 to-emerald-900/50 backdrop-blur-lg rounded-2xl p-4 border border-green-500/50 animate-slide-in-right">
-              <h3 className="text-green-400 font-bold text-lg mb-2 flex items-center gap-2">
-                <Zap className="w-5 h-5" />
-                Instant Withdraw
-              </h3>
-              <p className="text-white text-sm">
-                <span className="font-semibold">ON:</span> Withdraw from ₦50,000 
-                <span className="text-yellow-300"> +(₦12,800 activation, no referrals needed!)</span>
+            {!instantWithdraw && (
+              <p className="text-white text-sm mt-3">
+                <span className="font-semibold">OFF:</span> withdraw from 50,000+ with 5 referrals (one-time activation fee of ₦6,800 after 5 referrals!
               </p>
-            </div>
-          )}
+            )}
+          </div>
 
           <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-purple-700/40">
             <p className="text-sm text-gray-300 mb-1">Available Balance</p>
@@ -350,7 +341,7 @@ const WithdrawalAmount = () => {
                   : "bg-gray-700 text-gray-500 cursor-not-allowed"
               }`}
             >
-              {balance >= 50000 ? "Instant Cash Out - ₦12,800" : "Insufficient Balance"}
+              {balance >= 50000 ? "Instant Cash Out" : "Insufficient Balance"}
             </Button>
           ) : (
             <>
