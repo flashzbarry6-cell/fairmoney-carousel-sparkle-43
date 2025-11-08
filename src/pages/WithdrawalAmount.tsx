@@ -244,6 +244,11 @@ const WithdrawalAmount = () => {
                 <span className="font-semibold">OFF:</span> withdraw from 50,000+ with 5 referrals (one-time activation fee of ₦6,800 after 5 referrals!
               </p>
             )}
+            {instantWithdraw && (
+              <p className="text-white text-sm mt-3">
+                <span className="font-semibold">ON:</span> withdraw from ₦50,000+ (₦12,800 activation, no referrals needed)
+              </p>
+            )}
           </div>
 
           <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-purple-700/40">
