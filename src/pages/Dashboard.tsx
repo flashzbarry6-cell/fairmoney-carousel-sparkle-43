@@ -510,14 +510,14 @@ useEffect(() => {
           <Link to="/upgrade">
             <Button
               size="sm"
-              className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-semibold h-11 text-sm px-7"
+              className="bg-gradient-to-r from-service-button to-service-button-dark hover:from-service-button-dark hover:to-service-button text-service-button-foreground font-semibold h-11 text-sm px-7"
             >
               Upgrade
             </Button>
           </Link>
           
           {claimingStarted && (
-            <div className="bg-gold text-black text-xs px-3 py-1 rounded-full font-bold">
+            <div className="bg-service-button text-service-button-foreground text-xs px-3 py-1 rounded-full font-bold">
               {timerActive && countdown > 0 ? formatTime(countdown) : "Ready to claim!"}
             </div>
           )}
@@ -525,7 +525,7 @@ useEffect(() => {
           <Link to="/withdrawal-amount">
             <Button
               size="sm"
-              className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold h-11 text-sm px-7"
+              className="bg-gradient-to-r from-service-button to-service-button-dark hover:from-service-button-dark hover:to-service-button text-service-button-foreground font-semibold h-11 text-sm px-7"
             >
               Withdraw
             </Button>
@@ -591,7 +591,7 @@ useEffect(() => {
           navigator.clipboard.writeText(referralLink);
         }}
         size="icon"
-        className="bg-gold hover:bg-gold-dark text-black border-0"
+        className="bg-service-button hover:bg-service-button-dark text-service-button-foreground border-0"
       >
         <Copy className="w-4 h-4" />
       </Button>
@@ -604,11 +604,11 @@ useEffect(() => {
         {services.map((service, index) => (
           service.route === "groups" ? (
             <div key={index} className="flex flex-col items-center space-y-2">
-            <div 
+              <div 
                 className="w-14 h-14 rounded-2xl bg-gradient-to-br from-service-button via-service-button-light to-service-button-dark flex items-center justify-center cursor-pointer shadow-lg hover:shadow-service-button/50 transition-all hover:scale-105"
                 onClick={() => setShowGroupModal(true)}
               >
-                <service.icon className="w-6 h-6 text-service-button-foreground" />
+                <service.icon className="w-6 h-6 text-service-button-foreground animate-pulse" />
               </div>
               <span className="text-[10px] text-center text-white font-medium leading-tight">
                 {service.label}
@@ -617,7 +617,7 @@ useEffect(() => {
           ) : (
             <Link key={index} to={service.route} className="flex flex-col items-center space-y-2">
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-service-button via-service-button-light to-service-button-dark flex items-center justify-center shadow-lg hover:shadow-service-button/50 transition-all hover:scale-105">
-                <service.icon className="w-6 h-6 text-service-button-foreground" />
+                <service.icon className="w-6 h-6 text-service-button-foreground animate-pulse" />
               </div>
               <span className="text-[10px] text-center text-white font-medium leading-tight">
                 {service.label}
@@ -645,26 +645,26 @@ useEffect(() => {
       {/* Task and Check-in Buttons */}
       <div className="grid grid-cols-2 gap-2 mb-0 px-2 mt-4">
         <Link to="/activity">
-          <div className="bg-gradient-to-br from-purple-900 to-purple-700 rounded-2xl p-4 border border-purple-500/30 hover:scale-105 transition-transform">
+          <div className="bg-gradient-to-br from-service-button to-service-button-dark rounded-2xl p-4 border border-service-button-light/30 hover:scale-105 transition-transform">
             <div className="flex items-center gap-2 mb-2">
-              <Gift className="w-6 h-6 text-yellow-400" />
-              <h3 className="text-white font-semibold">Task</h3>
+              <Gift className="w-6 h-6 text-service-button-foreground animate-pulse" />
+              <h3 className="text-service-button-foreground font-semibold">Task</h3>
             </div>
-            <p className="text-purple-200 text-sm">Complete daily tasks</p>
+            <p className="text-service-button-foreground/80 text-sm">Complete daily tasks</p>
           </div>
         </Link>
 
         <div 
           onClick={handleCheckin}
-          className={`bg-gradient-to-br from-green-900 to-green-700 rounded-2xl p-4 border border-green-500/30 cursor-pointer hover:scale-105 transition-transform ${
+          className={`bg-gradient-to-br from-service-button to-service-button-dark rounded-2xl p-4 border border-service-button-light/30 cursor-pointer hover:scale-105 transition-transform ${
             !canCheckin ? 'opacity-50 cursor-not-allowed' : ''
           }`}
         >
           <div className="flex items-center gap-2 mb-3">
-            <TrendingUp className="w-6 h-6 text-yellow-400" />
-            <h3 className="text-white font-semibold">Check-in</h3>
+            <TrendingUp className="w-6 h-6 text-service-button-foreground animate-pulse" />
+            <h3 className="text-service-button-foreground font-semibold">Check-in</h3>
           </div>
-          <p className="text-green-200 text-sm">
+          <p className="text-service-button-foreground/80 text-sm">
             {canCheckin ? 'Earn ₦1,500' : '24hrs cooldown'}
           </p>
         </div>
@@ -710,7 +710,7 @@ useEffect(() => {
         </div>
 
         <Link to="/withdrawal-amount">
-          <Button className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-black font-bold py-3 rounded-full text-lg">
+          <Button className="w-full bg-gradient-to-r from-service-button to-service-button-dark hover:from-service-button-dark hover:to-service-button text-service-button-foreground font-bold py-3 rounded-full text-lg">
             Earn Now
           </Button>
         </Link>
