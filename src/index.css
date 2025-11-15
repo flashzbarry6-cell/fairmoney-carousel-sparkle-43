@@ -29,6 +29,12 @@ All colors MUST be HSL.
     --gold-light: 45 100% 65%;
     --gold-dark: 45 100% 40%;
 
+    /* Blackish Purple for service buttons */
+    --service-button: 270 60% 25%;
+    --service-button-foreground: 0 0% 100%;
+    --service-button-light: 270 55% 35%;
+    --service-button-dark: 270 65% 18%;
+
     --secondary: 270 20% 95%;
     --secondary-foreground: 270 75% 25%;
 

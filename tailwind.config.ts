@@ -39,6 +39,12 @@ export default {
 					light: 'hsl(var(--gold-light))',
 					dark: 'hsl(var(--gold-dark))'
 				},
+				'service-button': {
+					DEFAULT: 'hsl(var(--service-button))',
+					foreground: 'hsl(var(--service-button-foreground))',
+					light: 'hsl(var(--service-button-light))',
+					dark: 'hsl(var(--service-button-dark))'
+				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
 					foreground: 'hsl(var(--secondary-foreground))'

@@ -604,11 +604,11 @@ useEffect(() => {
         {services.map((service, index) => (
           service.route === "groups" ? (
             <div key={index} className="flex flex-col items-center space-y-2">
-              <div 
-                className="w-14 h-14 rounded-2xl bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600 flex items-center justify-center cursor-pointer shadow-lg hover:shadow-yellow-500/50 transition-all animate-pulse"
+            <div 
+                className="w-14 h-14 rounded-2xl bg-gradient-to-br from-service-button via-service-button-light to-service-button-dark flex items-center justify-center cursor-pointer shadow-lg hover:shadow-service-button/50 transition-all hover:scale-105"
                 onClick={() => setShowGroupModal(true)}
               >
-                <service.icon className="w-6 h-6 text-white" />
+                <service.icon className="w-6 h-6 text-service-button-foreground" />
               </div>
               <span className="text-[10px] text-center text-white font-medium leading-tight">
                 {service.label}
@@ -616,8 +616,8 @@ useEffect(() => {
             </div>
           ) : (
             <Link key={index} to={service.route} className="flex flex-col items-center space-y-2">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600 flex items-center justify-center shadow-lg hover:shadow-yellow-500/50 transition-all animate-pulse">
-                <service.icon className="w-6 h-6 text-white" />
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-service-button via-service-button-light to-service-button-dark flex items-center justify-center shadow-lg hover:shadow-service-button/50 transition-all hover:scale-105">
+                <service.icon className="w-6 h-6 text-service-button-foreground" />
               </div>
               <span className="text-[10px] text-center text-white font-medium leading-tight">
                 {service.label}
