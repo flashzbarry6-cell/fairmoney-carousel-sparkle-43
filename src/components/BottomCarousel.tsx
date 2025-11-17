@@ -1,15 +1,12 @@
 import { useState, useEffect } from "react";
-import carousel1 from "@/assets/carousel-1.jpeg";
-import carousel2 from "@/assets/carousel-2.jpeg";
-import carousel3 from "@/assets/carousel-3.jpeg";
-import carousel4 from "@/assets/carousel-4.jpeg";
-import carousel5 from "@/assets/carousel-5.jpeg";
-import carousel6 from "@/assets/carousel-6.jpeg";
+import carousel1 from "@/assets/carousel-new-1.jpg";
+import carousel2 from "@/assets/carousel-new-2.jpg";
+import carousel3 from "@/assets/carousel-new-3.jpg";
 
 export const BottomCarousel = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const banners = [carousel1, carousel2, carousel3, carousel4, carousel5, carousel6];
+  const banners = [carousel1, carousel2, carousel3];
 
   useEffect(() => {
     const interval = setInterval(() => {
