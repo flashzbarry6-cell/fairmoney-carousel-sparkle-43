@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import carousel1 from "@/assets/carousel-new-1.jpg";
 import carousel2 from "@/assets/carousel-new-2.jpg";
 import carousel3 from "@/assets/carousel-new-3.jpg";
+import carousel4 from "@/assets/carousel-new-4.jpg";
 
 export const BottomCarousel = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const banners = [carousel1, carousel2, carousel3];
+  const banners = [carousel1, carousel2, carousel3, carousel4];
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -16,9 +17,9 @@ export const BottomCarousel = () => {
   }, [banners.length]);
 
   return (
-    <div className="w-full max-w-xl mx-auto px-0 mt-0 mb-0">
+    <div className="w-full max-w-3xl mx-auto px-0 mt-0 mb-0">
       {/* Clean edges and smoother animation */}
-      <div className="relative h-40 overflow-hidden rounded-2xl bg-black">
+      <div className="relative h-32 overflow-hidden rounded-2xl bg-black">
         <div
           className="flex transition-transform duration-700 ease-in-out h-full will-change-transform"
           style={{
