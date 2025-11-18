@@ -1,4 +1,4 @@
-import { ArrowLeft, Send, Mail, MessageCircle } from "lucide-react";
+import { ArrowLeft, Send, Mail, MessageCircle, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
@@ -47,6 +47,29 @@ const Support = () => {
                   className="text-sm text-purple-400 hover:underline"
                 >
                   @lumexzz
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* WhatsApp */}
+          <div className="bg-black/40 backdrop-blur-lg rounded-2xl p-4 border border-purple-700/40">
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-purple-700/20 rounded-full flex items-center justify-center">
+                <Phone className="w-6 h-6 text-purple-400" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-white mb-1">WhatsApp Support</h3>
+                <p className="text-sm text-gray-300 mb-2">
+                  Chat with us directly on WhatsApp for instant support
+                </p>
+                <a
+                  href="https://wa.me/2349153889086"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-purple-400 hover:underline"
+                >
+                  +234 915 388 9086
                 </a>
               </div>
             </div>
