@@ -109,6 +109,33 @@ export type Database = {
           },
         ]
       }
+      spin_history: {
+        Row: {
+          created_at: string
+          id: string
+          prize_amount: number | null
+          result: string
+          stake_amount: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          prize_amount?: number | null
+          result: string
+          stake_amount: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          prize_amount?: number | null
+          result?: string
+          stake_amount?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
