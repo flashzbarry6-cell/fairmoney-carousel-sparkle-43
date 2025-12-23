@@ -4,8 +4,9 @@ import { Gift, Sparkles, Zap } from "lucide-react";
 interface SpinWheelProps {
   onSpinComplete: (result: "win" | "lose", prizeAmount: number) => void;
   isSpinning: boolean;
-  setIsSpinning: (spinning: boolean) => void;
+  onSpin: () => void;
   stakeAmount: number;
+  balance: number;
 }
 
 // Wheel segments configuration - easily adjustable
@@ -23,40 +24,46 @@ const SEGMENTS = [
 // Win probability (30% win chance) - adjustable
 const WIN_PROBABILITY = 0.3;
 
-const SpinWheel = ({ onSpinComplete, isSpinning, setIsSpinning, stakeAmount }: SpinWheelProps) => {
+const SpinWheel = ({ onSpinComplete, isSpinning, onSpin, stakeAmount, balance }: SpinWheelProps) => {
   const [rotation, setRotation] = useState(0);
+  const [hasStartedSpin, setHasStartedSpin] = useState(false);
   const wheelRef = useRef<HTMLDivElement>(null);
   const segmentAngle = 360 / SEGMENTS.length;
 
-  const spin = () => {
-    if (isSpinning) return;
-    
-    setIsSpinning(true);
-    
-    // Determine win/lose based on probability
-    const isWin = Math.random() < WIN_PROBABILITY;
-    
-    // Get winning or losing segments
-    const targetSegments = SEGMENTS.map((seg, i) => ({ ...seg, index: i }))
-      .filter(seg => seg.isWin === isWin);
-    
-    // Pick random target segment
-    const targetSegment = targetSegments[Math.floor(Math.random() * targetSegments.length)];
-    
-    // Calculate target rotation (multiple full spins + landing position)
-    const spins = 5 + Math.random() * 3; // 5-8 full rotations
-    const targetAngle = targetSegment.index * segmentAngle + segmentAngle / 2;
-    // We need to land so the pointer (at top) points to target segment
-    const finalRotation = rotation + spins * 360 + (360 - targetAngle);
-    
-    setRotation(finalRotation);
-    
-    // Wait for animation to complete
-    setTimeout(() => {
-      const prizeAmount = isWin ? Math.floor(stakeAmount * targetSegment.multiplier) : 0;
-      onSpinComplete(isWin ? "win" : "lose", prizeAmount);
-      setIsSpinning(false);
-    }, 5000);
+  // When isSpinning becomes true (from parent), start the wheel animation
+  useEffect(() => {
+    if (isSpinning && !hasStartedSpin) {
+      setHasStartedSpin(true);
+      
+      // Determine win/lose based on probability
+      const isWin = Math.random() < WIN_PROBABILITY;
+      
+      // Get winning or losing segments
+      const targetSegments = SEGMENTS.map((seg, i) => ({ ...seg, index: i }))
+        .filter(seg => seg.isWin === isWin);
+      
+      // Pick random target segment
+      const targetSegment = targetSegments[Math.floor(Math.random() * targetSegments.length)];
+      
+      // Calculate target rotation (multiple full spins + landing position)
+      const spins = 5 + Math.random() * 3; // 5-8 full rotations for 5 seconds
+      const targetAngle = targetSegment.index * segmentAngle + segmentAngle / 2;
+      const finalRotation = rotation + spins * 360 + (360 - targetAngle);
+      
+      setRotation(finalRotation);
+      
+      // Wait for 5 second animation to complete
+      setTimeout(() => {
+        const prizeAmount = isWin ? Math.floor(stakeAmount * targetSegment.multiplier) : 0;
+        onSpinComplete(isWin ? "win" : "lose", prizeAmount);
+        setHasStartedSpin(false);
+      }, 5000);
+    }
+  }, [isSpinning]);
+
+  const handleSpinClick = () => {
+    if (isSpinning || balance < stakeAmount) return;
+    onSpin();
   };
 
   return (
@@ -139,10 +146,10 @@ const SpinWheel = ({ onSpinComplete, isSpinning, setIsSpinning, stakeAmount }: S
       
       {/* Spin button */}
       <button
-        onClick={spin}
-        disabled={isSpinning}
+        onClick={handleSpinClick}
+        disabled={isSpinning || balance < stakeAmount}
         className={`mt-8 px-12 py-4 rounded-full font-bold text-lg transition-all duration-300 ${
-          isSpinning
+          isSpinning || balance < stakeAmount
             ? "bg-gray-600 text-gray-400 cursor-not-allowed"
             : "bg-gradient-to-r from-purple-600 to-purple-800 text-white hover:from-purple-500 hover:to-purple-700 shadow-[0_0_20px_rgba(123,63,228,0.5)] hover:shadow-[0_0_30px_rgba(123,63,228,0.7)]"
         }`}
@@ -151,6 +158,10 @@ const SpinWheel = ({ onSpinComplete, isSpinning, setIsSpinning, stakeAmount }: S
           <span className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 animate-spin" />
             Spinning...
+          </span>
+        ) : balance < stakeAmount ? (
+          <span className="flex items-center gap-2">
+            Insufficient Balance
           </span>
         ) : (
           <span className="flex items-center gap-2">
