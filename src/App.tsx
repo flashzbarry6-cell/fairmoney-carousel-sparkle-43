@@ -42,6 +42,11 @@ import UpgradeReceiptUpload from "./pages/UpgradeReceiptUpload";
 import UpgradeConfirming from "./pages/UpgradeConfirming";
 import NotFound from "./pages/NotFound";
 
+// Admin pages
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminPayments from "./pages/admin/AdminPayments";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -89,6 +94,13 @@ const App = () => (
           <Route path="/upgrade-confirming" element={<UpgradeConfirming />} />
           <Route path="/join-community" element={<JoinCommunity />} />
           <Route path="/buy-faircode" element={<BuyFaircode />} />
+          
+          {/* Admin Routes */}
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/payments" element={<AdminPayments />} />
+          
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

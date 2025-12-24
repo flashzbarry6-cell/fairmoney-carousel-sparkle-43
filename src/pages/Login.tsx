@@ -122,6 +122,23 @@ const Login = () => {
 
         if (error) throw error;
 
+        // Check if user is blocked
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('is_blocked, blocked_reason')
+          .eq('user_id', data.user.id)
+          .single();
+
+        if (profile?.is_blocked) {
+          await supabase.auth.signOut();
+          toast({
+            title: "Account Restricted",
+            description: "Your account has been restricted. Please contact support.",
+            variant: "destructive"
+          });
+          return;
+        }
+
         toast({
           title: "Login successful",
           description: "Welcome back!"
