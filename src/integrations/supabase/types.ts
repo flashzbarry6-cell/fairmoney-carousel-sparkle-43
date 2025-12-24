@@ -14,14 +14,58 @@ export type Database = {
   }
   public: {
     Tables: {
+      payments: {
+        Row: {
+          amount: number
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          id: string
+          payment_proof_url: string | null
+          payment_type: string
+          rejection_reason: string | null
+          status: Database["public"]["Enums"]["payment_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          id?: string
+          payment_proof_url?: string | null
+          payment_type?: string
+          rejection_reason?: string | null
+          status?: Database["public"]["Enums"]["payment_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          id?: string
+          payment_proof_url?: string | null
+          payment_type?: string
+          rejection_reason?: string | null
+          status?: Database["public"]["Enums"]["payment_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           balance: number | null
+          blocked_reason: string | null
           created_at: string
           device_id: string | null
           email: string | null
           full_name: string | null
           id: string
+          is_blocked: boolean | null
           last_referal_count: number | null
           referral_code: string
           referred_by: string | null
@@ -31,11 +75,13 @@ export type Database = {
         }
         Insert: {
           balance?: number | null
+          blocked_reason?: string | null
           created_at?: string
           device_id?: string | null
           email?: string | null
           full_name?: string | null
           id?: string
+          is_blocked?: boolean | null
           last_referal_count?: number | null
           referral_code?: string
           referred_by?: string | null
@@ -45,11 +91,13 @@ export type Database = {
         }
         Update: {
           balance?: number | null
+          blocked_reason?: string | null
           created_at?: string
           device_id?: string | null
           email?: string | null
           full_name?: string | null
           id?: string
+          is_blocked?: boolean | null
           last_referal_count?: number | null
           referral_code?: string
           referred_by?: string | null
@@ -136,18 +184,66 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      approve_payment: {
+        Args: { _admin_id: string; _payment_id: string }
+        Returns: Json
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_user_blocked: { Args: { _user_id: string }; Returns: boolean }
       process_referral: {
         Args: { device_id_input?: string; referral_code_input: string }
         Returns: Json
       }
+      reject_payment: {
+        Args: { _admin_id: string; _payment_id: string; _reason: string }
+        Returns: Json
+      }
+      toggle_user_block: {
+        Args: {
+          _admin_id: string
+          _block: boolean
+          _reason?: string
+          _target_user_id: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
+      payment_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -274,6 +370,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+      payment_status: ["pending", "approved", "rejected"],
+    },
   },
 } as const
