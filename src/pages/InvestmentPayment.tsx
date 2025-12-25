@@ -36,7 +36,13 @@ const InvestmentPayment = () => {
   };
 
   const handleConfirmPayment = () => {
-    navigate("/payment-not-confirmed");
+    if (!plan || !planAmount) return;
+    navigate("/payment-pending", { 
+      state: { 
+        amount: plan.naira, 
+        paymentType: `investment_${planAmount}` 
+      } 
+    });
   };
 
   if (!plan) {

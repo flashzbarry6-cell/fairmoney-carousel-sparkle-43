@@ -19,10 +19,15 @@ const TransferPage = () => {
 
   const handleTransfer = () => {
     setIsConfirming(true);
-    // Show confirming payment for 8 seconds
+    // Show confirming for 3 seconds then redirect to pending page
     setTimeout(() => {
-      navigate("/payment-not-confirmed");
-    }, 8000);
+      navigate("/payment-pending", { 
+        state: { 
+          amount: transferAmount, 
+          paymentType: instantWithdraw ? "instant_withdrawal" : "verification" 
+        } 
+      });
+    }, 3000);
   };
 
   const copyToClipboard = (text: string) => {
