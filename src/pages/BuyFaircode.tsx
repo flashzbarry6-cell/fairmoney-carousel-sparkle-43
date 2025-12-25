@@ -250,12 +250,15 @@ const BuyFaircode = () => {
               setCurrentStep(4);
               setIsConfirming(true);
               
-              // Simulate payment confirmation process (5 seconds)
+              // Navigate to payment pending page after brief confirmation
               setTimeout(() => {
-                setIsConfirming(false);
-                // Navigate to payment not confirmed page
-                navigate('/payment-not-confirmed');
-              }, 5000);
+                navigate('/payment-pending', { 
+                  state: { 
+                    amount: 5500, 
+                    paymentType: 'faircode' 
+                  } 
+                });
+              }, 3000);
             }}
             className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 rounded-full mt-4"
           >

@@ -20,6 +20,9 @@ import WithdrawalConfirmation from "./pages/WithdrawalConfirmation";
 import WithdrawalReceipt from "./pages/WithdrawalReceipt";
 import WithdrawalSuccess from "./pages/WithdrawalSuccess";
 import PaymentNotConfirmed from "./pages/PaymentNotConfirmed";
+import PaymentPending from "./pages/PaymentPending";
+import PaymentApproved from "./pages/PaymentApproved";
+import PaymentRejected from "./pages/PaymentRejected";
 import TransferPage from "./pages/TransferPage";
 import FaircodePaymentSuccess from "./pages/FaircodePaymentSuccess";
 import BuyAirtime from "./pages/BuyAirtime";
@@ -78,6 +81,9 @@ const App = () => (
           <Route path="/withdrawal-receipt" element={<WithdrawalReceipt />} />
           <Route path="/withdrawal-success" element={<WithdrawalSuccess />} />
           <Route path="/payment-not-confirmed" element={<PaymentNotConfirmed />} />
+          <Route path="/payment-pending" element={<PaymentPending />} />
+          <Route path="/payment-approved" element={<PaymentApproved />} />
+          <Route path="/payment-rejected" element={<PaymentRejected />} />
           <Route path="/transfer-page" element={<TransferPage />} />
           <Route path="/faircode-payment-success" element={<FaircodePaymentSuccess />} />
           <Route path="/buy-airtime" element={<BuyAirtime />} />
