@@ -20,6 +20,7 @@ export type Database = {
           approved_at: string | null
           approved_by: string | null
           created_at: string
+          expires_at: string | null
           id: string
           payment_proof_url: string | null
           payment_type: string
@@ -33,6 +34,7 @@ export type Database = {
           approved_at?: string | null
           approved_by?: string | null
           created_at?: string
+          expires_at?: string | null
           id?: string
           payment_proof_url?: string | null
           payment_type?: string
@@ -46,6 +48,7 @@ export type Database = {
           approved_at?: string | null
           approved_by?: string | null
           created_at?: string
+          expires_at?: string | null
           id?: string
           payment_proof_url?: string | null
           payment_type?: string

@@ -1,7 +1,7 @@
-import { ArrowLeft, Upload, CheckCircle, Clock, Loader2 } from "lucide-react";
+import { ArrowLeft, Upload, CheckCircle, Clock, Loader2, AlertTriangle } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -15,9 +15,67 @@ const PaymentPending = () => {
   const [receiptUploaded, setReceiptUploaded] = useState(false);
   const [paymentId, setPaymentId] = useState<string | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<string>("pending");
+  const [timeRemaining, setTimeRemaining] = useState<number>(3600); // 1 hour in seconds
+  const [expiresAt, setExpiresAt] = useState<Date | null>(null);
   
   const amount = location.state?.amount || 6800;
   const paymentType = location.state?.paymentType || "verification";
+
+  // Handle real-time status updates
+  const handleStatusChange = useCallback((newStatus: string, rejectionReason?: string) => {
+    setPaymentStatus(newStatus);
+    
+    if (newStatus === 'approved') {
+      navigate('/payment-approved', { state: { amount } });
+    } else if (newStatus === 'rejected') {
+      navigate('/payment-rejected', { 
+        state: { 
+          amount, 
+          reason: rejectionReason 
+        } 
+      });
+    }
+  }, [navigate, amount]);
+
+  // Countdown timer effect
+  useEffect(() => {
+    if (!expiresAt || paymentStatus !== 'pending') return;
+
+    const updateTimer = () => {
+      const now = new Date().getTime();
+      const expiry = expiresAt.getTime();
+      const remaining = Math.max(0, Math.floor((expiry - now) / 1000));
+      
+      setTimeRemaining(remaining);
+
+      // Auto-expire if time is up
+      if (remaining <= 0 && paymentId) {
+        handleExpiredPayment();
+      }
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [expiresAt, paymentStatus, paymentId]);
+
+  const handleExpiredPayment = async () => {
+    if (!paymentId) return;
+    
+    // Update status to rejected due to expiration
+    const { error } = await supabase
+      .from('payments')
+      .update({ 
+        status: 'rejected',
+        rejection_reason: 'Payment expired - no admin confirmation within time limit'
+      })
+      .eq('id', paymentId)
+      .eq('status', 'pending');
+
+    if (!error) {
+      handleStatusChange('rejected', 'Payment expired - no admin confirmation within time limit');
+    }
+  };
 
   useEffect(() => {
     createPaymentRecord();
@@ -28,7 +86,7 @@ const PaymentPending = () => {
 
     // Subscribe to real-time updates for this payment
     const channel = supabase
-      .channel(`payment-${paymentId}`)
+      .channel(`payment-status-${paymentId}`)
       .on(
         'postgres_changes',
         {
@@ -39,18 +97,7 @@ const PaymentPending = () => {
         },
         (payload) => {
           const newStatus = payload.new.status;
-          setPaymentStatus(newStatus);
-          
-          if (newStatus === 'approved') {
-            navigate('/payment-approved', { state: { amount } });
-          } else if (newStatus === 'rejected') {
-            navigate('/payment-rejected', { 
-              state: { 
-                amount, 
-                reason: payload.new.rejection_reason 
-              } 
-            });
-          }
+          handleStatusChange(newStatus, payload.new.rejection_reason);
         }
       )
       .subscribe();
@@ -58,7 +105,7 @@ const PaymentPending = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [paymentId, navigate, amount]);
+  }, [paymentId, handleStatusChange]);
 
   const createPaymentRecord = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -75,7 +122,7 @@ const PaymentPending = () => {
     // Check for existing pending payment of same type
     const { data: existingPayment } = await supabase
       .from('payments')
-      .select('id')
+      .select('id, payment_proof_url, expires_at')
       .eq('user_id', user.id)
       .eq('payment_type', paymentType)
       .eq('status', 'pending')
@@ -83,8 +130,16 @@ const PaymentPending = () => {
 
     if (existingPayment) {
       setPaymentId(existingPayment.id);
+      if (existingPayment.payment_proof_url) {
+        setReceiptUploaded(true);
+      }
+      if (existingPayment.expires_at) {
+        setExpiresAt(new Date(existingPayment.expires_at));
+      }
       return;
     }
+
+    const expiryTime = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
 
     const { data, error } = await supabase
       .from('payments')
@@ -92,7 +147,8 @@ const PaymentPending = () => {
         user_id: user.id,
         amount: amount,
         payment_type: paymentType,
-        status: 'pending'
+        status: 'pending',
+        expires_at: expiryTime.toISOString()
       })
       .select()
       .single();
@@ -108,6 +164,7 @@ const PaymentPending = () => {
     }
 
     setPaymentId(data.id);
+    setExpiresAt(expiryTime);
   };
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -157,6 +214,14 @@ const PaymentPending = () => {
     }
   };
 
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const isExpiringSoon = timeRemaining <= 300; // Less than 5 minutes
+
   return (
     <div className="min-h-screen relative overflow-hidden p-4 max-w-md mx-auto">
       {/* Animated background */}
@@ -183,6 +248,19 @@ const PaymentPending = () => {
                 <Loader2 className="w-4 h-4 text-white animate-spin" />
               </div>
             </div>
+          </div>
+
+          {/* Countdown Timer */}
+          <div className={`text-center p-4 rounded-xl ${isExpiringSoon ? 'bg-red-900/30 border border-red-500/30' : 'bg-purple-900/30 border border-purple-500/20'}`}>
+            <div className="flex items-center justify-center gap-2 mb-1">
+              {isExpiringSoon && <AlertTriangle className="w-5 h-5 text-red-400" />}
+              <span className={`text-sm ${isExpiringSoon ? 'text-red-300' : 'text-purple-300'}`}>
+                {isExpiringSoon ? 'Expiring Soon!' : 'Time Remaining'}
+              </span>
+            </div>
+            <span className={`text-3xl font-bold font-mono ${isExpiringSoon ? 'text-red-400' : 'text-yellow-400'}`}>
+              {formatTime(timeRemaining)}
+            </span>
           </div>
 
           {/* Status Text */}
@@ -218,7 +296,7 @@ const PaymentPending = () => {
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept="image/*,.pdf"
               onChange={handleFileUpload}
               className="hidden"
             />
@@ -266,7 +344,7 @@ const PaymentPending = () => {
           {/* Info Notice */}
           <div className="bg-purple-900/20 border border-purple-500/20 rounded-xl p-4">
             <p className="text-purple-300 text-sm text-center">
-              💡 Your wallet will be credited automatically once the admin approves your payment.
+              💡 Your wallet will be credited automatically once the admin approves your payment. This page updates in real-time.
             </p>
           </div>
         </div>

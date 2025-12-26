@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { supabase } from '@/integrations/supabase/client';
@@ -6,6 +6,7 @@ import { useAdmin } from '@/hooks/useAdmin';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Table,
   TableBody,
@@ -22,16 +23,14 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Search, CheckCircle, XCircle, Clock, Loader2, Eye } from 'lucide-react';
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Search, CheckCircle, XCircle, Clock, Loader2, Eye, ExternalLink, FileText, ZoomIn } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface Payment {
@@ -43,6 +42,7 @@ interface Payment {
   payment_proof_url: string | null;
   rejection_reason: string | null;
   created_at: string;
+  expires_at: string | null;
   user_name?: string;
   user_email?: string;
 }
@@ -57,6 +57,7 @@ const AdminPayments = () => {
   const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [showProofDialog, setShowProofDialog] = useState(false);
   const [rejectionReason, setRejectionReason] = useState('');
+  const [imageZoomed, setImageZoomed] = useState(false);
   const [searchParams] = useSearchParams();
   const { userId } = useAdmin();
   const { toast } = useToast();
@@ -68,7 +69,7 @@ const AdminPayments = () => {
     }
   }, [searchParams]);
 
-  const fetchPayments = async () => {
+  const fetchPayments = useCallback(async () => {
     try {
       let query = supabase
         .from('payments')
@@ -109,11 +110,35 @@ const AdminPayments = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [statusFilter, toast]);
 
+  // Initial fetch
   useEffect(() => {
     fetchPayments();
-  }, [statusFilter]);
+  }, [fetchPayments]);
+
+  // Real-time subscription for payments
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin-payments-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'payments'
+        },
+        () => {
+          // Refresh payments list on any change
+          fetchPayments();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchPayments]);
 
   const handleApprove = async (payment: Payment) => {
     setActionLoading(payment.id);
@@ -129,9 +154,9 @@ const AdminPayments = () => {
       if (result.success) {
         toast({
           title: "Payment Approved",
-          description: "User wallet has been credited"
+          description: "User wallet has been credited instantly"
         });
-        fetchPayments();
+        // Real-time will update the list automatically
       } else {
         throw new Error(result.message);
       }
@@ -163,9 +188,9 @@ const AdminPayments = () => {
       if (result.success) {
         toast({
           title: "Payment Rejected",
-          description: "User has been notified"
+          description: "User has been notified instantly"
         });
-        fetchPayments();
+        // Real-time will update the list automatically
       } else {
         throw new Error(result.message);
       }
@@ -217,12 +242,24 @@ const AdminPayments = () => {
     );
   };
 
+  const isPdfFile = (url: string) => {
+    return url.toLowerCase().includes('.pdf');
+  };
+
+  const getTimeRemaining = (expiresAt: string | null) => {
+    if (!expiresAt) return null;
+    const now = new Date().getTime();
+    const expiry = new Date(expiresAt).getTime();
+    const remaining = Math.max(0, Math.floor((expiry - now) / 1000 / 60));
+    return remaining;
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-white">Payment Management</h1>
-          <p className="text-purple-300 mt-2">Review and process user payments</p>
+          <p className="text-purple-300 mt-2">Review and process user payments • Real-time updates enabled</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-4">
@@ -266,152 +303,253 @@ const AdminPayments = () => {
                   <TableHead className="text-purple-300">User</TableHead>
                   <TableHead className="text-purple-300">Amount</TableHead>
                   <TableHead className="text-purple-300">Type</TableHead>
-                  <TableHead className="text-purple-300">Date</TableHead>
+                  <TableHead className="text-purple-300">Submitted</TableHead>
+                  <TableHead className="text-purple-300">Receipt</TableHead>
                   <TableHead className="text-purple-300">Status</TableHead>
                   <TableHead className="text-purple-300">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredPayments.map((payment) => (
-                  <TableRow 
-                    key={payment.id} 
-                    className="border-purple-500/30 hover:bg-purple-900/20"
-                  >
-                    <TableCell>
-                      <div>
-                        <p className="text-white font-medium">
-                          {payment.user_name || 'N/A'}
-                        </p>
-                        <p className="text-purple-400 text-sm">
-                          {payment.user_email || 'N/A'}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-green-400 font-medium">
-                      {formatCurrency(payment.amount)}
-                    </TableCell>
-                    <TableCell className="text-purple-200 capitalize">
-                      {payment.payment_type}
-                    </TableCell>
-                    <TableCell className="text-purple-300">
-                      {format(new Date(payment.created_at), 'MMM dd, yyyy HH:mm')}
-                    </TableCell>
-                    <TableCell>
-                      {getStatusBadge(payment.status)}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        {payment.payment_proof_url && (
+                {filteredPayments.map((payment) => {
+                  const timeRemaining = getTimeRemaining(payment.expires_at);
+                  
+                  return (
+                    <TableRow 
+                      key={payment.id} 
+                      className="border-purple-500/30 hover:bg-purple-900/20"
+                    >
+                      <TableCell>
+                        <div>
+                          <p className="text-white font-medium">
+                            {payment.user_name || 'N/A'}
+                          </p>
+                          <p className="text-purple-400 text-sm">
+                            {payment.user_email || 'N/A'}
+                          </p>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-green-400 font-medium">
+                        {formatCurrency(payment.amount)}
+                      </TableCell>
+                      <TableCell className="text-purple-200 capitalize">
+                        {payment.payment_type}
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <p className="text-purple-300">
+                            {format(new Date(payment.created_at), 'MMM dd, yyyy')}
+                          </p>
+                          <p className="text-purple-400 text-sm">
+                            {format(new Date(payment.created_at), 'HH:mm')}
+                          </p>
+                          {payment.status === 'pending' && timeRemaining !== null && (
+                            <p className={`text-xs mt-1 ${timeRemaining <= 10 ? 'text-red-400' : 'text-yellow-400'}`}>
+                              {timeRemaining > 0 ? `${timeRemaining}min left` : 'Expired'}
+                            </p>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {payment.payment_proof_url ? (
                           <Button
                             size="sm"
                             variant="outline"
                             onClick={() => {
                               setSelectedPayment(payment);
                               setShowProofDialog(true);
+                              setImageZoomed(false);
                             }}
-                            className="border-purple-500/30 text-purple-300"
+                            className="border-purple-500/30 text-purple-300 gap-2"
                           >
-                            <Eye className="h-4 w-4" />
+                            {isPdfFile(payment.payment_proof_url) ? (
+                              <FileText className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                            View
                           </Button>
+                        ) : (
+                          <span className="text-gray-500 text-sm">No receipt</span>
                         )}
-                        {payment.status === 'pending' && (
-                          <>
-                            <Button
-                              size="sm"
-                              onClick={() => handleApprove(payment)}
-                              disabled={actionLoading === payment.id}
-                              className="bg-green-600 hover:bg-green-700"
-                            >
-                              {actionLoading === payment.id ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                              ) : (
-                                <CheckCircle className="h-4 w-4" />
-                              )}
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              onClick={() => {
-                                setSelectedPayment(payment);
-                                setShowRejectDialog(true);
-                              }}
-                              disabled={actionLoading === payment.id}
-                            >
-                              <XCircle className="h-4 w-4" />
-                            </Button>
-                          </>
-                        )}
-                        {payment.status === 'rejected' && payment.rejection_reason && (
-                          <span className="text-xs text-red-400">
-                            {payment.rejection_reason}
-                          </span>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                      </TableCell>
+                      <TableCell>
+                        {getStatusBadge(payment.status)}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          {payment.status === 'pending' && (
+                            <>
+                              <Button
+                                size="sm"
+                                onClick={() => handleApprove(payment)}
+                                disabled={actionLoading === payment.id}
+                                className="bg-green-600 hover:bg-green-700 gap-1"
+                              >
+                                {actionLoading === payment.id ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <>
+                                    <CheckCircle className="h-4 w-4" />
+                                    Approve
+                                  </>
+                                )}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => {
+                                  setSelectedPayment(payment);
+                                  setShowRejectDialog(true);
+                                }}
+                                disabled={actionLoading === payment.id}
+                                className="gap-1"
+                              >
+                                <XCircle className="h-4 w-4" />
+                                Reject
+                              </Button>
+                            </>
+                          )}
+                          {payment.status === 'rejected' && payment.rejection_reason && (
+                            <span className="text-xs text-red-400 max-w-[150px] truncate" title={payment.rejection_reason}>
+                              {payment.rejection_reason}
+                            </span>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           )}
         </div>
 
         {/* Reject Dialog */}
-        <AlertDialog open={showRejectDialog} onOpenChange={setShowRejectDialog}>
-          <AlertDialogContent className="bg-black border-purple-500/30">
-            <AlertDialogHeader>
-              <AlertDialogTitle className="text-white">
+        <Dialog open={showRejectDialog} onOpenChange={setShowRejectDialog}>
+          <DialogContent className="bg-black border-purple-500/30">
+            <DialogHeader>
+              <DialogTitle className="text-white">
                 Reject Payment
-              </AlertDialogTitle>
-              <AlertDialogDescription className="text-purple-300">
-                This payment will be marked as rejected and the user will be notified.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
+              </DialogTitle>
+              <DialogDescription className="text-purple-300">
+                This payment will be marked as rejected and the user will be notified instantly.
+              </DialogDescription>
+            </DialogHeader>
             <div className="py-4">
-              <Input
-                placeholder="Reason for rejection"
+              <Textarea
+                placeholder="Reason for rejection (will be shown to user)"
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason(e.target.value)}
-                className="bg-purple-900/30 border-purple-500/30 text-white"
+                className="bg-purple-900/30 border-purple-500/30 text-white min-h-[100px]"
               />
             </div>
-            <AlertDialogFooter>
-              <AlertDialogCancel className="bg-transparent border-purple-500/30 text-purple-300">
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setShowRejectDialog(false)}
+                className="bg-transparent border-purple-500/30 text-purple-300"
+              >
                 Cancel
-              </AlertDialogCancel>
-              <AlertDialogAction
+              </Button>
+              <Button
                 onClick={handleReject}
+                disabled={actionLoading === selectedPayment?.id}
                 className="bg-red-600 hover:bg-red-700"
               >
+                {actionLoading === selectedPayment?.id ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : null}
                 Reject Payment
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
-        {/* Proof Dialog */}
-        <AlertDialog open={showProofDialog} onOpenChange={setShowProofDialog}>
-          <AlertDialogContent className="bg-black border-purple-500/30 max-w-2xl">
-            <AlertDialogHeader>
-              <AlertDialogTitle className="text-white">
-                Payment Proof
-              </AlertDialogTitle>
-            </AlertDialogHeader>
-            <div className="py-4">
+        {/* Receipt Preview Dialog */}
+        <Dialog open={showProofDialog} onOpenChange={setShowProofDialog}>
+          <DialogContent className="bg-black border-purple-500/30 max-w-4xl max-h-[90vh] overflow-hidden">
+            <DialogHeader>
+              <DialogTitle className="text-white flex items-center justify-between">
+                <span>Payment Receipt</span>
+                {selectedPayment?.payment_proof_url && (
+                  <a
+                    href={selectedPayment.payment_proof_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-purple-400 hover:text-purple-300 text-sm flex items-center gap-1"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    Open in new tab
+                  </a>
+                )}
+              </DialogTitle>
+              {selectedPayment && (
+                <DialogDescription className="text-purple-300">
+                  {selectedPayment.user_name} • {formatCurrency(selectedPayment.amount)} • {selectedPayment.payment_type}
+                </DialogDescription>
+              )}
+            </DialogHeader>
+            <div className="py-4 overflow-auto max-h-[60vh]">
               {selectedPayment?.payment_proof_url && (
-                <img
-                  src={selectedPayment.payment_proof_url}
-                  alt="Payment proof"
-                  className="w-full rounded-lg"
-                />
+                isPdfFile(selectedPayment.payment_proof_url) ? (
+                  <iframe
+                    src={selectedPayment.payment_proof_url}
+                    className="w-full h-[500px] rounded-lg border border-purple-500/30"
+                    title="Payment receipt PDF"
+                  />
+                ) : (
+                  <div 
+                    className={`relative cursor-zoom-in transition-all duration-300 ${imageZoomed ? 'scale-150' : ''}`}
+                    onClick={() => setImageZoomed(!imageZoomed)}
+                  >
+                    <img
+                      src={selectedPayment.payment_proof_url}
+                      alt="Payment receipt"
+                      className="w-full rounded-lg"
+                    />
+                    <div className="absolute top-2 right-2 bg-black/60 p-2 rounded-full">
+                      <ZoomIn className="h-4 w-4 text-white" />
+                    </div>
+                  </div>
+                )
               )}
             </div>
-            <AlertDialogFooter>
-              <AlertDialogCancel className="bg-transparent border-purple-500/30 text-purple-300">
+            <DialogFooter className="flex gap-2">
+              {selectedPayment?.status === 'pending' && (
+                <>
+                  <Button
+                    onClick={() => {
+                      setShowProofDialog(false);
+                      if (selectedPayment) handleApprove(selectedPayment);
+                    }}
+                    className="bg-green-600 hover:bg-green-700 gap-1"
+                  >
+                    <CheckCircle className="h-4 w-4" />
+                    Approve Payment
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={() => {
+                      setShowProofDialog(false);
+                      setShowRejectDialog(true);
+                    }}
+                    className="gap-1"
+                  >
+                    <XCircle className="h-4 w-4" />
+                    Reject Payment
+                  </Button>
+                </>
+              )}
+              <Button
+                variant="outline"
+                onClick={() => setShowProofDialog(false)}
+                className="bg-transparent border-purple-500/30 text-purple-300"
+              >
                 Close
-              </AlertDialogCancel>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </AdminLayout>
   );
