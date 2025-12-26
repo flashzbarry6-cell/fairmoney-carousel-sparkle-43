@@ -26,16 +26,31 @@ const PaymentPending = () => {
     setPaymentStatus(newStatus);
     
     if (newStatus === 'approved') {
-      navigate('/payment-approved', { state: { amount } });
+      // Redirect based on payment type
+      if (paymentType === 'bank_registration') {
+        navigate('/bank-registration-form');
+      } else {
+        navigate('/payment-approved', { state: { amount } });
+      }
     } else if (newStatus === 'rejected') {
-      navigate('/payment-rejected', { 
-        state: { 
-          amount, 
-          reason: rejectionReason 
-        } 
-      });
+      // Redirect based on payment type
+      if (paymentType === 'bank_registration') {
+        navigate('/payment-due', { 
+          state: { 
+            reason: rejectionReason,
+            paymentType: 'bank_registration'
+          } 
+        });
+      } else {
+        navigate('/payment-rejected', { 
+          state: { 
+            amount, 
+            reason: rejectionReason 
+          } 
+        });
+      }
     }
-  }, [navigate, amount]);
+  }, [navigate, amount, paymentType]);
 
   // Countdown timer effect
   useEffect(() => {

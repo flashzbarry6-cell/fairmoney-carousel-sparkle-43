@@ -44,6 +44,10 @@ import UpgradeBankTransfer from "./pages/UpgradeBankTransfer";
 import UpgradeReceiptUpload from "./pages/UpgradeReceiptUpload";
 import UpgradeConfirming from "./pages/UpgradeConfirming";
 import NotFound from "./pages/NotFound";
+import BankRegistrationEntry from "./pages/BankRegistrationEntry";
+import BankRegistrationPayment from "./pages/BankRegistrationPayment";
+import BankRegistrationForm from "./pages/BankRegistrationForm";
+import PaymentDue from "./pages/PaymentDue";
 
 // Admin pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -100,6 +104,12 @@ const App = () => (
           <Route path="/upgrade-confirming" element={<UpgradeConfirming />} />
           <Route path="/join-community" element={<JoinCommunity />} />
           <Route path="/buy-faircode" element={<BuyFaircode />} />
+          
+          {/* Bank Registration Routes */}
+          <Route path="/bank-registration" element={<BankRegistrationEntry />} />
+          <Route path="/bank-registration-payment" element={<BankRegistrationPayment />} />
+          <Route path="/bank-registration-form" element={<BankRegistrationForm />} />
+          <Route path="/payment-due" element={<PaymentDue />} />
           
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminDashboard />} />
