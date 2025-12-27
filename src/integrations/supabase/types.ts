@@ -49,6 +49,7 @@ export type Database = {
           amount: number
           approved_at: string | null
           approved_by: string | null
+          archived: boolean | null
           created_at: string
           expires_at: string | null
           id: string
@@ -63,6 +64,7 @@ export type Database = {
           amount: number
           approved_at?: string | null
           approved_by?: string | null
+          archived?: boolean | null
           created_at?: string
           expires_at?: string | null
           id?: string
@@ -77,6 +79,7 @@ export type Database = {
           amount?: number
           approved_at?: string | null
           approved_by?: string | null
+          archived?: boolean | null
           created_at?: string
           expires_at?: string | null
           id?: string

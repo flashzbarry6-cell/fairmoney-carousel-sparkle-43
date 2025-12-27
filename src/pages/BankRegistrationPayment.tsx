@@ -139,83 +139,86 @@ const BankRegistrationPayment = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B0B0F] relative overflow-hidden">
+    <div className="min-h-screen bg-background relative overflow-hidden page-transition">
+      {/* Animated Background */}
+      <div className="absolute inset-0 premium-bg-animated opacity-50"></div>
+      
       {/* Ambient glow effects */}
-      <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-[#6B2CF5]/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px] pointer-events-none animate-float" />
 
       <div className="relative z-10 p-4 max-w-md mx-auto">
         {/* Header */}
         <div className="flex items-center mb-6 pt-4">
-          <Link to="/bank-registration" className="mr-3 p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors">
-            <ArrowLeft className="w-5 h-5 text-white" />
+          <Link to="/bank-registration-entry" className="mr-3 p-2 rounded-xl bg-card hover:bg-accent transition-all interactive-press border border-border">
+            <ArrowLeft className="w-5 h-5 text-foreground" />
           </Link>
-          <h1 className="text-xl font-semibold text-white font-['Inter']">Bank Registration Payment</h1>
+          <h1 className="text-xl font-semibold text-foreground">Bank Registration Payment</h1>
         </div>
 
         {/* Amount Card */}
-        <div className="animate-slide-up bg-gradient-to-r from-[#6B2CF5] to-[#8B5CF6] rounded-2xl p-6 mb-6 shadow-[0_0_40px_rgba(107,44,245,0.4)]">
+        <div className="animate-fade-up bg-gradient-to-r from-primary to-primary-light rounded-2xl p-6 mb-6 shadow-glow">
           <div className="flex items-center gap-3 mb-2">
-            <Building2 className="w-6 h-6 text-white/80" />
-            <span className="text-white/80 font-['Inter']">Bank Registration Fee</span>
+            <Building2 className="w-6 h-6 text-primary-foreground/80" />
+            <span className="text-primary-foreground/80">Bank Registration Fee</span>
           </div>
-          <div className="text-4xl font-bold text-white font-['Inter']">₦{paymentDetails.amount.toLocaleString()}</div>
+          <div className="text-4xl font-bold text-primary-foreground">₦{paymentDetails.amount.toLocaleString()}</div>
         </div>
 
         {/* Payment Details Card */}
-        <div className="animate-slide-up-delay-1 bg-gradient-to-b from-white/[0.08] to-white/[0.02] backdrop-blur-xl rounded-2xl p-6 border border-[#6B2CF5]/30 mb-6 shadow-[0_0_30px_rgba(107,44,245,0.1)]">
-          <h3 className="text-white font-semibold mb-4 font-['Inter']">Transfer to this account</h3>
+        <div className="animate-fade-up bg-card/80 backdrop-blur-xl rounded-2xl p-6 border border-primary/30 mb-6 shadow-neon" style={{ animationDelay: '0.1s' }}>
+          <h3 className="text-foreground font-semibold mb-4">Transfer to this account</h3>
           
           <div className="space-y-4">
             {/* Bank Name */}
-            <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+            <div className="flex items-center justify-between p-3 bg-muted/50 rounded-xl interactive-press">
               <div>
-                <p className="text-gray-500 text-xs font-['Inter']">Bank Name</p>
-                <p className="text-white font-medium font-['Inter']">{paymentDetails.bankName}</p>
+                <p className="text-muted-foreground text-xs">Bank Name</p>
+                <p className="text-foreground font-medium">{paymentDetails.bankName}</p>
               </div>
               <button
                 onClick={() => copyToClipboard(paymentDetails.bankName, 'Bank Name')}
-                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                className="p-2 hover:bg-accent rounded-lg transition-colors"
               >
                 {copied === 'Bank Name' ? (
-                  <Check className="w-5 h-5 text-green-400" />
+                  <Check className="w-5 h-5 text-emerald-400" />
                 ) : (
-                  <Copy className="w-5 h-5 text-[#6B2CF5]" />
+                  <Copy className="w-5 h-5 text-primary" />
                 )}
               </button>
             </div>
 
             {/* Account Number */}
-            <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-[#6B2CF5]/20 shadow-[0_0_15px_rgba(107,44,245,0.2)]">
+            <div className="flex items-center justify-between p-3 bg-muted/50 rounded-xl border border-primary/20 shadow-neon interactive-press">
               <div>
-                <p className="text-gray-500 text-xs font-['Inter']">Account Number</p>
-                <p className="text-white font-bold text-lg font-['Inter']">{paymentDetails.accountNumber}</p>
+                <p className="text-muted-foreground text-xs">Account Number</p>
+                <p className="text-foreground font-bold text-lg">{paymentDetails.accountNumber}</p>
               </div>
               <button
                 onClick={() => copyToClipboard(paymentDetails.accountNumber, 'Account Number')}
-                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                className="p-2 hover:bg-accent rounded-lg transition-colors"
               >
                 {copied === 'Account Number' ? (
-                  <Check className="w-5 h-5 text-green-400" />
+                  <Check className="w-5 h-5 text-emerald-400" />
                 ) : (
-                  <Copy className="w-5 h-5 text-[#6B2CF5]" />
+                  <Copy className="w-5 h-5 text-primary" />
                 )}
               </button>
             </div>
 
             {/* Account Name */}
-            <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+            <div className="flex items-center justify-between p-3 bg-muted/50 rounded-xl interactive-press">
               <div>
-                <p className="text-gray-500 text-xs font-['Inter']">Account Name</p>
-                <p className="text-white font-medium font-['Inter']">{paymentDetails.accountName}</p>
+                <p className="text-muted-foreground text-xs">Account Name</p>
+                <p className="text-foreground font-medium">{paymentDetails.accountName}</p>
               </div>
               <button
                 onClick={() => copyToClipboard(paymentDetails.accountName, 'Account Name')}
-                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                className="p-2 hover:bg-accent rounded-lg transition-colors"
               >
                 {copied === 'Account Name' ? (
-                  <Check className="w-5 h-5 text-green-400" />
+                  <Check className="w-5 h-5 text-emerald-400" />
                 ) : (
-                  <Copy className="w-5 h-5 text-[#6B2CF5]" />
+                  <Copy className="w-5 h-5 text-primary" />
                 )}
               </button>
             </div>
@@ -223,8 +226,8 @@ const BankRegistrationPayment = () => {
         </div>
 
         {/* Upload Section */}
-        <div className="animate-slide-up-delay-2 bg-gradient-to-b from-white/[0.08] to-white/[0.02] backdrop-blur-xl rounded-2xl p-6 border border-[#6B2CF5]/30 mb-6">
-          <h3 className="text-white font-semibold mb-4 font-['Inter']">Upload Payment Receipt</h3>
+        <div className="animate-fade-up bg-card/80 backdrop-blur-xl rounded-2xl p-6 border border-primary/30 mb-6" style={{ animationDelay: '0.2s' }}>
+          <h3 className="text-foreground font-semibold mb-4">Upload Payment Receipt</h3>
           
           <input
             ref={fileInputRef}
@@ -237,24 +240,24 @@ const BankRegistrationPayment = () => {
           {!receiptFile ? (
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="w-full h-32 border-2 border-dashed border-[#6B2CF5]/40 rounded-xl flex flex-col items-center justify-center gap-2 hover:border-[#6B2CF5] hover:bg-[#6B2CF5]/5 transition-all"
+              className="w-full h-32 border-2 border-dashed border-primary/40 rounded-xl flex flex-col items-center justify-center gap-2 hover:border-primary hover:bg-primary/5 transition-all interactive-press"
             >
-              <Upload className="w-8 h-8 text-[#6B2CF5]" />
-              <span className="text-gray-400 font-['Inter']">Click to upload receipt</span>
-              <span className="text-gray-600 text-xs font-['Inter']">Image or PDF</span>
+              <Upload className="w-8 h-8 text-primary" />
+              <span className="text-muted-foreground">Click to upload receipt</span>
+              <span className="text-muted-foreground/60 text-xs">Image or PDF</span>
             </button>
           ) : (
-            <div className="flex items-center justify-between p-4 bg-green-900/20 border border-green-500/30 rounded-xl">
+            <div className="flex items-center justify-between p-4 bg-emerald-900/20 border border-emerald-500/30 rounded-xl">
               <div className="flex items-center gap-3">
-                <Check className="w-6 h-6 text-green-400" />
+                <Check className="w-6 h-6 text-emerald-400" />
                 <div>
-                  <p className="text-green-400 font-medium font-['Inter']">Receipt Selected</p>
-                  <p className="text-gray-400 text-sm font-['Inter']">{receiptFile.name}</p>
+                  <p className="text-emerald-400 font-medium">Receipt Selected</p>
+                  <p className="text-muted-foreground text-sm">{receiptFile.name}</p>
                 </div>
               </div>
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="text-[#6B2CF5] text-sm font-['Inter'] hover:underline"
+                className="text-primary text-sm hover:underline"
               >
                 Change
               </button>
@@ -266,7 +269,9 @@ const BankRegistrationPayment = () => {
         <Button
           onClick={handleSubmit}
           disabled={uploading || !receiptFile}
-          className="w-full h-14 bg-gradient-to-r from-[#6B2CF5] to-[#8B5CF6] hover:from-[#5B1CE5] hover:to-[#7B4CE6] text-white font-semibold rounded-2xl shadow-[0_0_30px_rgba(107,44,245,0.4)] transition-all duration-300 hover:shadow-[0_0_40px_rgba(107,44,245,0.6)] disabled:opacity-50 disabled:cursor-not-allowed font-['Inter']"
+          className="w-full h-14 interactive-press"
+          size="xl"
+          variant="luxury"
         >
           {uploading ? (
             <>
@@ -279,28 +284,10 @@ const BankRegistrationPayment = () => {
         </Button>
 
         {/* Note */}
-        <p className="text-center text-gray-500 text-sm mt-4 font-['Inter']">
+        <p className="text-center text-muted-foreground text-sm mt-4">
           Payment will be verified within 1 hour
         </p>
       </div>
-
-      <style>{`
-        @keyframes slide-up {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-slide-up {
-          animation: slide-up 0.5s ease-out forwards;
-        }
-        .animate-slide-up-delay-1 {
-          animation: slide-up 0.5s ease-out 0.1s forwards;
-          opacity: 0;
-        }
-        .animate-slide-up-delay-2 {
-          animation: slide-up 0.5s ease-out 0.2s forwards;
-          opacity: 0;
-        }
-      `}</style>
     </div>
   );
 };

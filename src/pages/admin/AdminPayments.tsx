@@ -30,7 +30,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Search, CheckCircle, XCircle, Clock, Loader2, Eye, ExternalLink, FileText, ZoomIn } from 'lucide-react';
+import { Search, CheckCircle, XCircle, Clock, Loader2, Eye, ExternalLink, FileText, ZoomIn, Archive } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface Payment {
@@ -74,6 +74,7 @@ const AdminPayments = () => {
       let query = supabase
         .from('payments')
         .select('*')
+        .eq('archived', false)
         .order('created_at', { ascending: false });
 
       if (statusFilter !== 'all') {
