@@ -382,7 +382,7 @@ useEffect(() => {
   }
 
   return (
-    <div className="min-h-screen bg-black p-2 max-w-md mx-auto pb-32 relative overflow-hidden">
+    <div className="min-h-screen bg-luxury-black p-2 max-w-md mx-auto pb-32 relative overflow-hidden page-transition">
       {/* Animated Purple Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Moving Purple Lights */}
@@ -484,7 +484,7 @@ useEffect(() => {
       </div>
 
       {/* Balance Card */}
-      <div className="bg-gradient-to-br from-purple-900 via-purple-800 to-black rounded-2xl p-3 text-white mb-4 relative border border-gold/20">
+      <div className="bg-gradient-to-br from-luxury-purple via-luxury-purple/80 to-luxury-black rounded-2xl p-3 text-white mb-4 relative border border-luxury-glow/30 luxury-glow animate-slide-up card-hover">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2">
             <Shield className="w-4 h-4 text-gold" />
@@ -603,21 +603,21 @@ useEffect(() => {
       <div className="grid grid-cols-4 gap-3 mb-6">
         {services.map((service, index) => (
           service.route === "groups" ? (
-            <div key={index} className="flex flex-col items-center space-y-2">
+            <div key={index} className="flex flex-col items-center space-y-2 animate-slide-up" style={{ animationDelay: `${index * 50}ms` }}>
               <div 
-                className="w-14 h-14 rounded-2xl bg-gradient-to-br from-service-button via-service-button-light to-service-button-dark flex items-center justify-center cursor-pointer shadow-lg hover:shadow-service-button/50 transition-all hover:scale-105"
+                className="w-14 h-14 rounded-2xl bg-gradient-to-br from-luxury-purple via-luxury-purple/80 to-luxury-black flex items-center justify-center cursor-pointer shadow-lg hover:shadow-luxury-glow/50 transition-all btn-press luxury-glow"
                 onClick={() => setShowGroupModal(true)}
               >
-                <service.icon className="w-6 h-6 text-service-button-foreground animate-pulse" />
+                <service.icon className="w-6 h-6 text-luxury-gold animate-pulse" />
               </div>
               <span className="text-[10px] text-center text-white font-medium leading-tight">
                 {service.label}
               </span>
             </div>
           ) : (
-            <Link key={index} to={service.route} className="flex flex-col items-center space-y-2">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-service-button via-service-button-light to-service-button-dark flex items-center justify-center shadow-lg hover:shadow-service-button/50 transition-all hover:scale-105">
-                <service.icon className="w-6 h-6 text-service-button-foreground animate-pulse" />
+            <Link key={index} to={service.route} className="flex flex-col items-center space-y-2 animate-slide-up" style={{ animationDelay: `${index * 50}ms` }}>
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-luxury-purple via-luxury-purple/80 to-luxury-black flex items-center justify-center shadow-lg hover:shadow-luxury-glow/50 transition-all btn-press luxury-glow">
+                <service.icon className="w-6 h-6 text-luxury-gold animate-pulse" />
               </div>
               <span className="text-[10px] text-center text-white font-medium leading-tight">
                 {service.label}
