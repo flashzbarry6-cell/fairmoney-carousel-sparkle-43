@@ -89,12 +89,12 @@ const TransferPage = () => {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden p-3 max-w-md mx-auto">
+    <div className="min-h-screen relative overflow-hidden p-3 max-w-md mx-auto page-transition">
       {/* Animated background */}
       <div className="absolute inset-0 animated-bg"></div>
 
       {/* Content */}
-      <div className="relative z-10">
+      <div className="relative z-10 animate-fade-in">
         {/* Header */}
         <div className="flex items-center mb-6 pt-2">
           <Link to="/dashboard" className="mr-3">
@@ -107,7 +107,7 @@ const TransferPage = () => {
 
         <div className="space-y-4">
           {/* Amount Card */}
-          <div className="bg-black/40 backdrop-blur-lg rounded-2xl p-6 text-center border border-purple-700/40 shadow-lg">
+          <div className="bg-luxury-black/60 backdrop-blur-lg rounded-2xl p-6 text-center border border-luxury-glow/40 shadow-lg luxury-glow animate-slide-up card-hover">
             <p className="text-sm text-gray-400 mb-2">Transfer Amount</p>
             <div className="flex justify-center items-center space-x-2 mb-1">
               <p className="text-4xl font-bold text-yellow-400">₦{transferAmount.toLocaleString()}</p>
@@ -120,7 +120,7 @@ const TransferPage = () => {
           </div>
 
           {/* Bank Details Card */}
-          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 space-y-4 border border-purple-700/40">
+          <div className="bg-luxury-black/40 backdrop-blur-lg rounded-2xl p-6 space-y-4 border border-luxury-glow/40 animate-slide-up luxury-glow" style={{ animationDelay: '100ms' }}>
             <div className="text-center mb-4">
               <h2 className="text-lg font-semibold text-white mb-1">
                 Transfer to:
@@ -168,7 +168,7 @@ const TransferPage = () => {
           {/* Action Button Only */}
           <Button
             onClick={handleTransfer}
-            className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-4 rounded-full text-lg"
+            className="w-full bg-luxury-gold hover:bg-luxury-gold/90 text-luxury-black font-semibold py-4 rounded-full text-lg btn-press animate-slide-up" style={{ animationDelay: '200ms' }}
           >
             I Have Made Transfer
           </Button>

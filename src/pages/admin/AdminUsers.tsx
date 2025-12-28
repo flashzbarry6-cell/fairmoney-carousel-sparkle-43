@@ -227,32 +227,48 @@ const AdminUsers = () => {
           )}
         </div>
 
-        <AlertDialog open={showBlockDialog} onOpenChange={setShowBlockDialog}>
-          <AlertDialogContent className="bg-black border-purple-500/30">
+      <AlertDialog open={showBlockDialog} onOpenChange={setShowBlockDialog}>
+          <AlertDialogContent className="bg-luxury-black border-luxury-glow/50 luxury-glow">
             <AlertDialogHeader>
-              <AlertDialogTitle className="text-white">
-                Block User: {selectedUser?.full_name}
-              </AlertDialogTitle>
-              <AlertDialogDescription className="text-purple-300">
-                This user will not be able to login or perform any transactions.
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-12 h-12 rounded-full bg-red-900/50 flex items-center justify-center">
+                  <Ban className="h-6 w-6 text-red-400" />
+                </div>
+                <AlertDialogTitle className="text-white text-xl">
+                  Block User
+                </AlertDialogTitle>
+              </div>
+              <div className="bg-luxury-purple/20 rounded-lg p-3 border border-luxury-glow/30">
+                <p className="text-luxury-gold font-medium">{selectedUser?.full_name || 'N/A'}</p>
+                <p className="text-purple-300 text-sm">{selectedUser?.email || 'N/A'}</p>
+              </div>
+              <AlertDialogDescription className="text-purple-300 mt-3">
+                ⚠️ This action will immediately:
+                <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
+                  <li>Block user from logging in</li>
+                  <li>Prevent all transactions</li>
+                  <li>Log out user instantly</li>
+                </ul>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <div className="py-4">
+              <label className="text-purple-300 text-sm mb-2 block">Reason for blocking</label>
               <Input
-                placeholder="Reason for blocking (optional)"
+                placeholder="Enter reason (will be shown to user)"
                 value={blockReason}
                 onChange={(e) => setBlockReason(e.target.value)}
-                className="bg-purple-900/30 border-purple-500/30 text-white"
+                className="bg-luxury-purple/30 border-luxury-glow/30 text-white"
               />
             </div>
             <AlertDialogFooter>
-              <AlertDialogCancel className="bg-transparent border-purple-500/30 text-purple-300">
+              <AlertDialogCancel className="bg-transparent border-luxury-glow/30 text-purple-300 hover:bg-luxury-purple/20">
                 Cancel
               </AlertDialogCancel>
               <AlertDialogAction
                 onClick={() => selectedUser && toggleBlock(selectedUser, true, blockReason)}
-                className="bg-red-600 hover:bg-red-700"
+                className="bg-red-600 hover:bg-red-700 gap-2"
               >
+                <Ban className="h-4 w-4" />
                 Block User
               </AlertDialogAction>
             </AlertDialogFooter>

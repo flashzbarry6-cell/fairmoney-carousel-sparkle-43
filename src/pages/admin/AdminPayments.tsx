@@ -191,7 +191,6 @@ const AdminPayments = () => {
           title: "Payment Rejected",
           description: "User has been notified instantly"
         });
-        // Real-time will update the list automatically
       } else {
         throw new Error(result.message);
       }
@@ -206,6 +205,32 @@ const AdminPayments = () => {
       setShowRejectDialog(false);
       setRejectionReason('');
       setSelectedPayment(null);
+    }
+  };
+
+  const handleArchive = async (payment: Payment) => {
+    setActionLoading(payment.id);
+    try {
+      const { error } = await supabase
+        .from('payments')
+        .update({ archived: true })
+        .eq('id', payment.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Payment Archived",
+        description: "Payment has been hidden from the list"
+      });
+      fetchPayments();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to archive payment",
+        variant: "destructive"
+      });
+    } finally {
+      setActionLoading(null);
     }
   };
 
@@ -415,6 +440,16 @@ const AdminPayments = () => {
                               {payment.rejection_reason}
                             </span>
                           )}
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleArchive(payment)}
+                            disabled={actionLoading === payment.id}
+                            className="border-purple-500/30 text-purple-300 hover:bg-purple-900/30 gap-1"
+                            title="Archive payment"
+                          >
+                            <Archive className="h-4 w-4" />
+                          </Button>
                         </div>
                       </TableCell>
                     </TableRow>
