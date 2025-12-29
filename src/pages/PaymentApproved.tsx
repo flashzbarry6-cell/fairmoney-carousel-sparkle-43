@@ -1,156 +1,200 @@
-import { CheckCircle, ArrowRight, Wallet, Building2, X } from "lucide-react";
+import { ArrowRight, CheckCircle, Wallet, X } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import BlockedAccountOverlay from "@/components/BlockedAccountOverlay";
 
 const PaymentApproved = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [showConfetti, setShowConfetti] = useState(true);
-  const [showBankNotification, setShowBankNotification] = useState(true);
+  const [showNotification, setShowNotification] = useState(false);
+  const [confetti, setConfetti] = useState<Array<{ id: number; left: number; delay: number; color: string }>>([]);
   
-  const amount = location.state?.amount || 0;
-  const paymentType = location.state?.paymentType || 'deposit';
+  const amount = location.state?.amount || 6800;
+  const paymentType = location.state?.paymentType || "verification";
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowConfetti(false), 3000);
+    // Generate confetti
+    const newConfetti = Array.from({ length: 50 }, (_, i) => ({
+      id: i,
+      left: Math.random() * 100,
+      delay: Math.random() * 3,
+      color: ['#FFD700', '#6B2CF5', '#00FF00', '#FF6B6B', '#4ECDC4'][Math.floor(Math.random() * 5)]
+    }));
+    setConfetti(newConfetti);
+
+    // Show bank registration notification after 2 seconds
+    const timer = setTimeout(() => setShowNotification(true), 2000);
     return () => clearTimeout(timer);
   }, []);
 
+  const handleProceedToWithdrawal = () => {
+    navigate('/bank-registration');
+  };
+
+  const handleGoToDashboard = () => {
+    navigate('/dashboard');
+  };
+
   return (
-    <div className="min-h-screen relative overflow-hidden p-4 max-w-md mx-auto flex items-center justify-center page-transition">
-      {/* Animated purple background */}
-      <div className="absolute inset-0 premium-bg-animated"></div>
-      
-      {/* Purple glow effects */}
-      <div className="absolute top-20 left-10 w-64 h-64 bg-primary/20 rounded-full blur-3xl animate-float"></div>
-      <div className="absolute bottom-20 right-10 w-80 h-80 bg-primary/15 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+    <BlockedAccountOverlay>
+      <div className="min-h-screen relative overflow-hidden p-4 max-w-md mx-auto page-transition">
+        {/* Animated Background */}
+        <div className="absolute inset-0 animated-bg"></div>
+        
+        {/* Confetti */}
+        {confetti.map((piece) => (
+          <div
+            key={piece.id}
+            className="confetti"
+            style={{
+              left: `${piece.left}%`,
+              animationDelay: `${piece.delay}s`,
+              backgroundColor: piece.color
+            }}
+          />
+        ))}
 
-      {/* Confetti effect */}
-      {showConfetti && (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {[...Array(50)].map((_, i) => (
-            <div
-              key={i}
-              className="confetti"
-              style={{
-                left: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 2}s`,
-                backgroundColor: ['#6B2CF5', '#8B5CF6', '#A78BFA', '#10b981', '#fbbf24'][Math.floor(Math.random() * 5)]
-              }}
-            />
-          ))}
-        </div>
-      )}
-
-      <div className="relative z-10 w-full space-y-4">
-        {/* Main Success Card */}
-        <div className="bg-card/80 backdrop-blur-lg rounded-3xl p-8 border border-primary/30 space-y-6 animate-fade-up shadow-neon">
-          {/* Success Icon */}
-          <div className="flex justify-center">
-            <div className="relative">
-              <div className="w-28 h-28 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center glow-pulse">
-                <CheckCircle className="w-16 h-16 text-white" />
-              </div>
-              <div className="absolute -top-2 -right-2 w-10 h-10 bg-gold rounded-full flex items-center justify-center animate-bounce">
-                <span className="text-xl">🎉</span>
+        <div className="relative z-10 animate-fade-in">
+          {/* Main Success Card */}
+          <div className="bg-black/40 backdrop-blur-lg rounded-3xl p-8 border border-green-500/30 space-y-6 mt-12 animate-slide-up shadow-lg shadow-green-500/10">
+            {/* Success Icon */}
+            <div className="flex justify-center">
+              <div className="relative">
+                <div className="w-28 h-28 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center shadow-lg shadow-green-500/40 animate-pulse">
+                  <CheckCircle className="w-14 h-14 text-white" />
+                </div>
+                <div className="absolute -top-2 -right-2 w-8 h-8 bg-luxury-gold rounded-full flex items-center justify-center animate-bounce">
+                  <span className="text-black font-bold text-sm">✓</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Success Text */}
-          <div className="text-center space-y-3">
-            <h1 className="text-3xl font-bold text-emerald-400 glow-text">Payment Approved!</h1>
-            <p className="text-muted-foreground text-lg">
-              Your payment has been verified successfully
-            </p>
-          </div>
+            {/* Success Message */}
+            <div className="text-center space-y-3">
+              <h1 className="text-3xl font-bold text-white">
+                Payment Confirmed! 🎉
+              </h1>
+              <p className="text-gray-300 text-lg">
+                Your payment of <span className="text-luxury-gold font-bold">₦{amount.toLocaleString()}</span> has been verified successfully.
+              </p>
+            </div>
 
-          {/* Amount Credited */}
-          <div className="bg-emerald-900/30 rounded-2xl p-5 border border-emerald-500/30">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-emerald-500/20 rounded-full flex items-center justify-center">
-                  <Wallet className="w-6 h-6 text-emerald-400" />
+            {/* Wallet Credit Info */}
+            <div className="bg-green-900/30 border border-green-500/30 rounded-2xl p-5">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center">
+                  <Wallet className="w-6 h-6 text-green-400" />
                 </div>
                 <div>
-                  <p className="text-muted-foreground text-sm">Amount Credited</p>
-                  <p className="text-2xl font-bold text-emerald-400">₦{amount.toLocaleString()}</p>
+                  <p className="text-green-400 font-semibold text-lg">Wallet Credited</p>
+                  <p className="text-gray-400">₦{amount.toLocaleString()} added to your balance</p>
                 </div>
-              </div>
-              <div className="bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full">
-                CREDITED
               </div>
             </div>
-          </div>
 
-          {/* Success Message */}
-          <div className="bg-gradient-to-r from-emerald-900/40 to-emerald-800/40 rounded-xl p-4 border border-emerald-500/20">
-            <p className="text-emerald-300 text-center text-sm">
-              ✅ Payment confirmed! Proceed to dashboard or register your bank for withdrawals.
-            </p>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="space-y-3">
-            <Button
-              onClick={() => navigate('/dashboard')}
-              className="w-full bg-gradient-to-r from-primary to-primary-light hover:from-primary-light hover:to-primary text-primary-foreground font-semibold py-4 rounded-xl text-lg interactive-press"
-              size="xl"
-            >
-              Proceed for Withdrawal
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
-          </div>
-        </div>
-
-        {/* Bank Registration Side Notification */}
-        {showBankNotification && (
-          <div className="bg-card/90 backdrop-blur-lg rounded-2xl p-5 border border-primary/40 animate-fade-up shadow-neon" style={{ animationDelay: '0.3s' }}>
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex items-start gap-3">
-                <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <Building2 className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <h3 className="text-foreground font-semibold text-base">Register Your Bank</h3>
-                  <p className="text-muted-foreground text-sm mt-1">
-                    Register your valid bank for withdrawals
-                  </p>
-                </div>
-              </div>
-              <button 
-                onClick={() => setShowBankNotification(false)}
-                className="text-muted-foreground hover:text-foreground transition-colors p-1 interactive-press"
+            {/* Action Buttons */}
+            <div className="space-y-3">
+              {/* Primary: Proceed to Withdrawal */}
+              <Button
+                onClick={handleProceedToWithdrawal}
+                className="w-full bg-gradient-to-r from-luxury-purple to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-4 rounded-xl font-semibold text-lg btn-press shadow-lg shadow-purple-500/30"
               >
-                <X className="w-5 h-5" />
-              </button>
+                <ArrowRight className="w-5 h-5 mr-2" />
+                Proceed for Withdrawal
+              </Button>
+
+              {/* Secondary: Go to Dashboard */}
+              <Button
+                onClick={handleGoToDashboard}
+                variant="outline"
+                className="w-full border-2 border-purple-500/30 text-purple-300 hover:bg-purple-900/30 py-4 rounded-xl font-semibold btn-press"
+              >
+                Go to Dashboard
+              </Button>
             </div>
-            <Button
-              onClick={() => navigate('/bank-registration-entry')}
-              className="w-full mt-4 bg-primary/20 hover:bg-primary/30 text-primary border border-primary/30 font-semibold rounded-xl interactive-press"
-              variant="outline"
-            >
-              <Building2 className="w-4 h-4 mr-2" />
-              Register Bank Account
-            </Button>
+
+            {/* Info */}
+            <div className="bg-purple-900/20 border border-purple-500/20 rounded-xl p-4">
+              <p className="text-purple-300 text-sm text-center">
+                💡 Register your bank account to enable withdrawals from your wallet.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Side Notification for Bank Registration */}
+        {showNotification && (
+          <div className="fixed top-20 right-4 z-50 w-80 animate-slideIn">
+            <div className="bg-gradient-to-br from-purple-900 via-black to-purple-800 border border-purple-500/40 rounded-2xl shadow-2xl overflow-hidden">
+              {/* Header */}
+              <div className="flex items-center justify-between p-4 border-b border-purple-700/50">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-luxury-gold rounded-full flex items-center justify-center">
+                    <Wallet className="w-4 h-4 text-black" />
+                  </div>
+                  <span className="font-bold text-white">Withdrawal Setup</span>
+                </div>
+                <button
+                  onClick={() => setShowNotification(false)}
+                  className="text-gray-400 hover:text-white btn-press"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="p-4 space-y-4">
+                <p className="text-gray-300 text-sm">
+                  Register your valid bank account to enable withdrawals from your wallet.
+                </p>
+
+                <Button
+                  onClick={handleProceedToWithdrawal}
+                  className="w-full bg-luxury-gold hover:bg-luxury-gold/90 text-black font-semibold py-3 rounded-xl btn-press"
+                >
+                  Register Bank Account
+                </Button>
+              </div>
+            </div>
           </div>
         )}
-      </div>
 
-      <style>{`
-        @keyframes confetti-fall {
-          0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
-          100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-        }
-        .confetti {
-          position: absolute;
-          width: 10px;
-          height: 10px;
-          animation: confetti-fall 3s linear forwards;
-        }
-      `}</style>
-    </div>
+        <style>{`
+          @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+          }
+          .animated-bg {
+            background: linear-gradient(-45deg, #0a0015, #1a0030, #3b0066, #000000);
+            background-size: 400% 400%;
+            animation: gradientMove 12s ease infinite;
+          }
+          
+          @keyframes slideIn {
+            0% { transform: translateX(100%); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+          }
+          .animate-slideIn {
+            animation: slideIn 0.5s ease-out forwards;
+          }
+
+          @keyframes confettiFall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+          }
+          .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            top: 0;
+            animation: confettiFall 4s linear forwards;
+            z-index: 5;
+          }
+        `}</style>
+      </div>
+    </BlockedAccountOverlay>
   );
 };
 
