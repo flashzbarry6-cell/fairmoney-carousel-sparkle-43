@@ -1,6 +1,7 @@
 import { ArrowLeft, XCircle, RefreshCw, MessageCircle, AlertTriangle } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { BlockedAccountOverlay } from "@/components/BlockedAccountOverlay";
 
 const PaymentDue = () => {
   const navigate = useNavigate();
@@ -35,6 +36,7 @@ const PaymentDue = () => {
   };
 
   return (
+    <BlockedAccountOverlay>
     <div className="min-h-screen bg-background relative overflow-hidden page-transition">
       {/* Animated Background */}
       <div className="absolute inset-0 premium-bg-animated opacity-50"></div>
@@ -134,6 +136,7 @@ const PaymentDue = () => {
         </div>
       </div>
     </div>
+    </BlockedAccountOverlay>
   );
 };
 

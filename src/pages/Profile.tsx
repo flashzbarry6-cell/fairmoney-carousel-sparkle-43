@@ -1,6 +1,7 @@
 import { ArrowLeft, LogOut, Mail, Users, Copy } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { BlockedAccountOverlay } from "@/components/BlockedAccountOverlay";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -76,6 +77,7 @@ const Profile = () => {
   }
 
   return (
+    <BlockedAccountOverlay>
     <div className="min-h-screen relative overflow-hidden p-4 max-w-md mx-auto">
       <style>{`
         @keyframes purpleGoldGradient {
@@ -153,6 +155,7 @@ const Profile = () => {
         </Button>
       </div>
     </div>
+    </BlockedAccountOverlay>
   );
 };
 

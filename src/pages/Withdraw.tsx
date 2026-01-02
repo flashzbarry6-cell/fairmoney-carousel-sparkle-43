@@ -1,6 +1,7 @@
 import { ArrowLeft, ChevronDown } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { BlockedAccountOverlay } from "@/components/BlockedAccountOverlay";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -24,6 +25,7 @@ const Withdraw = () => {
   };
 
   return (
+    <BlockedAccountOverlay>
     <div className="min-h-screen bg-muted/30 p-3 max-w-md mx-auto">
       {/* Header */}
       <div className="flex items-center mb-6 pt-2">
@@ -133,6 +135,7 @@ const Withdraw = () => {
         </Button>
       </div>
     </div>
+    </BlockedAccountOverlay>
   );
 };
 

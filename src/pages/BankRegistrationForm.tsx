@@ -1,6 +1,7 @@
 import { ArrowLeft, Building2, Check, Loader2, Shield } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { BlockedAccountOverlay } from "@/components/BlockedAccountOverlay";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -119,6 +120,7 @@ const BankRegistrationForm = () => {
 
   if (success) {
     return (
+      <BlockedAccountOverlay>
       <div className="min-h-screen bg-background flex items-center justify-center p-4 page-transition">
         {/* Success glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-emerald-500/20 rounded-full blur-[100px] pointer-events-none" />
@@ -132,10 +134,12 @@ const BankRegistrationForm = () => {
           <p className="text-muted-foreground/60 text-sm">Redirecting to dashboard...</p>
         </div>
       </div>
+      </BlockedAccountOverlay>
     );
   }
 
   return (
+    <BlockedAccountOverlay>
     <div className="min-h-screen bg-background relative overflow-hidden page-transition">
       {/* Animated Background */}
       <div className="absolute inset-0 premium-bg-animated opacity-50"></div>
@@ -274,6 +278,7 @@ const BankRegistrationForm = () => {
         </div>
       </div>
     </div>
+    </BlockedAccountOverlay>
   );
 };
 
