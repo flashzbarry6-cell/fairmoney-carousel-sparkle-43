@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { User, Eye, EyeOff, Shield, Users, Calculator, Wifi, CreditCard, Banknote, UserPlus, MessageCircle, Copy, History, Gift, TrendingUp, Gamepad2 } from "lucide-react";
+import { BlockedAccountOverlay } from "@/components/BlockedAccountOverlay";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { WelcomeNotification } from "@/components/WelcomeNotification";
@@ -382,6 +383,7 @@ useEffect(() => {
   }
 
   return (
+    <BlockedAccountOverlay>
     <div className="min-h-screen bg-luxury-black p-2 max-w-md mx-auto pb-32 relative overflow-hidden page-transition">
       {/* Animated Purple Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -789,6 +791,7 @@ useEffect(() => {
       )}
       </div> {/* End Main Content */}
     </div>
+    </BlockedAccountOverlay>
   );
 };
 

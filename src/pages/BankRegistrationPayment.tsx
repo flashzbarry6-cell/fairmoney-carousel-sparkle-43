@@ -1,6 +1,7 @@
 import { ArrowLeft, Upload, Copy, Check, Loader2, Building2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { BlockedAccountOverlay } from "@/components/BlockedAccountOverlay";
 import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -139,6 +140,7 @@ const BankRegistrationPayment = () => {
   };
 
   return (
+    <BlockedAccountOverlay>
     <div className="min-h-screen bg-background relative overflow-hidden page-transition">
       {/* Animated Background */}
       <div className="absolute inset-0 premium-bg-animated opacity-50"></div>
@@ -289,6 +291,7 @@ const BankRegistrationPayment = () => {
         </p>
       </div>
     </div>
+    </BlockedAccountOverlay>
   );
 };
 
