@@ -1,23 +1,26 @@
 import { useState, useEffect } from "react";
 import { ArrowLeft, Wallet, Info } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BottomNav } from "@/components/BottomNav";
 import SpinWheel from "@/components/SpinWheel";
 import SpinHistory from "@/components/SpinHistory";
 import SpinResultModal from "@/components/SpinResultModal";
+import BlockedAccountOverlay from "@/components/BlockedAccountOverlay";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-// Configuration - easily adjustable
-const STAKE_OPTIONS = [20000, 35000, 40000, 50000, 100000];
+// Configuration - easily adjustable stake amounts
+const STAKE_OPTIONS = [500, 1000, 2000, 5000, 10000, 20000];
 
 const SpinAndWin = () => {
+  const navigate = useNavigate();
   const [balance, setBalance] = useState(0);
-  const [stakeAmount, setStakeAmount] = useState(20000);
+  const [stakeAmount, setStakeAmount] = useState(500);
   const [isSpinning, setIsSpinning] = useState(false);
   const [showResultModal, setShowResultModal] = useState(false);
   const [spinResult, setSpinResult] = useState<"win" | "lose" | null>(null);
   const [prizeAmount, setPrizeAmount] = useState(0);
+  const [lostAmount, setLostAmount] = useState(0);
   const [historyRefresh, setHistoryRefresh] = useState(0);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
@@ -31,6 +34,7 @@ const SpinAndWin = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error("Please login to play");
+        navigate("/login");
         return;
       }
       setUserId(user.id);
@@ -97,11 +101,13 @@ const SpinAndWin = () => {
   const handleSpinComplete = async (result: "win" | "lose", prize: number) => {
     setSpinResult(result);
     setPrizeAmount(prize);
+    setLostAmount(result === "lose" ? stakeAmount : 0);
+    setIsSpinning(false);
 
     if (!userId) return;
 
     try {
-      // If won, credit the prize
+      // If won, credit the prize (stake already deducted, so add full prize)
       if (result === "win" && prize > 0) {
         const newBalance = balance + prize;
         const { error: balanceError } = await supabase
@@ -120,7 +126,7 @@ const SpinAndWin = () => {
           user_id: userId,
           stake_amount: stakeAmount,
           result: result,
-          prize_amount: prize,
+          prize_amount: result === "win" ? prize : 0,
         });
 
       if (historyError) throw historyError;
@@ -133,6 +139,18 @@ const SpinAndWin = () => {
     setShowResultModal(true);
   };
 
+  const handleModalClose = () => {
+    setShowResultModal(false);
+  };
+
+  const handleSpinAgain = () => {
+    setShowResultModal(false);
+  };
+
+  const handleBackToDashboard = () => {
+    navigate("/dashboard");
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0B0B0B] flex items-center justify-center">
@@ -142,6 +160,7 @@ const SpinAndWin = () => {
   }
 
   return (
+    <BlockedAccountOverlay>
     <div className="min-h-screen bg-gradient-to-b from-[#0B0B0B] via-[#121212] to-[#0B0B0B] pb-24">
       {/* Header */}
       <div className="sticky top-0 z-30 bg-[#0B0B0B]/90 backdrop-blur-md border-b border-purple-700/30">
@@ -232,13 +251,18 @@ const SpinAndWin = () => {
       {/* Result Modal */}
       <SpinResultModal
         isOpen={showResultModal}
-        onClose={() => setShowResultModal(false)}
+        onClose={handleModalClose}
         result={spinResult}
         prizeAmount={prizeAmount}
+        lostAmount={lostAmount}
+        onSpinAgain={handleSpinAgain}
+        onBackToDashboard={handleBackToDashboard}
+        canSpinAgain={balance >= stakeAmount}
       />
 
       <BottomNav />
     </div>
+    </BlockedAccountOverlay>
   );
 };
 
