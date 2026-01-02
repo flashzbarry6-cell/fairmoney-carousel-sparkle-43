@@ -17,12 +17,12 @@ const SEGMENTS = [
   { label: "LOSE", multiplier: 0, isWin: false, color: "#222222" },
   { label: "WIN 3X", multiplier: 3, isWin: true, color: "#9A6BFF" },
   { label: "LOSE", multiplier: 0, isWin: false, color: "#1A1A1A" },
-  { label: "WIN 1.2X", multiplier: 1.2, isWin: true, color: "#7B3FE4" },
+  { label: "WIN 1.5X", multiplier: 1.5, isWin: true, color: "#7B3FE4" },
   { label: "LOSE", multiplier: 0, isWin: false, color: "#222222" },
 ];
 
-// Win probability (30% win chance) - adjustable
-const WIN_PROBABILITY = 0.3;
+// Win probability (35% win chance) - adjustable for fairness
+const WIN_PROBABILITY = 0.35;
 
 const SpinWheel = ({ onSpinComplete, isSpinning, onSpin, stakeAmount, balance }: SpinWheelProps) => {
   const [rotation, setRotation] = useState(0);
