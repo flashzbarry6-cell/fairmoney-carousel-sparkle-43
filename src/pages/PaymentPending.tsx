@@ -52,7 +52,7 @@ const PaymentPending = () => {
     }
   }, [navigate, amount, paymentType]);
 
-  // Countdown timer effect
+  // Countdown timer effect (display only - no auto-expiry)
   useEffect(() => {
     if (!expiresAt || paymentStatus !== 'pending') return;
 
@@ -62,33 +62,13 @@ const PaymentPending = () => {
       const remaining = Math.max(0, Math.floor((expiry - now) / 1000));
       
       setTimeRemaining(remaining);
-
-      if (remaining <= 0 && paymentId) {
-        handleExpiredPayment();
-      }
+      // Timer is display-only - payments remain pending until admin action
     };
 
     updateTimer();
     const interval = setInterval(updateTimer, 1000);
     return () => clearInterval(interval);
-  }, [expiresAt, paymentStatus, paymentId]);
-
-  const handleExpiredPayment = async () => {
-    if (!paymentId) return;
-    
-    const { error } = await supabase
-      .from('payments')
-      .update({ 
-        status: 'rejected',
-        rejection_reason: 'Payment expired - no admin confirmation within time limit'
-      })
-      .eq('id', paymentId)
-      .eq('status', 'pending');
-
-    if (!error) {
-      handleStatusChange('rejected', 'Payment expired - no admin confirmation within time limit');
-    }
-  };
+  }, [expiresAt, paymentStatus]);
 
   // Fetch existing payment or use the one from navigation state
   useEffect(() => {
