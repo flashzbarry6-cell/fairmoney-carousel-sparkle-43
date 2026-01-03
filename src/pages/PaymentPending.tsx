@@ -276,18 +276,29 @@ const PaymentPending = () => {
             {/* Receipt Upload Section */}
             <div className="space-y-3">
               {receiptUploaded ? (
-                <div className="bg-green-900/30 border border-green-500/30 rounded-xl p-4 flex items-center gap-3">
-                  <CheckCircle className="w-6 h-6 text-green-400 flex-shrink-0" />
-                  <div>
-                    <p className="text-green-400 font-semibold">Receipt Uploaded Successfully</p>
-                    <p className="text-gray-400 text-sm">Awaiting admin confirmation</p>
+                <div className="bg-green-900/40 border-2 border-green-500/50 rounded-xl p-5 shadow-lg shadow-green-500/10">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center">
+                      <CheckCircle className="w-6 h-6 text-green-400" />
+                    </div>
+                    <div>
+                      <p className="text-green-400 font-bold text-lg">Receipt Uploaded ✓</p>
+                      <p className="text-green-300/80 text-sm">Your proof of payment is on file</p>
+                    </div>
+                  </div>
+                  <div className="bg-green-900/30 rounded-lg p-3 border border-green-500/20">
+                    <p className="text-gray-300 text-sm text-center">
+                      📋 Admin can now see your receipt and will confirm shortly
+                    </p>
                   </div>
                 </div>
               ) : (
                 <>
-                  <p className="text-gray-300 text-sm text-center">
-                    Upload your payment receipt for faster verification
-                  </p>
+                  <div className="bg-orange-900/30 border border-orange-500/30 rounded-xl p-4 mb-3">
+                    <p className="text-orange-300 text-sm text-center font-medium">
+                      ⚠️ No receipt uploaded yet - Upload for faster verification
+                    </p>
+                  </div>
                   
                   <input
                     ref={fileInputRef}
