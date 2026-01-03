@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { User, Eye, EyeOff, Shield, Users, Calculator, Wifi, CreditCard, Banknote, UserPlus, MessageCircle, Copy, History, Gift, TrendingUp, Gamepad2 } from "lucide-react";
 import { BlockedAccountOverlay } from "@/components/BlockedAccountOverlay";
+import { PaymentStatusOverlay } from "@/components/PaymentStatusOverlay";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { WelcomeNotification } from "@/components/WelcomeNotification";
@@ -35,6 +36,7 @@ const Dashboard = () => {
   const [claimingStarted, setClaimingStarted] = useState(false);
   const [lastCheckin, setLastCheckin] = useState<number | null>(null);
   const [canCheckin, setCanCheckin] = useState(true);
+  const [showPaymentStatusOverlay, setShowPaymentStatusOverlay] = useState(true);
 
   // Check auth and load profile
 useEffect(() => {
@@ -384,6 +386,10 @@ useEffect(() => {
 
   return (
     <BlockedAccountOverlay>
+      {/* Payment Status Overlay - Shows approved/rejected on app re-entry */}
+      {showPaymentStatusOverlay && (
+        <PaymentStatusOverlay onClose={() => setShowPaymentStatusOverlay(false)} />
+      )}
     <div className="min-h-screen bg-luxury-black p-2 max-w-md mx-auto pb-32 relative overflow-hidden page-transition">
       {/* Animated Purple Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">

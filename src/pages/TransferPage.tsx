@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import BlockedAccountOverlay from "@/components/BlockedAccountOverlay";
+import { PendingPaymentNotification } from "@/components/PendingPaymentNotification";
 
 const TransferPage = () => {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ const TransferPage = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [showPendingNotification, setShowPendingNotification] = useState(false);
   
   const instantWithdraw = location.state?.instantWithdraw || false;
   const transferAmount = instantWithdraw ? 12800 : 6800;
@@ -79,6 +81,24 @@ const TransferPage = () => {
           variant: "destructive",
         });
         navigate('/login');
+        return;
+      }
+
+      // CHECK FOR EXISTING PENDING PAYMENT
+      const { data: existingPending, error: pendingError } = await supabase
+        .from('payments')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('status', 'pending')
+        .limit(1);
+
+      if (pendingError) throw pendingError;
+
+      if (existingPending && existingPending.length > 0) {
+        setIsConfirming(false);
+        setUploading(false);
+        // Show pending notification
+        setShowPendingNotification(true);
         return;
       }
 
@@ -204,6 +224,10 @@ const TransferPage = () => {
 
   return (
     <BlockedAccountOverlay>
+      {/* Pending Payment Notification */}
+      {showPendingNotification && (
+        <PendingPaymentNotification onClose={() => setShowPendingNotification(false)} />
+      )}
       <div className="min-h-screen relative overflow-hidden p-3 max-w-md mx-auto page-transition">
         <div className="absolute inset-0 animated-bg"></div>
 

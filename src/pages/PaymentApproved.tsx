@@ -93,26 +93,14 @@ const PaymentApproved = () => {
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="space-y-3">
-              {/* Primary: Proceed to Withdrawal */}
-              <Button
-                onClick={handleProceedToWithdrawal}
-                className="w-full bg-gradient-to-r from-luxury-purple to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-4 rounded-xl font-semibold text-lg btn-press shadow-lg shadow-purple-500/30"
-              >
-                <ArrowRight className="w-5 h-5 mr-2" />
-                Proceed for Withdrawal
-              </Button>
-
-              {/* Secondary: Go to Dashboard */}
-              <Button
-                onClick={handleGoToDashboard}
-                variant="outline"
-                className="w-full border-2 border-purple-500/30 text-purple-300 hover:bg-purple-900/30 py-4 rounded-xl font-semibold btn-press"
-              >
-                Go to Dashboard
-              </Button>
-            </div>
+            {/* Action Button - Single CTA */}
+            <Button
+              onClick={handleProceedToWithdrawal}
+              className="w-full bg-gradient-to-r from-luxury-purple to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-4 rounded-xl font-semibold text-lg btn-press shadow-lg shadow-purple-500/30"
+            >
+              <ArrowRight className="w-5 h-5 mr-2" />
+              Proceed for Withdrawal
+            </Button>
 
             {/* Info */}
             <div className="bg-purple-900/20 border border-purple-500/20 rounded-xl p-4">
