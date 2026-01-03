@@ -11,16 +11,8 @@ const PaymentDue = () => {
   const paymentType = location.state?.paymentType || "bank_registration";
 
   const getRetryPath = () => {
-    switch (paymentType) {
-      case 'bank_registration':
-        return '/bank-registration-payment';
-      case 'verification_6800':
-        return '/upgrade-payment-method';
-      case 'verification_12800':
-        return '/upgrade-payment-method';
-      default:
-        return '/dashboard';
-    }
+    // All retry payments go to bank-registration
+    return '/bank-registration';
   };
 
   const getTitle = () => {

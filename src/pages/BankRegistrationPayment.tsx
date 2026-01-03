@@ -2,6 +2,7 @@ import { ArrowLeft, Upload, Copy, Check, Loader2, Building2 } from "lucide-react
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { BlockedAccountOverlay } from "@/components/BlockedAccountOverlay";
+import { PendingPaymentNotification } from "@/components/PendingPaymentNotification";
 import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -14,6 +15,7 @@ const BankRegistrationPayment = () => {
   const [uploading, setUploading] = useState(false);
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
+  const [showPendingNotification, setShowPendingNotification] = useState(false);
 
   const paymentDetails = {
     bankName: "Money Point",
@@ -63,26 +65,17 @@ const BankRegistrationPayment = () => {
         return;
       }
 
-      // Check for existing pending bank registration payment
+      // Check for ANY existing pending payment (not just bank_registration)
       const { data: existingPayment } = await supabase
         .from('payments')
         .select('id')
         .eq('user_id', user.id)
-        .eq('payment_type', 'bank_registration')
         .eq('status', 'pending')
-        .single();
+        .limit(1);
 
-      if (existingPayment) {
-        toast({
-          title: "Payment Pending",
-          description: "You already have a pending bank registration payment",
-        });
-        navigate('/payment-pending', { 
-          state: { 
-            amount: paymentDetails.amount, 
-            paymentType: 'bank_registration' 
-          } 
-        });
+      if (existingPayment && existingPayment.length > 0) {
+        setUploading(false);
+        setShowPendingNotification(true);
         return;
       }
 
@@ -141,6 +134,10 @@ const BankRegistrationPayment = () => {
 
   return (
     <BlockedAccountOverlay>
+      {/* Pending Payment Notification */}
+      {showPendingNotification && (
+        <PendingPaymentNotification onClose={() => setShowPendingNotification(false)} />
+      )}
     <div className="min-h-screen bg-background relative overflow-hidden page-transition">
       {/* Animated Background */}
       <div className="absolute inset-0 premium-bg-animated opacity-50"></div>
