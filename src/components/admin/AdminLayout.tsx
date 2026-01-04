@@ -2,6 +2,7 @@ import { ReactNode, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdmin } from '@/hooks/useAdmin';
 import { AdminSidebar } from './AdminSidebar';
+import { NotificationBell } from './NotificationBell';
 import { Loader2 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -14,7 +15,7 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
 
   useEffect(() => {
     if (!loading && !isAdmin) {
-      navigate('/login');
+      navigate('/dashboard');
     }
   }, [isAdmin, loading, navigate]);
 
@@ -36,8 +37,16 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-purple-900/20 to-black flex">
       <AdminSidebar />
-      <main className="flex-1 p-8 overflow-auto">
-        {children}
+      <main className="flex-1 overflow-auto">
+        {/* Top bar with notification bell */}
+        <div className="sticky top-0 z-10 bg-black/50 backdrop-blur-lg border-b border-purple-500/20 px-8 py-4">
+          <div className="flex items-center justify-end">
+            <NotificationBell />
+          </div>
+        </div>
+        <div className="p-8">
+          {children}
+        </div>
       </main>
     </div>
   );

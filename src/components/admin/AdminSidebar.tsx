@@ -4,21 +4,25 @@ import {
   Users, 
   CreditCard, 
   LogOut,
-  Shield
+  Shield,
+  Bell
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useAdminNotifications } from '@/hooks/useAdminNotifications';
 
 const menuItems = [
   { title: 'Dashboard', url: '/admin', icon: LayoutDashboard },
   { title: 'Users', url: '/admin/users', icon: Users },
   { title: 'Payments', url: '/admin/payments', icon: CreditCard },
+  { title: 'Notifications', url: '/admin/notifications', icon: Bell },
 ];
 
 export const AdminSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { unreadCount } = useAdminNotifications();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -43,6 +47,7 @@ export const AdminSidebar = () => {
         <nav className="space-y-2">
           {menuItems.map((item) => {
             const isActive = location.pathname === item.url;
+            const isNotifications = item.title === 'Notifications';
             return (
               <button
                 key={item.title}
@@ -54,7 +59,12 @@ export const AdminSidebar = () => {
                 }`}
               >
                 <item.icon className="h-5 w-5" />
-                <span className="font-medium">{item.title}</span>
+                <span className="font-medium flex-1 text-left">{item.title}</span>
+                {isNotifications && unreadCount > 0 && (
+                  <span className="px-2 py-0.5 text-xs font-bold bg-red-500 text-white rounded-full animate-pulse">
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
               </button>
             );
           })}
