@@ -30,7 +30,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Search, CheckCircle, XCircle, Clock, Loader2, Eye, ExternalLink, FileText, ZoomIn, Archive } from 'lucide-react';
+import { Search, CheckCircle, XCircle, Clock, Loader2, Eye, ExternalLink, FileText, ZoomIn, Archive, ArchiveRestore } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface Payment {
@@ -74,11 +74,16 @@ const AdminPayments = () => {
       let query = supabase
         .from('payments')
         .select('*')
-        .eq('archived', false)
         .order('created_at', { ascending: false });
 
-      if (statusFilter !== 'all') {
-        query = query.eq('status', statusFilter as 'pending' | 'approved' | 'rejected');
+      // Filter by archived status
+      if (statusFilter === 'archived') {
+        query = query.eq('archived', true);
+      } else {
+        query = query.eq('archived', false);
+        if (statusFilter !== 'all') {
+          query = query.eq('status', statusFilter as 'pending' | 'approved' | 'rejected');
+        }
       }
 
       const { data: paymentsData, error } = await query;
@@ -234,6 +239,32 @@ const AdminPayments = () => {
     }
   };
 
+  const handleUnarchive = async (payment: Payment) => {
+    setActionLoading(payment.id);
+    try {
+      const { error } = await supabase
+        .from('payments')
+        .update({ archived: false })
+        .eq('id', payment.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Payment Restored",
+        description: "Payment has been restored to the list"
+      });
+      fetchPayments();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to restore payment",
+        variant: "destructive"
+      });
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   const filteredPayments = payments.filter(payment =>
     payment.user_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     payment.user_email?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -307,6 +338,7 @@ const AdminPayments = () => {
               <SelectItem value="pending" className="text-yellow-300">Pending</SelectItem>
               <SelectItem value="approved" className="text-green-300">Approved</SelectItem>
               <SelectItem value="rejected" className="text-red-300">Rejected</SelectItem>
+              <SelectItem value="archived" className="text-purple-300">Archived</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -402,7 +434,8 @@ const AdminPayments = () => {
                         {getStatusBadge(payment.status)}
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {/* Show approve/reject for pending OR archived pending payments */}
                           {payment.status === 'pending' && (
                             <>
                               <Button
@@ -440,16 +473,31 @@ const AdminPayments = () => {
                               {payment.rejection_reason}
                             </span>
                           )}
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleArchive(payment)}
-                            disabled={actionLoading === payment.id}
-                            className="border-purple-500/30 text-purple-300 hover:bg-purple-900/30 gap-1"
-                            title="Archive payment"
-                          >
-                            <Archive className="h-4 w-4" />
-                          </Button>
+                          {/* Show archive/unarchive based on current archived status */}
+                          {statusFilter === 'archived' ? (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleUnarchive(payment)}
+                              disabled={actionLoading === payment.id}
+                              className="border-green-500/30 text-green-300 hover:bg-green-900/30 gap-1"
+                              title="Restore payment"
+                            >
+                              <ArchiveRestore className="h-4 w-4" />
+                              Restore
+                            </Button>
+                          ) : (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleArchive(payment)}
+                              disabled={actionLoading === payment.id}
+                              className="border-purple-500/30 text-purple-300 hover:bg-purple-900/30 gap-1"
+                              title="Archive payment"
+                            >
+                              <Archive className="h-4 w-4" />
+                            </Button>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>
