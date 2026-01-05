@@ -390,7 +390,7 @@ useEffect(() => {
       {showPaymentStatusOverlay && (
         <PaymentStatusOverlay onClose={() => setShowPaymentStatusOverlay(false)} />
       )}
-    <div className="min-h-screen bg-luxury-black p-2 max-w-md mx-auto pb-32 relative overflow-hidden page-transition">
+    <div className="min-h-screen bg-luxury-black px-3 py-2 max-w-md mx-auto pb-28 relative overflow-hidden page-transition">
       {/* Animated Purple Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Moving Purple Lights */}
@@ -492,7 +492,7 @@ useEffect(() => {
       </div>
 
       {/* Balance Card */}
-      <div className="bg-gradient-to-br from-luxury-purple via-luxury-purple/80 to-luxury-black rounded-2xl p-3 text-white mb-4 relative border border-luxury-glow/30 luxury-glow animate-slide-up card-hover">
+      <div className="bg-gradient-to-br from-luxury-purple via-luxury-purple/80 to-luxury-black rounded-xl p-3 text-white mb-3 relative border border-luxury-glow/30 luxury-glow animate-slide-up card-hover">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2">
             <Shield className="w-4 h-4 text-gold" />
@@ -540,7 +540,7 @@ useEffect(() => {
           </Link>
         </div>
         
-        <div className="text-3xl font-bold mb-4 text-center">
+        <div className="text-2xl font-bold mb-3 text-center">
           {showBalance ? `₦${balance.toLocaleString()}.00` : "₦****"}
         </div>
         
@@ -574,7 +574,7 @@ useEffect(() => {
 
      {/* ✅ Referral Link Section (Fixed for Dashboard) */}
 {profile?.referral_code && (
-  <div className="bg-gradient-to-br from-gray-900 to-black border border-gold/20 rounded-2xl p-3 mb-4">
+  <div className="bg-gradient-to-br from-gray-900 to-black border border-gold/20 rounded-xl p-2.5 mb-3">
     <div className="flex items-center justify-between mb-2">
       <span className="text-sm font-medium text-gray-400">Your Referral Link</span>
       <span className="text-sm text-gray-400">
@@ -608,26 +608,26 @@ useEffect(() => {
 )}
 
       {/* Services Grid */}
-      <div className="grid grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-4 gap-2 mb-4">
         {services.map((service, index) => (
           service.route === "groups" ? (
             <div key={index} className="flex flex-col items-center space-y-2 animate-slide-up" style={{ animationDelay: `${index * 50}ms` }}>
               <div 
-                className="w-14 h-14 rounded-2xl bg-gradient-to-br from-luxury-purple via-luxury-purple/80 to-luxury-black flex items-center justify-center cursor-pointer shadow-lg hover:shadow-luxury-glow/50 transition-all btn-press luxury-glow"
+                className="w-12 h-12 rounded-xl bg-gradient-to-br from-luxury-purple via-luxury-purple/80 to-luxury-black flex items-center justify-center cursor-pointer shadow-lg hover:shadow-luxury-glow/50 transition-all btn-press luxury-glow"
                 onClick={() => setShowGroupModal(true)}
               >
-                <service.icon className="w-6 h-6 text-luxury-gold animate-pulse" />
+                <service.icon className="w-5 h-5 text-luxury-gold animate-pulse" />
               </div>
-              <span className="text-[10px] text-center text-white font-medium leading-tight">
+              <span className="text-[9px] text-center text-white font-medium leading-tight">
                 {service.label}
               </span>
             </div>
           ) : (
             <Link key={index} to={service.route} className="flex flex-col items-center space-y-2 animate-slide-up" style={{ animationDelay: `${index * 50}ms` }}>
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-luxury-purple via-luxury-purple/80 to-luxury-black flex items-center justify-center shadow-lg hover:shadow-luxury-glow/50 transition-all btn-press luxury-glow">
-                <service.icon className="w-6 h-6 text-luxury-gold animate-pulse" />
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-luxury-purple via-luxury-purple/80 to-luxury-black flex items-center justify-center shadow-lg hover:shadow-luxury-glow/50 transition-all btn-press luxury-glow">
+                <service.icon className="w-5 h-5 text-luxury-gold animate-pulse" />
               </div>
-              <span className="text-[10px] text-center text-white font-medium leading-tight">
+              <span className="text-[9px] text-center text-white font-medium leading-tight">
                 {service.label}
               </span>
             </Link>
@@ -651,41 +651,41 @@ useEffect(() => {
       <BottomCarousel />
 
       {/* Task and Check-in Buttons */}
-      <div className="grid grid-cols-2 gap-2 mb-0 px-2 mt-4">
+      <div className="grid grid-cols-2 gap-2 mb-0 px-1 mt-3">
         <Link to="/activity">
-          <div className="bg-gradient-to-br from-service-button to-service-button-dark rounded-2xl p-4 border border-service-button-light/30 hover:scale-105 transition-transform">
-            <div className="flex items-center gap-2 mb-2">
-              <Gift className="w-6 h-6 text-service-button-foreground animate-pulse" />
-              <h3 className="text-service-button-foreground font-semibold">Task</h3>
+          <div className="bg-gradient-to-br from-service-button to-service-button-dark rounded-xl p-3 border border-service-button-light/30 hover:scale-105 transition-transform">
+            <div className="flex items-center gap-2 mb-1">
+              <Gift className="w-5 h-5 text-service-button-foreground animate-pulse" />
+              <h3 className="text-service-button-foreground font-semibold text-sm">Task</h3>
             </div>
-            <p className="text-service-button-foreground/80 text-sm">Complete daily tasks</p>
+            <p className="text-service-button-foreground/80 text-xs">Complete daily tasks</p>
           </div>
         </Link>
 
         <div 
           onClick={handleCheckin}
-          className={`bg-gradient-to-br from-service-button to-service-button-dark rounded-2xl p-4 border border-service-button-light/30 cursor-pointer hover:scale-105 transition-transform ${
+          className={`bg-gradient-to-br from-service-button to-service-button-dark rounded-xl p-3 border border-service-button-light/30 cursor-pointer hover:scale-105 transition-transform ${
             !canCheckin ? 'opacity-50 cursor-not-allowed' : ''
           }`}
         >
-          <div className="flex items-center gap-2 mb-3">
-            <TrendingUp className="w-6 h-6 text-service-button-foreground animate-pulse" />
-            <h3 className="text-service-button-foreground font-semibold">Check-in</h3>
+          <div className="flex items-center gap-2 mb-1">
+            <TrendingUp className="w-5 h-5 text-service-button-foreground animate-pulse" />
+            <h3 className="text-service-button-foreground font-semibold text-sm">Check-in</h3>
           </div>
-          <p className="text-service-button-foreground/80 text-sm">
+          <p className="text-service-button-foreground/80 text-xs">
             {canCheckin ? 'Earn ₦1,500' : '24hrs cooldown'}
           </p>
         </div>
       </div>
 
       {/* Lumexzz Info Section */}
-      <div className="bg-gradient-to-br from-white via-purple-950 to-purple rounded-2xl py-2 px-3 mb-3 mx-2 mt-4 border border-purple-500/30">
-        <div className="text-center mb-2 mt-2">
-          <h2 className="text-2xl font-bold text-gold mb-2 mt-2">GO Lumexzz?</h2>
-          <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-white-400 mx-auto mb-3"></div>
+      <div className="bg-gradient-to-br from-white via-purple-950 to-purple rounded-xl py-2 px-3 mb-3 mx-1 mt-3 border border-purple-500/30">
+        <div className="text-center mb-2 mt-1">
+          <h2 className="text-xl font-bold text-gold mb-1 mt-1">GO Lumexzz?</h2>
+          <div className="w-12 h-1 bg-gradient-to-r from-purple-500 to-white-400 mx-auto mb-2"></div>
         </div>
 
-        <div className="space-y-6 mb-3">
+        <div className="space-y-4 mb-3">
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
               <Shield className="w-5 h-5 text-gold" />
