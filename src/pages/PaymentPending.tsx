@@ -104,12 +104,11 @@ const PaymentPending = () => {
         return;
       }
 
-      // Check for existing pending payment
+      // Check for existing pending payment - search ALL pending payments for this user
       const { data: pendingPayment } = await supabase
         .from('payments')
         .select('*')
         .eq('user_id', user.id)
-        .eq('payment_type', paymentType)
         .eq('status', 'pending')
         .order('created_at', { ascending: false })
         .limit(1)
@@ -129,7 +128,7 @@ const PaymentPending = () => {
     fetchOrCreatePayment();
   }, [paymentId, paymentType, navigate, handleStatusChange]);
 
-  // Real-time subscription
+  // Real-time subscription - also update receipt status
   useEffect(() => {
     if (!paymentId) return;
 
@@ -145,6 +144,10 @@ const PaymentPending = () => {
         },
         (payload) => {
           const newStatus = payload.new.status;
+          // Update receipt uploaded status in real-time
+          if (payload.new.payment_proof_url) {
+            setReceiptUploaded(true);
+          }
           handleStatusChange(newStatus, payload.new.rejection_reason);
         }
       )
