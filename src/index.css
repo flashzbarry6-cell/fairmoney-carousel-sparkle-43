@@ -1,129 +1,133 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Luxury Fintech Design System - All colors MUST be HSL */
+/* 🔥 LUXURY PHOENIX DESIGN SYSTEM - All colors MUST be HSL */
 
 @layer base {
   :root {
-    /* Deep Black Background */
-    --background: 240 10% 4%;
-    --foreground: 0 0% 98%;
+    /* 🔥 Phoenix Core Colors */
+    --phoenix-black: 240 12% 4%;         /* #0B0B0F - Jet Black */
+    --phoenix-purple: 261 88% 57%;       /* #6B2CF5 - Deep Phoenix Purple */
+    --phoenix-royal: 268 80% 18%;        /* #2A0E4F - Royal Dark Purple */
+    --phoenix-glow: 261 80% 57%;         /* rgba(123, 63, 228, 0.8) equivalent */
+    
+    /* Background System */
+    --background: 240 12% 4%;
+    --foreground: 0 0% 96%;
 
-    --card: 240 10% 6%;
-    --card-foreground: 0 0% 98%;
+    --card: 260 20% 7%;
+    --card-foreground: 0 0% 96%;
 
-    --popover: 240 10% 6%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 260 25% 8%;
+    --popover-foreground: 0 0% 96%;
 
-    /* Deep Purple Branding */
-    --primary: 261 84% 55%;
+    /* Primary - Phoenix Purple */
+    --primary: 261 88% 57%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 261 75% 65%;
-    --primary-dark: 261 90% 40%;
-    --primary-glow: 261 84% 55%;
+    --primary-light: 261 80% 68%;
+    --primary-dark: 268 80% 35%;
+    --primary-glow: 261 100% 60%;
     
-    /* Neon Purple Glow */
-    --neon-purple: 261 100% 60%;
-    --neon-glow: 0 0 20px hsl(261 100% 60% / 0.5);
+    /* Neon Phoenix Glow */
+    --neon-purple: 261 100% 65%;
+    --neon-glow: 261 100% 60%;
     
-    /* Gold Accent */
+    /* Gold Accent (kept for compatibility) */
     --gold: 45 100% 51%;
     --gold-foreground: 0 0% 0%;
     --gold-light: 45 100% 65%;
     --gold-dark: 45 100% 40%;
 
     /* Service Button Colors */
-    --service-button: 261 60% 25%;
+    --service-button: 268 70% 20%;
     --service-button-foreground: 0 0% 100%;
-    --service-button-light: 261 55% 35%;
-    --service-button-dark: 261 65% 18%;
+    --service-button-light: 261 65% 30%;
+    --service-button-dark: 268 80% 12%;
 
-    --secondary: 261 20% 12%;
-    --secondary-foreground: 261 10% 90%;
+    --secondary: 260 25% 10%;
+    --secondary-foreground: 261 20% 90%;
 
-    --muted: 261 20% 15%;
-    --muted-foreground: 261 15% 60%;
+    /* Muted - Lavender tones */
+    --muted: 261 25% 12%;
+    --muted-foreground: 261 20% 65%;
 
-    --accent: 261 30% 20%;
-    --accent-foreground: 261 75% 80%;
+    --accent: 261 40% 18%;
+    --accent-foreground: 261 70% 85%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 142 76% 36%;
+    --success: 142 76% 42%;
     --success-foreground: 0 0% 100%;
 
-    --border: 261 30% 20%;
-    --input: 261 20% 12%;
-    --input-border: 261 30% 25%;
-    --ring: 261 84% 55%;
+    --border: 261 35% 18%;
+    --input: 260 25% 10%;
+    --input-border: 261 40% 22%;
+    --ring: 261 88% 57%;
 
-    --radius: 0.75rem;
+    --radius: 0.875rem;
     
-    /* Luxury Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
-    --gradient-dark: linear-gradient(180deg, hsl(240 10% 4%), hsl(261 30% 8%));
-    --gradient-card: linear-gradient(145deg, hsl(261 20% 10%), hsl(240 10% 6%));
-    --gradient-glow: radial-gradient(ellipse at center, hsl(261 100% 60% / 0.15), transparent 70%);
+    /* 🔥 Phoenix Gradients */
+    --gradient-phoenix: linear-gradient(135deg, hsl(261 88% 57%), hsl(261 80% 68%), hsl(268 80% 35%));
+    --gradient-dark: linear-gradient(180deg, hsl(240 12% 4%), hsl(268 80% 8%));
+    --gradient-card: linear-gradient(145deg, hsl(260 25% 10%), hsl(260 20% 7%));
+    --gradient-glow: radial-gradient(ellipse at center, hsl(261 100% 60% / 0.12), transparent 70%);
+    --gradient-phoenix-flame: linear-gradient(-45deg, hsl(240 12% 4%), hsl(268 60% 12%), hsl(261 70% 20%), hsl(240 12% 4%));
     
-    /* Premium Shadows */
-    --shadow-neon: 0 0 20px hsl(261 100% 60% / 0.3);
-    --shadow-card: 0 10px 40px -10px hsl(261 100% 60% / 0.15);
-    --shadow-button: 0 4px 20px 0 hsl(261 100% 60% / 0.4);
-    --shadow-glow: 0 0 40px hsl(261 100% 60% / 0.3);
+    /* 🔥 Premium Phoenix Shadows */
+    --shadow-neon: 0 0 25px hsl(261 100% 60% / 0.35);
+    --shadow-card: 0 12px 50px -12px hsl(261 100% 60% / 0.18);
+    --shadow-button: 0 6px 25px 0 hsl(261 100% 60% / 0.45);
+    --shadow-glow: 0 0 50px hsl(261 100% 60% / 0.35);
+    --shadow-phoenix: 0 0 60px hsl(261 100% 60% / 0.25), 0 0 120px hsl(268 80% 50% / 0.1);
     
     /* Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    --transition-bounce: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    --transition-phoenix: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
-    --sidebar-background: 240 10% 6%;
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 261 84% 55%;
+    --sidebar-background: 260 20% 6%;
+    --sidebar-foreground: 0 0% 92%;
+    --sidebar-primary: 261 88% 57%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 261 30% 15%;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 261 30% 20%;
-    --sidebar-ring: 261 84% 55%;
+    --sidebar-accent: 261 35% 14%;
+    --sidebar-accent-foreground: 0 0% 96%;
+    --sidebar-border: 261 35% 18%;
+    --sidebar-ring: 261 88% 57%;
   }
 
   .dark {
-    --background: 240 10% 4%;
-    --foreground: 0 0% 98%;
-
-    --card: 240 10% 6%;
-    --card-foreground: 0 0% 98%;
-
-    --popover: 240 10% 6%;
-    --popover-foreground: 0 0% 98%;
-
-    --primary: 261 84% 55%;
+    /* Same as root - app is dark-first */
+    --background: 240 12% 4%;
+    --foreground: 0 0% 96%;
+    --card: 260 20% 7%;
+    --card-foreground: 0 0% 96%;
+    --popover: 260 25% 8%;
+    --popover-foreground: 0 0% 96%;
+    --primary: 261 88% 57%;
     --primary-foreground: 0 0% 100%;
-
-    --secondary: 261 20% 12%;
-    --secondary-foreground: 0 0% 98%;
-
-    --muted: 261 20% 15%;
-    --muted-foreground: 261 15% 60%;
-
-    --accent: 261 30% 20%;
-    --accent-foreground: 0 0% 98%;
-
-    --destructive: 0 62% 30%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 261 30% 20%;
-    --input: 261 20% 12%;
-    --ring: 261 84% 55%;
-    
-    --sidebar-background: 240 10% 6%;
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 261 84% 55%;
+    --secondary: 260 25% 10%;
+    --secondary-foreground: 0 0% 96%;
+    --muted: 261 25% 12%;
+    --muted-foreground: 261 20% 65%;
+    --accent: 261 40% 18%;
+    --accent-foreground: 0 0% 96%;
+    --destructive: 0 62% 35%;
+    --destructive-foreground: 0 0% 96%;
+    --border: 261 35% 18%;
+    --input: 260 25% 10%;
+    --ring: 261 88% 57%;
+    --sidebar-background: 260 20% 6%;
+    --sidebar-foreground: 0 0% 92%;
+    --sidebar-primary: 261 88% 57%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 261 30% 15%;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 261 30% 20%;
-    --sidebar-ring: 261 84% 55%;
+    --sidebar-accent: 261 35% 14%;
+    --sidebar-accent-foreground: 0 0% 96%;
+    --sidebar-border: 261 35% 18%;
+    --sidebar-ring: 261 88% 57%;
   }
 }
 
@@ -133,57 +137,160 @@
   }
 
   body {
-    @apply bg-background text-foreground;
-    font-family: 'Inter', system-ui, sans-serif;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    letter-spacing: -0.01em;
+  }
+  
+  /* 🔥 Typography Enhancement */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    letter-spacing: -0.02em;
   }
 }
 
 @layer components {
-  /* Luxury Fintech Components */
+  /* 🔥 PHOENIX LUXURY COMPONENTS */
+  
+  /* Glassmorphism Card */
+  .phoenix-card {
+    @apply relative rounded-2xl p-6 backdrop-blur-xl border overflow-hidden;
+    background: linear-gradient(145deg, 
+      hsl(260 25% 10% / 0.9), 
+      hsl(260 20% 7% / 0.95)
+    );
+    border-color: hsl(261 88% 57% / 0.2);
+    box-shadow: 
+      0 0 0 1px hsl(261 88% 57% / 0.1),
+      0 12px 50px -12px hsl(261 100% 60% / 0.15),
+      inset 0 1px 0 0 hsl(261 80% 70% / 0.1);
+  }
+  
+  .phoenix-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse at top,
+      hsl(261 100% 60% / 0.05) 0%,
+      transparent 70%
+    );
+    pointer-events: none;
+  }
+  
+  /* Glowing Card Variant */
+  .phoenix-card-glow {
+    @apply phoenix-card;
+    border-color: hsl(261 88% 57% / 0.35);
+    box-shadow: 
+      0 0 0 1px hsl(261 88% 57% / 0.2),
+      0 0 30px hsl(261 100% 60% / 0.2),
+      0 15px 60px -15px hsl(261 100% 60% / 0.25),
+      inset 0 1px 0 0 hsl(261 80% 70% / 0.15);
+  }
+  
+  /* Legacy support */
   .luxury-card {
-    @apply bg-card rounded-2xl p-6 border border-border/50 backdrop-blur-sm;
-    box-shadow: var(--shadow-card);
+    @apply phoenix-card;
   }
   
   .luxury-card-glow {
-    @apply bg-card rounded-2xl p-6 border border-primary/30 backdrop-blur-sm;
-    box-shadow: var(--shadow-neon);
+    @apply phoenix-card-glow;
   }
   
+  /* Neon Border Effect */
   .neon-border {
-    @apply border border-primary/50;
-    box-shadow: var(--shadow-neon), inset 0 0 20px hsl(261 100% 60% / 0.05);
+    @apply border rounded-2xl;
+    border-color: hsl(261 88% 57% / 0.4);
+    box-shadow: 
+      0 0 20px hsl(261 100% 60% / 0.3),
+      inset 0 0 20px hsl(261 100% 60% / 0.05);
   }
   
+  /* Glowing Text */
   .glow-text {
-    text-shadow: 0 0 20px hsl(261 100% 60% / 0.5);
+    text-shadow: 
+      0 0 10px hsl(261 100% 60% / 0.5),
+      0 0 30px hsl(261 100% 60% / 0.3);
   }
   
-  .btn-luxury {
-    @apply bg-primary hover:bg-primary-light text-primary-foreground font-semibold py-4 px-6 rounded-xl transition-all duration-300;
-    box-shadow: var(--shadow-button);
+  /* 🔥 Phoenix Button */
+  .btn-phoenix {
+    @apply relative font-semibold py-4 px-6 rounded-xl transition-all duration-300 overflow-hidden;
+    background: linear-gradient(135deg, 
+      hsl(261 88% 57%), 
+      hsl(261 80% 50%)
+    );
+    color: white;
+    box-shadow: 
+      0 6px 25px 0 hsl(261 100% 60% / 0.4),
+      inset 0 1px 0 0 hsl(261 80% 75% / 0.3);
   }
   
-  .btn-luxury:hover {
-    box-shadow: var(--shadow-glow);
+  .btn-phoenix::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, 
+      hsl(261 80% 65%), 
+      hsl(261 90% 55%)
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .btn-phoenix:hover::before {
+    opacity: 1;
+  }
+  
+  .btn-phoenix:hover {
+    box-shadow: 
+      0 8px 35px 0 hsl(261 100% 60% / 0.55),
+      0 0 50px hsl(261 100% 60% / 0.3);
     transform: translateY(-2px);
   }
   
-  .btn-luxury:active {
+  .btn-phoenix:active {
     transform: translateY(0) scale(0.98);
   }
   
-  .input-luxury {
-    @apply w-full p-4 bg-input border border-input-border rounded-xl text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none transition-all duration-300;
+  .btn-phoenix > * {
+    position: relative;
+    z-index: 1;
   }
   
-  .input-luxury:focus {
-    box-shadow: 0 0 0 3px hsl(261 100% 60% / 0.1), var(--shadow-neon);
+  /* Legacy support */
+  .btn-luxury {
+    @apply btn-phoenix;
+  }
+  
+  /* 🔥 Phoenix Input */
+  .input-phoenix {
+    @apply w-full p-4 rounded-xl text-foreground placeholder:text-muted-foreground transition-all duration-300;
+    background: hsl(260 25% 10%);
+    border: 1px solid hsl(261 40% 22%);
+  }
+  
+  .input-phoenix:focus {
+    outline: none;
+    border-color: hsl(261 88% 57%);
+    box-shadow: 
+      0 0 0 3px hsl(261 100% 60% / 0.15),
+      0 0 25px hsl(261 100% 60% / 0.2);
+  }
+  
+  .input-phoenix:hover:not(:focus) {
+    border-color: hsl(261 60% 35%);
+  }
+  
+  /* Legacy support */
+  .input-luxury {
+    @apply input-phoenix;
   }
 
-  /* Global Interactive Animation - Button/Div Press Effect */
+  /* 🔥 Interactive Press Effect */
   .interactive-press {
-    @apply transition-all duration-150 cursor-pointer;
+    @apply transition-all duration-200 cursor-pointer;
   }
   
   .interactive-press:active {
@@ -193,20 +300,41 @@
   .interactive-press:hover {
     transform: scale(1.02);
   }
+  
+  .btn-press {
+    @apply interactive-press;
+  }
 
-  /* Page Transition Animation */
+  /* 🔥 Page Transition Animation */
   .page-transition {
-    animation: pageSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation: phoenixSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
   
-  @keyframes pageSlideIn {
+  @keyframes phoenixSlideIn {
     0% {
       opacity: 0;
-      transform: translateY(20px);
+      transform: translateY(25px);
     }
     100% {
       opacity: 1;
       transform: translateY(0);
+    }
+  }
+
+  /* 🔥 Staggered Card Animation */
+  .animate-stagger-in {
+    animation: staggerFadeUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    opacity: 0;
+  }
+  
+  @keyframes staggerFadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(30px) scale(0.98);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
     }
   }
 
@@ -225,6 +353,19 @@
       transform: translateY(0);
     }
   }
+  
+  .animate-slide-up {
+    animation: fadeUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+  }
+  
+  @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
 
   /* Staggered Animation Delays */
   .stagger-1 { animation-delay: 0.1s; }
@@ -232,19 +373,37 @@
   .stagger-3 { animation-delay: 0.3s; }
   .stagger-4 { animation-delay: 0.4s; }
   .stagger-5 { animation-delay: 0.5s; }
+  .stagger-6 { animation-delay: 0.6s; }
 
-  /* Glow Pulse Animation */
+  /* 🔥 Phoenix Glow Pulse */
   .glow-pulse {
-    animation: glowPulse 2s ease-in-out infinite;
+    animation: phoenixGlowPulse 2.5s ease-in-out infinite;
   }
   
-  @keyframes glowPulse {
+  @keyframes phoenixGlowPulse {
     0%, 100% {
-      box-shadow: 0 0 20px hsl(261 100% 60% / 0.3);
+      box-shadow: 
+        0 0 20px hsl(261 100% 60% / 0.3),
+        0 0 40px hsl(261 100% 60% / 0.1);
     }
     50% {
-      box-shadow: 0 0 40px hsl(261 100% 60% / 0.6);
+      box-shadow: 
+        0 0 35px hsl(261 100% 60% / 0.5),
+        0 0 70px hsl(261 100% 60% / 0.2);
     }
+  }
+  
+  /* 🔥 Phoenix Flame Loader */
+  .phoenix-loader {
+    @apply w-12 h-12 rounded-full;
+    border: 3px solid hsl(261 35% 18%);
+    border-top-color: hsl(261 88% 57%);
+    animation: phoenixSpin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+  
+  @keyframes phoenixSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 
   /* Typewriter Effect */
@@ -257,25 +416,91 @@
     overflow: hidden;
     white-space: nowrap;
     display: inline-block;
-    animation: typewriter 3s steps(40) 1s forwards;
+    animation: typewriter 2.5s steps(40) 0.5s forwards;
     width: 0;
   }
 
-  /* Premium Background */
+  /* 🔥 Phoenix Premium Backgrounds */
+  .phoenix-bg {
+    background: linear-gradient(180deg, 
+      hsl(240 12% 4%) 0%, 
+      hsl(268 60% 8%) 50%,
+      hsl(240 12% 4%) 100%
+    );
+  }
+  
+  .phoenix-bg-animated {
+    background: linear-gradient(-45deg, 
+      hsl(240 12% 4%), 
+      hsl(268 60% 10%), 
+      hsl(261 50% 15%), 
+      hsl(268 60% 10%),
+      hsl(240 12% 4%)
+    );
+    background-size: 400% 400%;
+    animation: phoenixFlame 20s ease infinite;
+  }
+  
+  @keyframes phoenixFlame {
+    0%, 100% { background-position: 0% 50%; }
+    25% { background-position: 100% 25%; }
+    50% { background-position: 100% 75%; }
+    75% { background-position: 0% 75%; }
+  }
+  
+  /* Legacy support */
   .premium-bg {
-    background: linear-gradient(180deg, hsl(240 10% 4%) 0%, hsl(261 30% 8%) 100%);
+    @apply phoenix-bg;
   }
   
   .premium-bg-animated {
-    background: linear-gradient(-45deg, hsl(240 10% 4%), hsl(261 30% 10%), hsl(261 40% 15%), hsl(240 10% 4%));
-    background-size: 400% 400%;
-    animation: gradientMove 15s ease infinite;
+    @apply phoenix-bg-animated;
   }
   
-  @keyframes gradientMove {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+  .animated-bg {
+    @apply phoenix-bg-animated;
+  }
+
+  /* 🔥 Phoenix Divider */
+  .phoenix-divider {
+    @apply h-px w-full;
+    background: linear-gradient(90deg, 
+      transparent, 
+      hsl(261 88% 57% / 0.4) 20%, 
+      hsl(261 100% 65% / 0.6) 50%, 
+      hsl(261 88% 57% / 0.4) 80%, 
+      transparent
+    );
+  }
+  
+  /* 🔥 Phoenix Glow Line */
+  .phoenix-glow-line {
+    @apply absolute w-full h-px;
+    background: linear-gradient(90deg, 
+      transparent, 
+      hsl(261 100% 60% / 0.5), 
+      transparent
+    );
+    animation: glowLinePulse 3s ease-in-out infinite;
+  }
+  
+  @keyframes glowLinePulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.8; }
+  }
+  
+  /* Legacy class support */
+  .luxury-glow {
+    box-shadow: 0 0 30px hsl(261 100% 60% / 0.2);
+  }
+  
+  .card-hover {
+    @apply transition-all duration-300;
+  }
+  
+  .card-hover:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 50px -15px hsl(261 100% 60% / 0.25);
   }
 }
 
@@ -307,16 +532,16 @@
   /* Float Animation */
   @keyframes float {
     0%, 100% { transform: translate(0, 0) scale(1); }
-    33% { transform: translate(30px, -30px) scale(1.1); }
-    66% { transform: translate(-20px, 20px) scale(0.9); }
+    33% { transform: translate(25px, -25px) scale(1.05); }
+    66% { transform: translate(-15px, 15px) scale(0.95); }
   }
   
   .animate-float {
-    animation: float 8s ease-in-out infinite;
+    animation: float 10s ease-in-out infinite;
   }
 
-  /* Shimmer Effect */
-  @keyframes shimmer {
+  /* 🔥 Phoenix Shimmer Effect */
+  @keyframes phoenixShimmer {
     0% { background-position: -200% 0; }
     100% { background-position: 200% 0; }
   }
@@ -329,6 +554,22 @@
       transparent 100%
     );
     background-size: 200% 100%;
-    animation: shimmer 2s infinite;
+    animation: phoenixShimmer 2.5s infinite;
+  }
+  
+  /* Count-up Animation Base */
+  .count-up {
+    display: inline-block;
+    animation: countPop 0.3s ease-out;
+  }
+  
+  @keyframes countPop {
+    0% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+  
+  /* Legacy class */
+  .bg-luxury-black {
+    background-color: hsl(240 12% 4%);
   }
 }

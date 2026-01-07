@@ -1,11 +1,8 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowLeft } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -122,7 +119,6 @@ const Login = () => {
 
         if (error) throw error;
 
-        // Check if user is blocked
         const { data: profile } = await supabase
           .from('profiles')
           .select('is_blocked, blocked_reason')
@@ -159,58 +155,76 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-purple-900 to-black flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Floating Bubbles */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="bubble bubble-1"></div>
-        <div className="bubble bubble-2"></div>
-        <div className="bubble bubble-3"></div>
-        <div className="bubble bubble-4"></div>
-        <div className="bubble bubble-5"></div>
-        <div className="bubble bubble-6"></div>
+    <div className="min-h-screen phoenix-bg-animated flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Phoenix Flame Orbs */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px] animate-float" 
+          style={{ top: '-20%', left: '-10%' }} 
+        />
+        <div className="absolute w-[400px] h-[400px] bg-primary/15 rounded-full blur-[100px] animate-float" 
+          style={{ bottom: '-15%', right: '-10%', animationDelay: '3s' }} 
+        />
+        <div className="absolute w-[300px] h-[300px] bg-primary/10 rounded-full blur-[80px] animate-float" 
+          style={{ top: '40%', right: '5%', animationDelay: '5s' }} 
+        />
+        
+        {/* Phoenix flame lines */}
+        <div className="phoenix-glow-line top-1/4 opacity-30" />
+        <div className="phoenix-glow-line top-1/2 opacity-20" style={{ animationDelay: '1s' }} />
+        <div className="phoenix-glow-line top-3/4 opacity-25" style={{ animationDelay: '2s' }} />
       </div>
-      <div className="w-full max-w-md">
-        {/* Top Animated Title Section */}
-        <div className="mb-6 flex justify-center">
+      
+      <div className="w-full max-w-md relative z-10">
+        {/* Logo Section */}
+        <div className="mb-8 flex justify-center animate-fade-up">
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-extrabold tracking-widest text-white drop-shadow-[0_0_15px_rgba(168,85,247,0.8)]">
-              <span className="inline-block typing">LUMEXZZ WIN</span>
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white glow-text">
+              LUMEXZZ WIN
             </h1>
-            <p className="text-purple-300 text-sm mt-2">Your winning edge in financial freedom</p>
+            <p className="text-muted-foreground text-sm mt-3 tracking-wide">
+              Your winning edge in financial freedom
+            </p>
           </div>
         </div>
 
         {/* Login Form Card */}
-        <Card className="bg-black/90 backdrop-blur-sm shadow-2xl border border-purple-500/30 rounded-2xl overflow-hidden">
+        <Card className="phoenix-card-glow animate-fade-up" style={{ animationDelay: '0.1s' }}>
           <CardContent className="p-0">
-            <div className="flex">
+            {/* Tab Switcher */}
+            <div className="flex border-b border-border/50">
               <button
                 onClick={() => setIsSignUp(false)}
-                className={`flex-1 py-4 px-6 text-sm font-medium transition-all duration-200 ${
+                className={`flex-1 py-4 px-6 text-sm font-semibold transition-all duration-300 relative ${
                   !isSignUp
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-purple-900/50 text-purple-300 hover:bg-purple-800/50'
+                    ? 'text-white'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 LOGIN
+                {!isSignUp && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary to-primary-light" />
+                )}
               </button>
               <button
                 onClick={() => setIsSignUp(true)}
-                className={`flex-1 py-4 px-6 text-sm font-medium transition-all duration-200 ${
+                className={`flex-1 py-4 px-6 text-sm font-semibold transition-all duration-300 relative ${
                   isSignUp
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-purple-900/50 text-purple-300 hover:bg-purple-800/50'
+                    ? 'text-white'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 CREATE ACCOUNT
+                {isSignUp && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary to-primary-light" />
+                )}
               </button>
             </div>
 
-            <div className="p-6 pt-8">
-              <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="p-6 pt-8 space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-5">
                 {isSignUp && (
                   <>
-                    <div className="space-y-2">
+                    <div className="space-y-2 animate-fade-up" style={{ animationDelay: '0.15s' }}>
                       <Input
                         id="fullName"
                         type="text"
@@ -218,22 +232,22 @@ const Login = () => {
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
                         required
-                        className="h-14 text-base bg-purple-900/30 border-purple-500/30 text-white placeholder:text-purple-300/50 rounded-xl focus:border-purple-500 focus:ring-purple-500"
+                        className="h-14"
                       />
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-2 animate-fade-up" style={{ animationDelay: '0.2s' }}>
                       <Input
                         id="referralCode"
                         type="text"
                         placeholder="Referral Code (Optional)"
                         value={referralCode}
                         onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
-                        className="h-14 text-base bg-purple-900/30 border-purple-500/30 text-white placeholder:text-purple-300/50 rounded-xl focus:border-purple-500 focus:ring-purple-500"
+                        className="h-14"
                       />
                     </div>
                   </>
                 )}
-                <div className="space-y-2">
+                <div className="space-y-2 animate-fade-up" style={{ animationDelay: isSignUp ? '0.25s' : '0.15s' }}>
                   <Input
                     id="email"
                     type="email"
@@ -241,10 +255,10 @@ const Login = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="h-14 text-base bg-purple-900/30 border-purple-500/30 text-white placeholder:text-purple-300/50 rounded-xl focus:border-purple-500 focus:ring-purple-500"
+                    className="h-14"
                   />
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-2 animate-fade-up" style={{ animationDelay: isSignUp ? '0.3s' : '0.2s' }}>
                   <Input
                     id="password"
                     type="password"
@@ -252,25 +266,25 @@ const Login = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="h-14 text-base bg-purple-900/30 border-purple-500/30 text-white placeholder:text-purple-300/50 rounded-xl focus:border-purple-500 focus:ring-purple-500"
+                    className="h-14"
                   />
                 </div>
 
                 {isSignUp && (
-                  <div className="flex items-start space-x-2">
+                  <div className="flex items-start space-x-3 animate-fade-up" style={{ animationDelay: '0.35s' }}>
                     <Checkbox 
                       id="terms" 
                       checked={agreedToTerms}
                       onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
-                      className="mt-1"
+                      className="mt-1 border-primary/50 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                     />
-                    <label htmlFor="terms" className="text-sm text-gray-300 leading-relaxed">
+                    <label htmlFor="terms" className="text-sm text-muted-foreground leading-relaxed">
                       I agree to the{" "}
-                      <a href="#" className="text-blue-400 hover:text-blue-300 underline">
+                      <a href="#" className="text-primary hover:text-primary-light underline transition-colors">
                         terms of service
                       </a>
                       {" "}and{" "}
-                      <a href="#" className="text-blue-400 hover:text-blue-300 underline">
+                      <a href="#" className="text-primary hover:text-primary-light underline transition-colors">
                         privacy policy
                       </a>
                     </label>
@@ -279,16 +293,25 @@ const Login = () => {
 
                 <Button
                   type="submit"
-                  className="w-full h-14 bg-purple-600 hover:bg-purple-700 text-white text-base font-medium rounded-xl transition-colors duration-200 shadow-lg"
+                  variant="phoenix"
+                  size="xl"
+                  className="w-full animate-fade-up"
+                  style={{ animationDelay: isSignUp ? '0.4s' : '0.25s' }}
                   disabled={loading}
                 >
-                  {loading ? "Processing..." : isSignUp ? "CREATE ACCOUNT" : "LOGIN"}
+                  {loading ? (
+                    <div className="phoenix-loader !w-5 !h-5" />
+                  ) : isSignUp ? (
+                    "CREATE ACCOUNT"
+                  ) : (
+                    "LOGIN"
+                  )}
                 </Button>
               </form>
 
               {!isSignUp && (
-                <div className="text-center mt-6">
-                  <button className="text-purple-400 hover:text-purple-300 text-sm font-medium transition-colors duration-200">
+                <div className="text-center animate-fade-up" style={{ animationDelay: '0.3s' }}>
+                  <button className="text-primary hover:text-primary-light text-sm font-medium transition-colors duration-300">
                     Forgot password?
                   </button>
                 </div>
@@ -296,93 +319,12 @@ const Login = () => {
             </div>
           </CardContent>
         </Card>
+        
+        {/* Phoenix Flame Motif */}
+        <div className="mt-8 flex justify-center animate-fade-up" style={{ animationDelay: '0.5s' }}>
+          <div className="phoenix-divider w-32" />
+        </div>
       </div>
-
-      <style>{`
-        .typing {
-          display: inline-block;
-          animation: glow 2s ease-in-out infinite;
-        }
-
-        @keyframes glow {
-          0%, 100% { 
-            text-shadow: 0 0 10px rgba(168,85,247,0.8), 0 0 20px rgba(168,85,247,0.6);
-          }
-          50% { 
-            text-shadow: 0 0 20px rgba(168,85,247,1), 0 0 30px rgba(168,85,247,0.8), 0 0 40px rgba(168,85,247,0.6);
-          }
-        }
-
-        .bubble {
-          position: absolute;
-          background: radial-gradient(circle, rgba(168,85,247,0.3) 0%, rgba(168,85,247,0) 70%);
-          border-radius: 50%;
-          opacity: 0.6;
-          animation: float-up 15s infinite ease-in-out;
-        }
-
-        .bubble-1 {
-          width: 60px;
-          height: 60px;
-          bottom: -60px;
-          left: 10%;
-          animation-delay: 0s;
-        }
-
-        .bubble-2 {
-          width: 80px;
-          height: 80px;
-          bottom: -80px;
-          left: 25%;
-          animation-delay: 2s;
-        }
-
-        .bubble-3 {
-          width: 50px;
-          height: 50px;
-          bottom: -50px;
-          right: 15%;
-          animation-delay: 4s;
-        }
-
-        .bubble-4 {
-          width: 70px;
-          height: 70px;
-          bottom: -70px;
-          right: 30%;
-          animation-delay: 1s;
-        }
-
-        .bubble-5 {
-          width: 90px;
-          height: 90px;
-          bottom: -90px;
-          left: 5%;
-          animation-delay: 3s;
-        }
-
-        .bubble-6 {
-          width: 65px;
-          height: 65px;
-          bottom: -65px;
-          right: 8%;
-          animation-delay: 5s;
-        }
-
-        @keyframes float-up {
-          0% {
-            transform: translateY(0) scale(1);
-            opacity: 0.6;
-          }
-          50% {
-            opacity: 0.8;
-          }
-          100% {
-            transform: translateY(-100vh) scale(1.2);
-            opacity: 0;
-          }
-        }
-      `}</style>
     </div>
   );
 };
