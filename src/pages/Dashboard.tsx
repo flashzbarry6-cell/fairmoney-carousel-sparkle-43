@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { User, Eye, EyeOff, Shield, Users, Calculator, Wifi, CreditCard, Banknote, UserPlus, MessageCircle, Copy, History, Gift, TrendingUp, Gamepad2 } from "lucide-react";
+import { User, Eye, EyeOff, Shield, Users, Calculator, Wifi, CreditCard, Banknote, UserPlus, MessageCircle, Copy, History, Gift, TrendingUp, Gamepad2, Zap, ArrowRight, Wallet } from "lucide-react";
 import { BlockedAccountOverlay } from "@/components/BlockedAccountOverlay";
 import { PaymentStatusOverlay } from "@/components/PaymentStatusOverlay";
 import { Button } from "@/components/ui/button";
@@ -678,50 +678,89 @@ useEffect(() => {
         </div>
       </div>
 
-      {/* Lumexzz Info Section */}
-      <div className="bg-gradient-to-br from-white via-purple-950 to-purple rounded-xl py-2 px-3 mb-3 mx-1 mt-3 border border-purple-500/30">
-        <div className="text-center mb-2 mt-1">
-          <h2 className="text-xl font-bold text-gold mb-1 mt-1">GO Lumexzz?</h2>
-          <div className="w-12 h-1 bg-gradient-to-r from-purple-500 to-white-400 mx-auto mb-2"></div>
-        </div>
-
-        <div className="space-y-4 mb-3">
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
-              <Shield className="w-5 h-5 text-gold" />
-            </div>
-            <div>
-              <h3 className="text-green-500 font-semibold mb-1">safe and Secure</h3>
-              <p className="text-white text-sm">Bank-level encryption protects your transactions and personal data</p>
-            </div>
+      {/* Lumexzz Info Section - Premium Phoenix Design */}
+      <div className="relative bg-phoenix-black rounded-2xl p-5 mb-3 mx-1 mt-4 border border-phoenix-purple/40 shadow-[0_8px_32px_rgba(107,44,245,0.15)] overflow-hidden animate-fade-in group hover:border-phoenix-purple/60 transition-all duration-500">
+        {/* Animated Glow Border */}
+        <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-phoenix-purple/20 via-transparent to-phoenix-purple/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        
+        {/* Subtle Purple Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-phoenix-purple/5 via-transparent to-phoenix-royal/10 rounded-2xl" />
+        
+        {/* Phoenix Flame Line Accents */}
+        <div className="absolute top-0 left-1/4 w-px h-8 bg-gradient-to-b from-phoenix-purple/60 to-transparent animate-pulse" />
+        <div className="absolute top-0 right-1/4 w-px h-6 bg-gradient-to-b from-phoenix-glow/40 to-transparent animate-pulse" style={{ animationDelay: '0.5s' }} />
+        
+        {/* Header with Premium Badge */}
+        <div className="relative flex items-center justify-between mb-5">
+          <div>
+            <h2 className="text-2xl font-bold text-white tracking-wide">GO Lumexzz</h2>
+            <p className="text-phoenix-muted text-sm mt-1">Access smart features • Earn smarter • Move faster</p>
           </div>
-
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center flex-shrink-0">
-              <TrendingUp className="w-5 h-5 text-white" />
+          
+          {/* Phoenix Wing Badge - Right Top */}
+          <div className="relative">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-phoenix-purple to-phoenix-royal flex items-center justify-center shadow-[0_0_20px_rgba(107,44,245,0.5)] animate-glow-pulse">
+              <Zap className="w-6 h-6 text-white" />
             </div>
-            <div>
-              <h3 className="text-green-500 font-semibold mb-1">Lightning Fast</h3>
-              <p className="text-white text-sm">fast withdrawals and secure transactions in seconds</p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-              <Users className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h3 className="text-green-500 font-semibold mb-1">sure% Reliable</h3>
-              <p className="text-white text-sm">24/7 trusted and guaranteed service uptime</p>
-            </div>
+            {/* Glow Ring */}
+            <div className="absolute inset-0 rounded-full border-2 border-phoenix-purple/50 animate-ping opacity-30" />
           </div>
         </div>
+        
+        {/* Divider with Phoenix Gradient */}
+        <div className="w-full h-px bg-gradient-to-r from-transparent via-phoenix-purple/50 to-transparent mb-5" />
 
-        <Link to="/withdrawal-amount">
-          <Button className="w-full bg-gradient-to-r from-service-button to-service-button-dark hover:from-service-button-dark hover:to-service-button text-service-button-foreground font-bold py-3 rounded-full text-lg">
-            Earn Now
+        {/* Features Grid */}
+        <div className="relative space-y-4 mb-5">
+          <div className="flex items-center gap-4 p-3 rounded-xl bg-phoenix-royal/20 border border-phoenix-purple/20 hover:border-phoenix-purple/40 transition-all duration-300 group/item">
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-phoenix-purple to-phoenix-royal flex items-center justify-center shadow-lg group-hover/item:shadow-phoenix-purple/30 transition-shadow">
+              <Shield className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-white font-semibold text-sm">Bank-Grade Security</h3>
+              <p className="text-phoenix-muted text-xs">256-bit encryption • Protected transactions</p>
+            </div>
+            <ArrowRight className="w-4 h-4 text-phoenix-purple opacity-0 group-hover/item:opacity-100 transition-opacity" />
+          </div>
+
+          <div className="flex items-center gap-4 p-3 rounded-xl bg-phoenix-royal/20 border border-phoenix-purple/20 hover:border-phoenix-purple/40 transition-all duration-300 group/item">
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-phoenix-glow to-phoenix-purple flex items-center justify-center shadow-lg group-hover/item:shadow-phoenix-glow/30 transition-shadow">
+              <Zap className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-white font-semibold text-sm">Lightning Withdrawals</h3>
+              <p className="text-phoenix-muted text-xs">Instant processing • No delays</p>
+            </div>
+            <ArrowRight className="w-4 h-4 text-phoenix-purple opacity-0 group-hover/item:opacity-100 transition-opacity" />
+          </div>
+
+          <div className="flex items-center gap-4 p-3 rounded-xl bg-phoenix-royal/20 border border-phoenix-purple/20 hover:border-phoenix-purple/40 transition-all duration-300 group/item">
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg group-hover/item:shadow-emerald-500/30 transition-shadow">
+              <Wallet className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-white font-semibold text-sm">100% Reliable</h3>
+              <p className="text-phoenix-muted text-xs">24/7 uptime • Guaranteed service</p>
+            </div>
+            <ArrowRight className="w-4 h-4 text-phoenix-purple opacity-0 group-hover/item:opacity-100 transition-opacity" />
+          </div>
+        </div>
+
+        {/* Premium CTA Button */}
+        <Link to="/withdrawal-amount" className="block">
+          <Button className="w-full relative overflow-hidden bg-gradient-to-r from-phoenix-purple via-phoenix-glow to-phoenix-purple bg-[length:200%_100%] hover:bg-right text-white font-bold py-4 rounded-xl text-base shadow-[0_4px_20px_rgba(107,44,245,0.4)] hover:shadow-[0_6px_30px_rgba(107,44,245,0.6)] transition-all duration-500 active:scale-[0.98] group/btn">
+            <span className="relative z-10 flex items-center justify-center gap-2">
+              <TrendingUp className="w-5 h-5" />
+              Start Earning Now
+              <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+            </span>
+            {/* Button Glow Effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700" />
           </Button>
         </Link>
+        
+        {/* Bottom Accent Line */}
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-gradient-to-r from-transparent via-phoenix-purple/40 to-transparent" />
       </div>
 
       {/* Live Chat */}
