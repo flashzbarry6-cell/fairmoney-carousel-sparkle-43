@@ -679,7 +679,7 @@ useEffect(() => {
       </div>
 
       {/* Lumexzz Info Section - Premium Phoenix Design */}
-      <div className="relative bg-phoenix-black rounded-2xl p-4 mb-3 mx-0 mt-4 border border-phoenix-purple/40 shadow-[0_8px_32px_rgba(107,44,245,0.15)] overflow-hidden animate-fade-in group hover:border-phoenix-purple/60 transition-all duration-500">
+      <div className="relative bg-phoenix-black rounded-2xl p-3 mb-3 mx-0 mt-4 border border-phoenix-purple/40 shadow-[0_8px_32px_rgba(107,44,245,0.15)] overflow-hidden animate-fade-in group hover:border-phoenix-purple/60 transition-all duration-500">
         {/* Animated Glow Border */}
         <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-phoenix-purple/20 via-transparent to-phoenix-purple/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         
@@ -687,10 +687,10 @@ useEffect(() => {
         <div className="absolute inset-0 bg-gradient-to-br from-phoenix-purple/5 via-transparent to-phoenix-royal/10 rounded-2xl" />
         
         {/* Header with Premium Badge */}
-        <div className="relative flex items-center justify-between mb-3">
+        <div className="relative flex items-center justify-between mb-2">
           <div>
-            <h2 className="text-xl font-bold text-white tracking-wide">GO Lumexzz</h2>
-            <p className="text-phoenix-muted text-xs mt-0.5">Access smart features • Earn smarter • Move faster</p>
+            <h2 className="text-2xl font-bold text-white tracking-wide">GO Lumexzz</h2>
+            <p className="text-phoenix-muted text-sm">Access smart features • Earn smarter • Move faster</p>
           </div>
           
           {/* Phoenix Wing Badge - Right Top */}
@@ -703,14 +703,14 @@ useEffect(() => {
         </div>
 
         {/* Features Row - Compact Horizontal Layout */}
-        <div className="relative flex gap-2 mb-3">
+        <div className="relative flex gap-2 mb-2">
           <div className="flex-1 flex items-center gap-2 p-2 rounded-lg bg-phoenix-royal/20 border border-phoenix-purple/20">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-phoenix-purple to-phoenix-royal flex items-center justify-center">
               <Shield className="w-4 h-4 text-white" />
             </div>
             <div>
-              <h3 className="text-white font-semibold text-xs">Secure</h3>
-              <p className="text-phoenix-muted text-[10px]">256-bit encrypted</p>
+              <h3 className="text-white font-semibold text-sm">Secure</h3>
+              <p className="text-phoenix-muted text-xs">256-bit encrypted</p>
             </div>
           </div>
 
@@ -719,8 +719,8 @@ useEffect(() => {
               <Zap className="w-4 h-4 text-white" />
             </div>
             <div>
-              <h3 className="text-white font-semibold text-xs">Fast</h3>
-              <p className="text-phoenix-muted text-[10px]">Instant payout</p>
+              <h3 className="text-white font-semibold text-sm">Fast</h3>
+              <p className="text-phoenix-muted text-xs">Instant payout</p>
             </div>
           </div>
 
@@ -729,15 +729,15 @@ useEffect(() => {
               <Wallet className="w-4 h-4 text-white" />
             </div>
             <div>
-              <h3 className="text-white font-semibold text-xs">Reliable</h3>
-              <p className="text-phoenix-muted text-[10px]">24/7 uptime</p>
+              <h3 className="text-white font-semibold text-sm">Reliable</h3>
+              <p className="text-phoenix-muted text-xs">24/7 uptime</p>
             </div>
           </div>
         </div>
 
         {/* Premium CTA Button */}
         <Link to="/withdrawal-amount" className="block">
-          <Button className="w-full relative overflow-hidden bg-gradient-to-r from-phoenix-purple via-phoenix-glow to-phoenix-purple bg-[length:200%_100%] hover:bg-right text-white font-bold py-3 rounded-xl text-sm shadow-[0_4px_20px_rgba(107,44,245,0.4)] hover:shadow-[0_6px_30px_rgba(107,44,245,0.6)] transition-all duration-500 active:scale-[0.98] group/btn">
+          <Button className="w-full relative overflow-hidden bg-gradient-to-r from-phoenix-purple via-phoenix-glow to-phoenix-purple bg-[length:200%_100%] hover:bg-right text-white font-bold py-2.5 rounded-xl text-sm shadow-[0_4px_20px_rgba(107,44,245,0.4)] hover:shadow-[0_6px_30px_rgba(107,44,245,0.6)] transition-all duration-500 active:scale-[0.98] group/btn">
             <span className="relative z-10 flex items-center justify-center gap-2">
               <TrendingUp className="w-4 h-4" />
               Start Earning Now
