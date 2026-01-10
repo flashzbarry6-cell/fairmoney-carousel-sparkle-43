@@ -1,14 +1,31 @@
-import { ArrowRight, CheckCircle, Wallet, X } from "lucide-react";
+import { ArrowRight, CheckCircle, Wallet, X, Loader2, Shield, Zap } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import BlockedAccountOverlay from "@/components/BlockedAccountOverlay";
+import { useBalanceDeduction } from "@/hooks/useBalanceDeduction";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const PaymentApproved = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { toast } = useToast();
   const [showNotification, setShowNotification] = useState(false);
   const [confetti, setConfetti] = useState<Array<{ id: number; left: number; delay: number; color: string }>>([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [showDeductionAnimation, setShowDeductionAnimation] = useState(false);
+  const [animatedBalance, setAnimatedBalance] = useState<number | null>(null);
+  const [deductionAmount, setDeductionAmount] = useState<number | null>(null);
+  const processedRef = useRef(false);
+  
+  const { 
+    checkAutoDeductEnabled, 
+    processWithdrawalDeduction,
+    animateBalanceChange,
+    checkSessionLock,
+    setSessionLock
+  } = useBalanceDeduction();
   
   const amount = location.state?.amount || 6800;
   const paymentType = location.state?.paymentType || "verification";
@@ -28,8 +45,89 @@ const PaymentApproved = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleProceedToWithdrawal = () => {
-    navigate('/bank-registration');
+  const handleProceedToWithdrawal = async () => {
+    // Prevent double-clicks
+    if (isProcessing || processedRef.current) return;
+    
+    const sessionKey = `withdrawal_continue_${amount}_${Date.now()}`;
+    if (checkSessionLock(sessionKey)) {
+      toast({
+        title: "Already Processing",
+        description: "This action has already been initiated",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsProcessing(true);
+    processedRef.current = true;
+    setSessionLock(sessionKey);
+
+    try {
+      // Check if auto-deduct is enabled
+      const autoDeductEnabled = await checkAutoDeductEnabled();
+
+      if (autoDeductEnabled) {
+        // Get current balance for animation
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          navigate('/bank-registration');
+          return;
+        }
+
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('balance')
+          .eq('user_id', session.user.id)
+          .single();
+
+        if (profile) {
+          const currentBalance = profile.balance || 0;
+          setAnimatedBalance(currentBalance);
+          setDeductionAmount(amount);
+          setShowDeductionAnimation(true);
+
+          // Process the deduction
+          const result = await processWithdrawalDeduction(amount);
+
+          if (result.success) {
+            // Animate balance change
+            animateBalanceChange(
+              currentBalance,
+              result.balance_after || currentBalance - amount,
+              1500,
+              (value) => setAnimatedBalance(value)
+            );
+
+            // Wait for animation then navigate
+            setTimeout(() => {
+              toast({
+                title: "Amount Reserved",
+                description: "Withdrawal processing initiated",
+              });
+              navigate('/bank-registration');
+            }, 2000);
+          } else {
+            // If deduction fails, still navigate (toggle might be off)
+            setTimeout(() => {
+              navigate('/bank-registration');
+            }, 500);
+          }
+        }
+      } else {
+        // Auto-deduct is OFF - just redirect without deduction
+        toast({
+          title: "Complete Bank Setup",
+          description: "Complete bank setup to proceed with withdrawals",
+        });
+        navigate('/bank-registration');
+      }
+    } catch (error) {
+      console.error('Error processing withdrawal:', error);
+      navigate('/bank-registration');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleGoToDashboard = () => {
@@ -54,6 +152,58 @@ const PaymentApproved = () => {
             }}
           />
         ))}
+
+        {/* Deduction Animation Overlay */}
+        {showDeductionAnimation && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fade-in">
+            <div className="bg-gradient-to-br from-purple-900/90 to-black/90 border border-purple-500/40 rounded-3xl p-8 max-w-sm mx-4 shadow-2xl animate-scale-in">
+              {/* Animated Icon */}
+              <div className="flex justify-center mb-6">
+                <div className="relative">
+                  <div className="w-20 h-20 bg-gradient-to-br from-purple-600 to-purple-800 rounded-full flex items-center justify-center animate-pulse shadow-lg shadow-purple-500/50">
+                    <Zap className="w-10 h-10 text-white" />
+                  </div>
+                  <div className="absolute -top-2 -right-2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center animate-bounce">
+                    <CheckCircle className="w-5 h-5 text-white" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Title */}
+              <h2 className="text-xl font-bold text-white text-center mb-2">
+                Processing Withdrawal
+              </h2>
+              
+              {/* Amount being deducted */}
+              <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-4 mb-4">
+                <p className="text-red-300 text-sm text-center mb-1">Amount Reserved</p>
+                <p className="text-2xl font-bold text-red-400 text-center animate-pulse">
+                  -₦{deductionAmount?.toLocaleString()}
+                </p>
+              </div>
+
+              {/* Animated Balance */}
+              <div className="bg-purple-900/40 border border-purple-500/30 rounded-xl p-4 mb-4">
+                <p className="text-purple-300 text-sm text-center mb-1">New Balance</p>
+                <p className="text-2xl font-bold text-white text-center transition-all duration-300">
+                  ₦{animatedBalance?.toLocaleString()}
+                </p>
+              </div>
+
+              {/* Loading indicator */}
+              <div className="flex items-center justify-center gap-2 text-purple-300">
+                <Loader2 className="w-5 h-5 animate-spin" />
+                <span className="text-sm">Initiating withdrawal...</span>
+              </div>
+
+              {/* Security badge */}
+              <div className="flex items-center justify-center gap-2 mt-4 text-green-400 text-xs">
+                <Shield className="w-4 h-4" />
+                <span>Secured by Lumexzz</span>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="relative z-10 animate-fade-in">
           {/* Main Success Card */}
@@ -93,13 +243,31 @@ const PaymentApproved = () => {
               </div>
             </div>
 
+            {/* Status Badge */}
+            <div className="flex justify-center">
+              <span className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/20 border border-green-500/40 rounded-full text-green-400 text-sm font-medium">
+                <CheckCircle className="w-4 h-4" />
+                Approved
+              </span>
+            </div>
+
             {/* Action Button - Single CTA */}
             <Button
               onClick={handleProceedToWithdrawal}
-              className="w-full bg-gradient-to-r from-luxury-purple to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-4 rounded-xl font-semibold text-lg btn-press shadow-lg shadow-purple-500/30"
+              disabled={isProcessing}
+              className="w-full bg-gradient-to-r from-luxury-purple to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-4 rounded-xl font-semibold text-lg btn-press shadow-lg shadow-purple-500/30 disabled:opacity-50"
             >
-              <ArrowRight className="w-5 h-5 mr-2" />
-              Proceed for Withdrawal
+              {isProcessing ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <ArrowRight className="w-5 h-5 mr-2" />
+                  Continue to Withdraw
+                </>
+              )}
             </Button>
 
             {/* Info */}
@@ -139,6 +307,7 @@ const PaymentApproved = () => {
 
                 <Button
                   onClick={handleProceedToWithdrawal}
+                  disabled={isProcessing}
                   className="w-full bg-luxury-gold hover:bg-luxury-gold/90 text-black font-semibold py-3 rounded-xl btn-press"
                 >
                   Register Bank Account
@@ -179,6 +348,14 @@ const PaymentApproved = () => {
             top: 0;
             animation: confettiFall 4s linear forwards;
             z-index: 5;
+          }
+
+          @keyframes scaleIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+          }
+          .animate-scale-in {
+            animation: scaleIn 0.3s ease-out forwards;
           }
         `}</style>
       </div>

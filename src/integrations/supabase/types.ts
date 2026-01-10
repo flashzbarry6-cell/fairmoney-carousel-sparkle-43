@@ -59,6 +59,72 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_settings: {
+        Row: {
+          description: string | null
+          id: string
+          setting_key: string
+          setting_value: Json
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          description?: string | null
+          id?: string
+          setting_key: string
+          setting_value?: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          description?: string | null
+          id?: string
+          setting_key?: string
+          setting_value?: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      balance_deductions: {
+        Row: {
+          amount: number
+          balance_after: number
+          balance_before: number
+          created_at: string
+          deduction_type: string
+          id: string
+          reason: string | null
+          reference_id: string | null
+          transaction_hash: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          balance_after: number
+          balance_before: number
+          created_at?: string
+          deduction_type: string
+          id?: string
+          reason?: string | null
+          reference_id?: string | null
+          transaction_hash?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          balance_after?: number
+          balance_before?: number
+          created_at?: string
+          deduction_type?: string
+          id?: string
+          reason?: string | null
+          reference_id?: string | null
+          transaction_hash?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       bank_accounts: {
         Row: {
           account_name: string
@@ -96,6 +162,7 @@ export type Database = {
           approved_by: string | null
           archived: boolean | null
           created_at: string
+          deduction_processed: boolean | null
           expires_at: string | null
           id: string
           payment_proof_url: string | null
@@ -111,6 +178,7 @@ export type Database = {
           approved_by?: string | null
           archived?: boolean | null
           created_at?: string
+          deduction_processed?: boolean | null
           expires_at?: string | null
           id?: string
           payment_proof_url?: string | null
@@ -126,6 +194,7 @@ export type Database = {
           approved_by?: string | null
           archived?: boolean | null
           created_at?: string
+          deduction_processed?: boolean | null
           expires_at?: string | null
           id?: string
           payment_proof_url?: string | null
@@ -295,6 +364,10 @@ export type Database = {
         Args: { _admin_id: string; _payment_id: string }
         Returns: Json
       }
+      approve_payment_with_deduction: {
+        Args: { _admin_id: string; _payment_id: string }
+        Returns: Json
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -304,8 +377,16 @@ export type Database = {
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_user_blocked: { Args: { _user_id: string }; Returns: boolean }
+      process_payment_deduction: {
+        Args: { _deduction_type: string; _payment_id: string }
+        Returns: Json
+      }
       process_referral: {
         Args: { device_id_input?: string; referral_code_input: string }
+        Returns: Json
+      }
+      process_withdrawal_deduction: {
+        Args: { _amount: number; _user_id: string }
         Returns: Json
       }
       reject_payment: {

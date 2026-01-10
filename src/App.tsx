@@ -54,6 +54,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminPayments from "./pages/admin/AdminPayments";
 import AdminNotifications from "./pages/admin/AdminNotifications";
+import AdminWithdrawalSettings from "./pages/admin/AdminWithdrawalSettings";
 
 const queryClient = new QueryClient();
 
@@ -118,6 +119,7 @@ const App = () => (
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/payments" element={<AdminPayments />} />
           <Route path="/admin/notifications" element={<AdminNotifications />} />
+          <Route path="/admin/withdrawal-settings" element={<AdminWithdrawalSettings />} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>
