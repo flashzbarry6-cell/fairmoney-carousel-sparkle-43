@@ -5,7 +5,8 @@ import {
   CreditCard, 
   LogOut,
   Shield,
-  Bell
+  Bell,
+  Settings
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -16,6 +17,7 @@ const menuItems = [
   { title: 'Users', url: '/admin/users', icon: Users },
   { title: 'Payments', url: '/admin/payments', icon: CreditCard },
   { title: 'Notifications', url: '/admin/notifications', icon: Bell },
+  { title: 'Withdrawal Settings', url: '/admin/withdrawal-settings', icon: Settings },
 ];
 
 export const AdminSidebar = () => {

@@ -594,4 +594,93 @@
   .bg-luxury-black {
     background-color: hsl(240 12% 4%);
   }
+  
+  /* Balance Deduction Animation */
+  @keyframes balanceDeduct {
+    0% { 
+      color: hsl(var(--foreground)); 
+      transform: scale(1);
+    }
+    25% { 
+      color: hsl(0 84% 60%);
+      transform: scale(1.05);
+    }
+    50% { 
+      color: hsl(0 84% 60%);
+      transform: scale(0.95);
+    }
+    100% { 
+      color: hsl(var(--foreground)); 
+      transform: scale(1);
+    }
+  }
+  
+  .animate-balance-deduct {
+    animation: balanceDeduct 1.5s ease-out;
+  }
+  
+  /* Balance Credit Animation */
+  @keyframes balanceCredit {
+    0% { 
+      color: hsl(var(--foreground)); 
+      transform: scale(1);
+    }
+    25% { 
+      color: hsl(142 76% 42%);
+      transform: scale(1.1);
+    }
+    50% { 
+      color: hsl(142 76% 42%);
+      transform: scale(1.05);
+    }
+    100% { 
+      color: hsl(var(--foreground)); 
+      transform: scale(1);
+    }
+  }
+  
+  .animate-balance-credit {
+    animation: balanceCredit 1.5s ease-out;
+  }
+  
+  /* Pulse Glow for Processing */
+  @keyframes pulseGlow {
+    0%, 100% {
+      box-shadow: 0 0 10px hsl(261 100% 60% / 0.3);
+    }
+    50% {
+      box-shadow: 0 0 30px hsl(261 100% 60% / 0.6), 0 0 60px hsl(261 100% 60% / 0.3);
+    }
+  }
+  
+  .animate-pulse-glow {
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+  
+  /* Fade Up Animation */
+  @keyframes fadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-fade-up {
+    animation: fadeUp 0.5s ease-out forwards;
+  }
+  
+  /* Reserved Amount Shake */
+  @keyframes reserveShake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+    20%, 40%, 60%, 80% { transform: translateX(2px); }
+  }
+  
+  .animate-reserve-shake {
+    animation: reserveShake 0.5s ease-in-out;
+  }
 }
