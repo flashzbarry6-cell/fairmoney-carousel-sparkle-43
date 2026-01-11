@@ -314,15 +314,15 @@ const AdminWithdrawalSettings = () => {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-green-400 mt-1">•</span>
-                <span>Amount instantly deducted from balance</span>
+                <span>Amount (₦6,800 or ₦12,800) instantly deducted</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-green-400 mt-1">•</span>
-                <span>User redirected to bank registration</span>
+                <span>User redirected to <strong>Dashboard</strong></span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-green-400 mt-1">•</span>
-                <span>Animated confirmation shown</span>
+                <span>Withdrawal history record created</span>
               </li>
             </ul>
           </div>

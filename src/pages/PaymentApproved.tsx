@@ -46,11 +46,18 @@ const PaymentApproved = () => {
   }, []);
 
   const handleProceedToWithdrawal = async () => {
-    // Prevent double-clicks
-    if (isProcessing || processedRef.current) return;
-    
-    const sessionKey = `withdrawal_continue_${amount}_${Date.now()}`;
-    if (checkSessionLock(sessionKey)) {
+    // Validate amount is exactly ₦6,800 or ₦12,800
+    if (amount !== 6800 && amount !== 12800) {
+      toast({
+        title: "Invalid Amount",
+        description: "Only ₦6,800 or ₦12,800 withdrawals are supported",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Prevent double-clicks with strict lock
+    if (isProcessing || processedRef.current) {
       toast({
         title: "Already Processing",
         description: "This action has already been initiated",
@@ -59,73 +66,128 @@ const PaymentApproved = () => {
       return;
     }
 
+    // Create unique session key to prevent duplicate deductions
+    const sessionKey = `withdrawal_continue_${amount}`;
+    if (checkSessionLock(sessionKey)) {
+      toast({
+        title: "Action Already Completed",
+        description: "This withdrawal action has already been processed",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsProcessing(true);
     processedRef.current = true;
-    setSessionLock(sessionKey);
 
     try {
-      // Check if auto-deduct is enabled
+      // Check if auto-deduct toggle is enabled
       const autoDeductEnabled = await checkAutoDeductEnabled();
 
       if (autoDeductEnabled) {
-        // Get current balance for animation
+        // 🟢 TOGGLE ON: Deduct amount and redirect to Dashboard
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
-          navigate('/bank-registration');
+          toast({
+            title: "Session Expired",
+            description: "Please log in again",
+            variant: "destructive"
+          });
+          processedRef.current = false;
+          setIsProcessing(false);
+          navigate('/login');
           return;
         }
 
+        // Get current balance for animation
         const { data: profile } = await supabase
           .from('profiles')
           .select('balance')
           .eq('user_id', session.user.id)
           .single();
 
-        if (profile) {
-          const currentBalance = profile.balance || 0;
-          setAnimatedBalance(currentBalance);
-          setDeductionAmount(amount);
-          setShowDeductionAnimation(true);
+        if (!profile) {
+          toast({
+            title: "Error",
+            description: "Could not fetch your profile",
+            variant: "destructive"
+          });
+          processedRef.current = false;
+          setIsProcessing(false);
+          return;
+        }
 
-          // Process the deduction
-          const result = await processWithdrawalDeduction(amount);
+        const currentBalance = profile.balance || 0;
 
-          if (result.success) {
-            // Animate balance change
-            animateBalanceChange(
-              currentBalance,
-              result.balance_after || currentBalance - amount,
-              1500,
-              (value) => setAnimatedBalance(value)
-            );
+        // Check if sufficient balance
+        if (currentBalance < amount) {
+          toast({
+            title: "Insufficient Balance",
+            description: `You need ₦${amount.toLocaleString()} to proceed`,
+            variant: "destructive"
+          });
+          processedRef.current = false;
+          setIsProcessing(false);
+          return;
+        }
 
-            // Wait for animation then navigate
-            setTimeout(() => {
-              toast({
-                title: "Amount Reserved",
-                description: "Withdrawal processing initiated",
-              });
-              navigate('/bank-registration');
-            }, 2000);
-          } else {
-            // If deduction fails, still navigate (toggle might be off)
-            setTimeout(() => {
-              navigate('/bank-registration');
-            }, 500);
-          }
+        // Show deduction animation
+        setAnimatedBalance(currentBalance);
+        setDeductionAmount(amount);
+        setShowDeductionAnimation(true);
+
+        // Process the deduction (atomic database operation)
+        const result = await processWithdrawalDeduction(amount);
+
+        if (result.success) {
+          // Lock this action permanently for this session
+          setSessionLock(sessionKey);
+
+          // Animate balance drop
+          animateBalanceChange(
+            currentBalance,
+            result.balance_after || currentBalance - amount,
+            1500,
+            (value) => setAnimatedBalance(value)
+          );
+
+          // Wait for animation then redirect to DASHBOARD
+          setTimeout(() => {
+            setShowDeductionAnimation(false);
+            toast({
+              title: "Withdrawal Amount Deducted Successfully",
+              description: `₦${amount.toLocaleString()} has been reserved for withdrawal processing`,
+            });
+            navigate('/dashboard');
+          }, 2000);
+        } else {
+          // Deduction failed - show error and don't redirect
+          setShowDeductionAnimation(false);
+          processedRef.current = false;
+          toast({
+            title: "Deduction Failed",
+            description: result.message || "Could not process deduction. Please try again.",
+            variant: "destructive"
+          });
+          setIsProcessing(false);
         }
       } else {
-        // Auto-deduct is OFF - just redirect without deduction
+        // 🔴 TOGGLE OFF: No deduction, redirect to Bank Registration
         toast({
           title: "Complete Bank Setup",
           description: "Complete bank setup to proceed with withdrawals",
         });
         navigate('/bank-registration');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error processing withdrawal:', error);
-      navigate('/bank-registration');
-    } finally {
+      setShowDeductionAnimation(false);
+      processedRef.current = false;
+      toast({
+        title: "Error",
+        description: error.message || "An error occurred. Please try again.",
+        variant: "destructive"
+      });
       setIsProcessing(false);
     }
   };
