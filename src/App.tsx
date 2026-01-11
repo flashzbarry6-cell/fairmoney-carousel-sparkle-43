@@ -19,6 +19,7 @@ import WithdrawBankSelection from "./pages/WithdrawBankSelection";
 import WithdrawalConfirmation from "./pages/WithdrawalConfirmation";
 import WithdrawalReceipt from "./pages/WithdrawalReceipt";
 import WithdrawalSuccess from "./pages/WithdrawalSuccess";
+import WithdrawalSuccessPage from "./pages/WithdrawalSuccessPage";
 import PaymentNotConfirmed from "./pages/PaymentNotConfirmed";
 import PaymentPending from "./pages/PaymentPending";
 import PaymentApproved from "./pages/PaymentApproved";
@@ -86,6 +87,7 @@ const App = () => (
           <Route path="/withdrawal-confirmation" element={<WithdrawalConfirmation />} />
           <Route path="/withdrawal-receipt" element={<WithdrawalReceipt />} />
           <Route path="/withdrawal-success" element={<WithdrawalSuccess />} />
+          <Route path="/withdrawal-success-page" element={<WithdrawalSuccessPage />} />
           <Route path="/payment-not-confirmed" element={<PaymentNotConfirmed />} />
           <Route path="/payment-pending" element={<PaymentPending />} />
           <Route path="/payment-approved" element={<PaymentApproved />} />

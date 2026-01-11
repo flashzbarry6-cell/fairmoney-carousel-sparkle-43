@@ -132,6 +132,8 @@ const WithdrawalAmount = () => {
       return;
     }
 
+    // Store the withdrawal amount for later use in PaymentApproved
+    localStorage.setItem('pendingWithdrawAmount', withdrawalAmount.toString());
     navigate("/withdraw-bank-selection", { state: { amount: withdrawalAmount, instantWithdraw } });
   };
 
@@ -163,6 +165,8 @@ const WithdrawalAmount = () => {
       });
       return;
     }
+    // Store the withdrawal amount for later use in PaymentApproved
+    localStorage.setItem('pendingWithdrawAmount', withdrawalAmount.toString());
     navigate("/withdraw-bank-selection", { state: { amount: withdrawalAmount, instantWithdraw: true } });
   };
 

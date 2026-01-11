@@ -27,7 +27,12 @@ const PaymentApproved = () => {
     setSessionLock
   } = useBalanceDeduction();
   
-  const amount = location.state?.amount || 6800;
+  // Plan amount (₦6,800 or ₦12,800) - used for validation
+  const planAmount = location.state?.amount || 6800;
+  // Withdrawal amount - the actual amount user typed on /withdrawal-amount page
+  // Read from localStorage if not in state (set on /withdrawal-amount page)
+  const storedWithdrawAmount = localStorage.getItem('pendingWithdrawAmount');
+  const withdrawAmount = location.state?.withdrawAmount || (storedWithdrawAmount ? parseFloat(storedWithdrawAmount) : 0);
   const paymentType = location.state?.paymentType || "verification";
 
   useEffect(() => {
@@ -46,11 +51,11 @@ const PaymentApproved = () => {
   }, []);
 
   const handleProceedToWithdrawal = async () => {
-    // Validate amount is exactly ₦6,800 or ₦12,800
-    if (amount !== 6800 && amount !== 12800) {
+    // STRICT VALIDATION: Only ₦6,800 or ₦12,800 plans
+    if (planAmount !== 6800 && planAmount !== 12800) {
       toast({
-        title: "Invalid Amount",
-        description: "Only ₦6,800 or ₦12,800 withdrawals are supported",
+        title: "Invalid Plan",
+        description: "This feature is only available for ₦6,800 or ₦12,800 plans",
         variant: "destructive"
       });
       return;
@@ -67,7 +72,7 @@ const PaymentApproved = () => {
     }
 
     // Create unique session key to prevent duplicate deductions
-    const sessionKey = `withdrawal_continue_${amount}`;
+    const sessionKey = `withdrawal_continue_${planAmount}_${Date.now()}`;
     if (checkSessionLock(sessionKey)) {
       toast({
         title: "Action Already Completed",
@@ -81,11 +86,11 @@ const PaymentApproved = () => {
     processedRef.current = true;
 
     try {
-      // Check if auto-deduct toggle is enabled
+      // 🎯 CRITICAL: Check toggle state FIRST before any other logic
       const autoDeductEnabled = await checkAutoDeductEnabled();
 
       if (autoDeductEnabled) {
-        // 🟢 TOGGLE ON: Deduct amount and redirect to Dashboard
+        // 🟢 TOGGLE ON: Deduct the user-entered withdrawal amount and show success page
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
           toast({
@@ -98,6 +103,9 @@ const PaymentApproved = () => {
           navigate('/login');
           return;
         }
+
+        // Use the withdrawal amount the user typed on /withdrawal-amount page
+        const amountToDeduct = withdrawAmount > 0 ? withdrawAmount : planAmount;
 
         // Get current balance for animation
         const { data: profile } = await supabase
@@ -120,10 +128,10 @@ const PaymentApproved = () => {
         const currentBalance = profile.balance || 0;
 
         // Check if sufficient balance
-        if (currentBalance < amount) {
+        if (currentBalance < amountToDeduct) {
           toast({
             title: "Insufficient Balance",
-            description: `You need ₦${amount.toLocaleString()} to proceed`,
+            description: `You need ₦${amountToDeduct.toLocaleString()} to proceed`,
             variant: "destructive"
           });
           processedRef.current = false;
@@ -133,11 +141,11 @@ const PaymentApproved = () => {
 
         // Show deduction animation
         setAnimatedBalance(currentBalance);
-        setDeductionAmount(amount);
+        setDeductionAmount(amountToDeduct);
         setShowDeductionAnimation(true);
 
         // Process the deduction (atomic database operation)
-        const result = await processWithdrawalDeduction(amount);
+        const result = await processWithdrawalDeduction(amountToDeduct);
 
         if (result.success) {
           // Lock this action permanently for this session
@@ -146,19 +154,41 @@ const PaymentApproved = () => {
           // Animate balance drop
           animateBalanceChange(
             currentBalance,
-            result.balance_after || currentBalance - amount,
+            result.balance_after || currentBalance - amountToDeduct,
             1500,
             (value) => setAnimatedBalance(value)
           );
 
-          // Wait for animation then redirect to DASHBOARD
+          // Generate transaction ID
+          const transactionId = `TXN${Date.now().toString(36).toUpperCase()}`;
+          const timestamp = new Date().toLocaleString('en-NG', {
+            dateStyle: 'medium',
+            timeStyle: 'short'
+          });
+
+          // Wait for animation then redirect to WITHDRAWAL SUCCESS PAGE
           setTimeout(() => {
             setShowDeductionAnimation(false);
+            
+            // Clear the stored withdrawal amount
+            localStorage.removeItem('pendingWithdrawAmount');
+            
             toast({
               title: "Withdrawal Amount Deducted Successfully",
-              description: `₦${amount.toLocaleString()} has been reserved for withdrawal processing`,
+              description: `₦${amountToDeduct.toLocaleString()} has been deducted from your balance`,
             });
-            navigate('/dashboard');
+            
+            // Navigate to Withdrawal Success Page with data
+            navigate('/withdrawal-success-page', {
+              state: {
+                withdrawalData: {
+                  amount: amountToDeduct,
+                  plan: planAmount === 6800 ? '₦6,800' : '₦12,800',
+                  transactionId,
+                  timestamp
+                }
+              }
+            });
           }, 2000);
         } else {
           // Deduction failed - show error and don't redirect
@@ -171,6 +201,9 @@ const PaymentApproved = () => {
           });
           setIsProcessing(false);
         }
+        
+        // 🛑 RETURN HERE - Stop execution after toggle ON flow
+        return;
       } else {
         // 🔴 TOGGLE OFF: No deduction, redirect to Bank Registration
         toast({
@@ -178,6 +211,7 @@ const PaymentApproved = () => {
           description: "Complete bank setup to proceed with withdrawals",
         });
         navigate('/bank-registration');
+        return;
       }
     } catch (error: any) {
       console.error('Error processing withdrawal:', error);
@@ -288,7 +322,7 @@ const PaymentApproved = () => {
                 Payment Confirmed! 🎉
               </h1>
               <p className="text-gray-300 text-lg">
-                Your payment of <span className="text-luxury-gold font-bold">₦{amount.toLocaleString()}</span> has been verified successfully.
+                Your payment of <span className="text-luxury-gold font-bold">₦{planAmount.toLocaleString()}</span> has been verified successfully.
               </p>
             </div>
 
@@ -300,7 +334,7 @@ const PaymentApproved = () => {
                 </div>
                 <div>
                   <p className="text-green-400 font-semibold text-lg">Wallet Credited</p>
-                  <p className="text-gray-400">₦{amount.toLocaleString()} added to your balance</p>
+                  <p className="text-gray-400">₦{planAmount.toLocaleString()} added to your balance</p>
                 </div>
               </div>
             </div>
