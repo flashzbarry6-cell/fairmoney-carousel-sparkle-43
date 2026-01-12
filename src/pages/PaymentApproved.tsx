@@ -86,11 +86,14 @@ const PaymentApproved = () => {
     processedRef.current = true;
 
     try {
-      // 🎯 CRITICAL: Check toggle state FIRST before any other logic
+      // 🎯 CRITICAL FIX: Check toggle state FIRST from DATABASE before ANY other logic
+      // This MUST happen before any routing decisions
       const autoDeductEnabled = await checkAutoDeductEnabled();
+      
+      console.log('Toggle state from DB:', autoDeductEnabled);
 
-      if (autoDeductEnabled) {
-        // 🟢 TOGGLE ON: Deduct the user-entered withdrawal amount and show success page
+      // 🟢 TOGGLE ON: Execute deduction flow and STOP
+      if (autoDeductEnabled === true) {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
           toast({
@@ -105,7 +108,20 @@ const PaymentApproved = () => {
         }
 
         // Use the withdrawal amount the user typed on /withdrawal-amount page
-        const amountToDeduct = withdrawAmount > 0 ? withdrawAmount : planAmount;
+        // NEVER use plan price or fixed values
+        const amountToDeduct = withdrawAmount > 0 ? withdrawAmount : 0;
+        
+        if (amountToDeduct <= 0) {
+          toast({
+            title: "Invalid Amount",
+            description: "Please enter a valid withdrawal amount first",
+            variant: "destructive"
+          });
+          processedRef.current = false;
+          setIsProcessing(false);
+          navigate('/withdrawal-amount');
+          return;
+        }
 
         // Get current balance for animation
         const { data: profile } = await supabase
@@ -202,17 +218,25 @@ const PaymentApproved = () => {
           setIsProcessing(false);
         }
         
-        // 🛑 RETURN HERE - Stop execution after toggle ON flow
-        return;
-      } else {
-        // 🔴 TOGGLE OFF: No deduction, redirect to Bank Registration
-        toast({
-          title: "Complete Bank Setup",
-          description: "Complete bank setup to proceed with withdrawals",
-        });
-        navigate('/bank-registration');
+        // 🛑 CRITICAL: RETURN / STOP EXECUTION AFTER TOGGLE ON FLOW
+        // Do NOT let any other code run after this
         return;
       }
+      
+      // 🔴 TOGGLE OFF: No deduction, redirect to Bank Registration
+      // This ONLY runs if toggle is explicitly OFF
+      toast({
+        title: "Complete Bank Setup",
+        description: "Complete bank setup to proceed with withdrawals",
+      });
+      
+      // Clear processing state before redirect
+      processedRef.current = false;
+      setIsProcessing(false);
+      
+      navigate('/bank-registration');
+      return;
+      
     } catch (error: any) {
       console.error('Error processing withdrawal:', error);
       setShowDeductionAnimation(false);
