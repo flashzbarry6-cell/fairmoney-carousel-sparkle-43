@@ -754,20 +754,12 @@ useEffect(() => {
       {/* Withdrawal Notifications */}
       <WithdrawalNotification />
 
-      {/* Notifications */}
-        {showJoinGroupNotification && (
-          <JoinGroupNotification
-            onClose={() => setShowJoinGroupNotification(false)}
-            onGetStarted={() => setShowJoinGroupNotification(false)}
-          />
-        )}
-
+      {/* Welcome Notification - Single Join Community Flow */}
         {showWelcomeNotification && (
           <WelcomeNotification
             onClose={() => setShowWelcomeNotification(false)}
             onJoinCommunity={() => {
               setShowWelcomeNotification(false);
-              setShowJoinGroupNotification(true);
             }}
           />
         )}
