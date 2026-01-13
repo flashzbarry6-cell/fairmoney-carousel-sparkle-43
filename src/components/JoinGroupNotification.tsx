@@ -1,4 +1,4 @@
-import { Users, CheckCircle } from "lucide-react";
+import { Users, CheckCircle, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
@@ -16,8 +16,8 @@ export const JoinGroupNotification = ({ onClose, onGetStarted }: JoinGroupNotifi
     setHasJoinedGroup(true);
     setShowWarning(false);
     setShowProceed(true);
-    // ✅ Open WhatsApp Group directly
-    window.open("https://whatsapp.com/channel/0029Vb6eAwH9mrGTeNSKVh1q", "_blank");
+    // ✅ Open Telegram Channel
+    window.open("https://t.me/Plutozanki", "_blank");
   };
 
   const handleProceed = () => {
@@ -30,62 +30,67 @@ export const JoinGroupNotification = ({ onClose, onGetStarted }: JoinGroupNotifi
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center p-4 z-50 bg-black/60 backdrop-blur-sm">
-      <div className="rounded-3xl p-8 text-white max-w-sm w-full relative shadow-2xl border border-purple-600/30 bg-gradient-to-br from-black via-purple-900 to-black animate-gradient-x bg-[length:400%_400%] animate-in slide-in-from-bottom-4 duration-300">
-        <div className="text-center">
-          {/* Users Icon */}
-          <div className="w-20 h-20 bg-purple-700/40 rounded-full flex items-center justify-center mx-auto mb-6 shadow-md">
-            <Users className="w-10 h-10 text-white" />
-          </div>
+    <div className="fixed inset-0 flex items-center justify-center px-4 z-50 bg-black/70 backdrop-blur-sm">
+      {/* Compact Card */}
+      <div className="w-[92%] max-w-[380px] bg-card/95 backdrop-blur-xl rounded-2xl p-5 border border-primary/20 shadow-2xl animate-fade-up">
+        {/* Icon */}
+        <div className="w-14 h-14 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-primary/30">
+          <Send className="w-6 h-6 text-primary" />
+        </div>
 
-          {/* Title */}
-          <h2 className="text-2xl font-bold mb-4">Join Our Community!</h2>
+        {/* Title */}
+        <h2 className="text-lg font-semibold text-foreground text-center mb-2 leading-tight">
+          Join Our Community!
+        </h2>
 
-          {/* Description */}
-          <p className="text-sm opacity-90 mb-6 leading-relaxed">
-            Join our WhatsApp Group to get updates, tips, and connect with other users of FairMonie Pay.
+        {/* Description */}
+        <p className="text-sm text-muted-foreground text-center mb-5 leading-relaxed">
+          Join our Telegram Channel to get updates, tips, and connect with other users.
+        </p>
+
+        {/* Warning Text */}
+        {showWarning && (
+          <p className="text-destructive text-xs font-medium text-center mb-3 animate-fade-up">
+            Please join the community before proceeding.
           </p>
+        )}
 
-          {/* Warning Text */}
-          {showWarning && (
-            <p className="text-red-500 text-sm font-medium mb-4">
-              Please join the community before proceeding.
-            </p>
-          )}
+        {/* Action Buttons */}
+        <div className="space-y-2.5">
+          <Button
+            onClick={handleJoinCommunity}
+            className={`w-full h-11 text-sm font-medium rounded-xl transition-all ${
+              hasJoinedGroup
+                ? "bg-success hover:bg-success/90 text-white"
+                : "bg-primary hover:bg-primary/90 text-primary-foreground"
+            }`}
+          >
+            {hasJoinedGroup ? (
+              <div className="flex items-center justify-center gap-2">
+                <CheckCircle className="w-4 h-4" />
+                <span>Joined Community</span>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center gap-2">
+                <Send className="w-4 h-4" />
+                <span>Join Community</span>
+              </div>
+            )}
+          </Button>
 
-          {/* Action Buttons */}
-          <div className="space-y-3">
+          {showProceed && (
             <Button
-              onClick={handleJoinCommunity}
-              className={`w-full font-semibold py-4 rounded-full text-lg transition-all ${
+              onClick={handleProceed}
+              variant={hasJoinedGroup ? "default" : "secondary"}
+              className={`w-full h-11 text-sm font-medium rounded-xl ${
                 hasJoinedGroup
-                  ? "bg-green-500 hover:bg-green-600 text-white"
-                  : "bg-white text-purple-700 hover:bg-white/90"
+                  ? "bg-primary/80 hover:bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground"
               }`}
             >
-              {hasJoinedGroup ? (
-                <div className="flex items-center justify-center space-x-2">
-                  <CheckCircle className="w-5 h-5" />
-                  <span>Joined Community</span>
-                </div>
-              ) : (
-                "Join Community"
-              )}
+              Proceed
             </Button>
-
-            {showProceed && (
-              <Button
-                onClick={handleProceed}
-                className={`w-full font-semibold py-4 rounded-full text-lg transition-all ${
-                  hasJoinedGroup
-                    ? "bg-purple-600 hover:bg-purple-700 text-white"
-                    : "bg-gray-500 text-gray-300"
-                }`}
-              >
-                Proceed
-              </Button>
-            )}
-          </div>
+          )}
         </div>
       </div>
     </div>
