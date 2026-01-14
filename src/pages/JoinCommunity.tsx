@@ -40,7 +40,7 @@ const JoinCommunity = () => {
 
       {/* Compact Card Container */}
       <div className="relative z-10 w-[92%] max-w-[380px] mx-auto">
-        <div className="bg-card/95 backdrop-blur-xl rounded-2xl p-5 border border-primary/20 shadow-2xl animate-fade-up  -mt-16 sm:mt-0">">
+        <div className="bg-card/95 backdrop-blur-xl rounded-2xl p-5 border border-primary/20 shadow-2xl animate-fade-up">
           {/* Icon */}
           <div className="w-14 h-14 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-primary/30">
             <Send className="w-6 h-6 text-primary" />
