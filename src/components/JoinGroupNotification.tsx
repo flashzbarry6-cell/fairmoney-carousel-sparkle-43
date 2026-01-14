@@ -32,7 +32,7 @@ export const JoinGroupNotification = ({ onClose, onGetStarted }: JoinGroupNotifi
   return (
     <div className="fixed inset-0 flex items-center justify-center px-4 z-50 bg-black/70 backdrop-blur-sm">
       {/* Compact Card */}
-      <div className="w-[92%] max-w-[380px] bg-card/95 backdrop-blur-xl rounded-2xl p-5 border border-primary/20 shadow-2xl animate-fade-up">
+      <div className="w-[92%] max-w-[380px] bg-card/95 backdrop-blur-xl rounded-2xl p-5 border border-primary/20 shadow-2xl animate-fade-up-mt-16 sm:mt-0">
         {/* Icon */}
         <div className="w-14 h-14 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-primary/30">
           <Send className="w-6 h-6 text-primary" />
