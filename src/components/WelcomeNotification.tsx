@@ -35,12 +35,12 @@ export const WelcomeNotification = ({ onClose, onJoinCommunity }: WelcomeNotific
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/80 backdrop-blur-md">
-      {/* Centered Card - Bigger & Prominent */}
-      <div className="w-[90%] max-w-[400px] bg-gradient-to-b from-primary/90 to-primary/70 backdrop-blur-xl rounded-3xl p-8 border border-primary/30 shadow-2xl animate-fade-up mx-auto">
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/90 backdrop-blur-md">
+      {/* Centered Card - Luxurious Purple & Black */}
+      <div className="w-[90%] max-w-[400px] bg-gradient-to-b from-[#1a1025] via-[#2d1b4e] to-[#1a1025] backdrop-blur-xl rounded-3xl p-8 border border-purple-500/30 shadow-[0_0_60px_rgba(139,92,246,0.3)] animate-fade-up mx-auto">
         {/* Icon */}
-        <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-white/30">
-          <Gift className="w-10 h-10 text-white" />
+        <div className="w-20 h-20 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-purple-400/40 shadow-[0_0_30px_rgba(139,92,246,0.4)]">
+          <Gift className="w-10 h-10 text-purple-300" />
         </div>
 
         {/* Title */}
@@ -72,7 +72,7 @@ export const WelcomeNotification = ({ onClose, onJoinCommunity }: WelcomeNotific
             className={`w-full h-12 text-base font-semibold rounded-xl transition-all shadow-lg ${
               hasJoinedGroup
                 ? "bg-green-500 hover:bg-green-600 text-white"
-                : "bg-white hover:bg-white/90 text-primary"
+                : "bg-purple-500 hover:bg-purple-600 text-white shadow-[0_0_20px_rgba(139,92,246,0.5)]"
             }`}
           >
             {hasJoinedGroup ? (
@@ -92,8 +92,8 @@ export const WelcomeNotification = ({ onClose, onJoinCommunity }: WelcomeNotific
             onClick={handleProceed}
             className={`w-full h-12 text-base font-semibold rounded-xl transition-all ${
               hasJoinedGroup
-                ? "bg-white/20 hover:bg-white/30 text-white border border-white/30"
-                : "bg-white/10 text-white/60 border border-white/20"
+                ? "bg-purple-500/30 hover:bg-purple-500/50 text-white border border-purple-400/40"
+                : "bg-white/5 text-white/50 border border-white/10"
             }`}
           >
             Proceed
@@ -102,10 +102,10 @@ export const WelcomeNotification = ({ onClose, onJoinCommunity }: WelcomeNotific
 
         {/* Dots indicator */}
         <div className="flex items-center justify-center gap-2 mt-6">
-          <div className="w-2 h-2 rounded-full bg-white/40"></div>
-          <div className="w-2 h-2 rounded-full bg-white/40"></div>
-          <div className="w-2 h-2 rounded-full bg-white/40"></div>
-          <div className="w-2 h-2 rounded-full bg-white"></div>
+          <div className="w-2 h-2 rounded-full bg-purple-400/40"></div>
+          <div className="w-2 h-2 rounded-full bg-purple-400/40"></div>
+          <div className="w-2 h-2 rounded-full bg-purple-400/40"></div>
+          <div className="w-2 h-2 rounded-full bg-purple-400"></div>
         </div>
       </div>
     </div>
