@@ -35,70 +35,77 @@ export const WelcomeNotification = ({ onClose, onJoinCommunity }: WelcomeNotific
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center px-4 z-50 bg-black/70 backdrop-blur-sm">
-      {/* Compact Card */}
-      <div className="w-[92%] max-w-[380px] bg-card/95 backdrop-blur-xl rounded-2xl p-5 border border-primary/20 shadow-2xl animate-fade-up">
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/80 backdrop-blur-md">
+      {/* Centered Card - Bigger & Prominent */}
+      <div className="w-[90%] max-w-[400px] bg-gradient-to-b from-primary/90 to-primary/70 backdrop-blur-xl rounded-3xl p-8 border border-primary/30 shadow-2xl animate-fade-up mx-auto">
         {/* Icon */}
-        <div className="w-14 h-14 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-primary/30">
-          <Gift className="w-6 h-6 text-primary" />
+        <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-white/30">
+          <Gift className="w-10 h-10 text-white" />
         </div>
 
         {/* Title */}
-        <h2 className="text-lg font-semibold text-foreground text-center mb-2 leading-tight">
+        <h2 className="text-2xl font-bold text-white text-center mb-3 leading-tight">
           Welcome to LUMEXZZ WIN!
         </h2>
 
         {/* Greeting */}
-        <p className="text-sm text-foreground text-center mb-2">
-          Hello <span className="font-semibold text-primary">{user?.fullName?.toUpperCase() || "USER"}!</span> 👋
+        <p className="text-base text-white/90 text-center mb-3">
+          Hello <span className="font-bold text-white">{user?.fullName?.toUpperCase() || "USER"}!</span> 👋
         </p>
 
         {/* Description */}
-        <p className="text-sm text-muted-foreground text-center mb-5 leading-relaxed">
-          Join our Telegram community to get updates and start earning.
+        <p className="text-sm text-white/80 text-center mb-6 leading-relaxed">
+          Earn welcome bonus and daily cash by completing easy tasks. But first, join our Telegram channel for updates!
         </p>
 
         {/* Warning Text */}
         {showWarning && (
-          <p className="text-destructive text-xs font-medium text-center mb-3 animate-fade-up">
-            Please join the community before proceeding.
+          <p className="text-yellow-300 text-sm font-medium text-center mb-4 animate-pulse">
+            ⚠️ Please join the community before proceeding.
           </p>
         )}
 
         {/* Action Buttons */}
-        <div className="space-y-2.5">
+        <div className="space-y-3">
           <Button
             onClick={handleJoinCommunity}
-            className={`w-full h-11 text-sm font-medium rounded-xl transition-all ${
+            className={`w-full h-12 text-base font-semibold rounded-xl transition-all shadow-lg ${
               hasJoinedGroup
-                ? "bg-success hover:bg-success/90 text-white"
-                : "bg-primary hover:bg-primary/90 text-primary-foreground"
+                ? "bg-green-500 hover:bg-green-600 text-white"
+                : "bg-white hover:bg-white/90 text-primary"
             }`}
           >
             {hasJoinedGroup ? (
               <div className="flex items-center justify-center gap-2">
-                <CheckCircle className="w-4 h-4" />
+                <CheckCircle className="w-5 h-5" />
                 <span>Joined Community</span>
               </div>
             ) : (
               <div className="flex items-center justify-center gap-2">
-                <Send className="w-4 h-4" />
-                <span>Join Community</span>
+                <Send className="w-5 h-5" />
+                <span>Join Telegram Channel</span>
               </div>
             )}
           </Button>
 
           <Button
             onClick={handleProceed}
-            variant={hasJoinedGroup ? "default" : "secondary"}
-            className={`w-full h-11 text-sm font-medium rounded-xl ${
+            className={`w-full h-12 text-base font-semibold rounded-xl transition-all ${
               hasJoinedGroup
-                ? "bg-primary/80 hover:bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground"
+                ? "bg-white/20 hover:bg-white/30 text-white border border-white/30"
+                : "bg-white/10 text-white/60 border border-white/20"
             }`}
           >
             Proceed
           </Button>
+        </div>
+
+        {/* Dots indicator */}
+        <div className="flex items-center justify-center gap-2 mt-6">
+          <div className="w-2 h-2 rounded-full bg-white/40"></div>
+          <div className="w-2 h-2 rounded-full bg-white/40"></div>
+          <div className="w-2 h-2 rounded-full bg-white/40"></div>
+          <div className="w-2 h-2 rounded-full bg-white"></div>
         </div>
       </div>
     </div>
