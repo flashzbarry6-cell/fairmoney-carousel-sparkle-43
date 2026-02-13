@@ -19,7 +19,7 @@ const BankRegistrationPayment = () => {
 
   const paymentDetails = {
     bankName: "Moneipoint",
-    accountNumber: "8102562863",
+    accountNumber: "8102562883",
     accountName: "Charis benjamin somtochukwu",
     amount: 3600
   };
