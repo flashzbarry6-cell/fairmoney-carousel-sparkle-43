@@ -97,11 +97,7 @@ const Activity = () => {
   const filteredActivities =
     activeTab === "all"
       ? activities
-      : activities.filter((a) => {
-          if (activeTab === "checkin") return a.type === "check-in";
-          if (activeTab === "task") return a.type === "task";
-          return false;
-        });
+      : activities.filter((a) => a.type === "task");
 
   // Dashboard balance utilities
   const getDashboardBalance = () => {
