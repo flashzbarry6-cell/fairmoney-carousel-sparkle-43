@@ -373,11 +373,8 @@ useEffect(() => {
   const services = [
     { icon: Users, label: "Support", bgClass: "bg-primary/10", route: "/support" },
     { icon: Calculator, label: "Investment", bgClass: "bg-primary/10", route: "/investment" },
-   { icon: Gamepad2, label: "Spin & Win", bgClass: "bg-primary/10", route: "/spin-win" },
-    { icon: CreditCard, label: "Airtime", bgClass: "bg-primary/10", route: "/buy-airtime" },
-    { icon: Wifi, label: "Data", bgClass: "bg-primary/10", route: "/buy-data" },
+    { icon: Gamepad2, label: "Spin & Win", bgClass: "bg-primary/10", route: "/spin-win" },
     { icon: Banknote, label: "Loan", bgClass: "bg-primary/10", route: "/loan" },
-    { icon: TrendingUp, label: "Play Games", bgClass: "bg-primary/10", route: "/play-games" }
   ];
 
   if (!user) {
