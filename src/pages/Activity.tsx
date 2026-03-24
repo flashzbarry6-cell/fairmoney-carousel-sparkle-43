@@ -31,7 +31,7 @@ const TASKS = [
 ];
 
 const Activity = () => {
-  const [activeTab, setActiveTab] = useState<"all" | "task" | "checkin">("all");
+  const [activeTab, setActiveTab] = useState<"all" | "task">("task");
   const [activities, setActivities] = useState<any[]>([]);
   const [completedTasks, setCompletedTasks] = useState<Record<string, boolean>>({});
 
