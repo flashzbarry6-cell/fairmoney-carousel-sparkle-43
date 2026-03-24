@@ -116,6 +116,9 @@ export const TransactionHistory = ({ isOpen, onClose }: TransactionHistoryProps)
       case 'bonus':
       case 'credit':
       case 'reversal':
+      case 'check-in':
+      case 'auto-bonus':
+      case 'task':
         return 'text-green-500';
       case 'deduction':
         return 'text-red-400';

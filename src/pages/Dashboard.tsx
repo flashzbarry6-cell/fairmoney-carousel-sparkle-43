@@ -218,7 +218,7 @@ useEffect(() => {
 
   // Countdown timer effect with auto-claim
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let timer: ReturnType<typeof setInterval>;
     if (timerActive && countdown > 0) {
       timer = setInterval(() => {
         setCountdown(prev => {
