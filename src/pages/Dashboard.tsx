@@ -653,32 +653,17 @@ useEffect(() => {
       {/* Bottom Carousel */}
       <BottomCarousel />
 
-      {/* Task and Check-in Buttons */}
-      <div className="grid grid-cols-2 gap-2 mb-0 px-1 mt-3">
+      {/* Task Button */}
+      <div className="mb-0 px-1 mt-3">
         <Link to="/activity">
           <div className="bg-gradient-to-br from-service-button to-service-button-dark rounded-xl p-3 border border-service-button-light/30 hover:scale-105 transition-transform">
             <div className="flex items-center gap-2 mb-1">
               <Gift className="w-5 h-5 text-service-button-foreground animate-pulse" />
               <h3 className="text-service-button-foreground font-semibold text-sm">Task</h3>
             </div>
-            <p className="text-service-button-foreground/80 text-xs">Complete daily tasks</p>
+            <p className="text-service-button-foreground/80 text-xs">Complete daily tasks & earn rewards</p>
           </div>
         </Link>
-
-        <div 
-          onClick={handleCheckin}
-          className={`bg-gradient-to-br from-service-button to-service-button-dark rounded-xl p-3 border border-service-button-light/30 cursor-pointer hover:scale-105 transition-transform ${
-            !canCheckin ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
-        >
-          <div className="flex items-center gap-2 mb-1">
-            <TrendingUp className="w-5 h-5 text-service-button-foreground animate-pulse" />
-            <h3 className="text-service-button-foreground font-semibold text-sm">Check-in</h3>
-          </div>
-          <p className="text-service-button-foreground/80 text-xs">
-            {canCheckin ? 'Earn ₦1,500' : '24hrs cooldown'}
-          </p>
-        </div>
       </div>
 
       {/* Lumexzz Info Section - Premium Phoenix Design */}
