@@ -68,9 +68,9 @@ const SpinAndWin = () => {
     setStakeAmount(amount);
   };
 
-  const startSpin = async () => {
+  const startSpin = () => {
     if (isSpinning) return;
-    
+
     if (balance < stakeAmount) {
       toast.error("Insufficient balance");
       return;
@@ -81,21 +81,15 @@ const SpinAndWin = () => {
       return;
     }
 
-    // Deduct stake immediately
-    try {
-      const newBalance = balance - stakeAmount;
-      const { error } = await supabase
-        .from("profiles")
-        .update({ balance: newBalance })
-        .eq("user_id", userId);
+    spinStartBalanceRef.current = balance;
+    spinStakeRef.current = stakeAmount;
 
-      if (error) throw error;
-      setBalance(newBalance);
-      setIsSpinning(true);
-    } catch (error) {
-      console.error("Error deducting stake:", error);
-      toast.error("Error processing stake");
-    }
+    setShowResultModal(false);
+    setSpinResult(null);
+    setPrizeAmount(0);
+    setLostAmount(0);
+    setBalance((prev) => prev - stakeAmount);
+    setIsSpinning(true);
   };
 
 
