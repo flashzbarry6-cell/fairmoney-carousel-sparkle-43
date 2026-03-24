@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ArrowLeft, Wallet, Info } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { BottomNav } from "@/components/BottomNav";
@@ -9,7 +9,6 @@ import BlockedAccountOverlay from "@/components/BlockedAccountOverlay";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-// Configuration - easily adjustable stake amounts
 const STAKE_OPTIONS = [500, 1000, 2000, 5000, 10000, 20000];
 
 const SpinAndWin = () => {
@@ -24,6 +23,8 @@ const SpinAndWin = () => {
   const [historyRefresh, setHistoryRefresh] = useState(0);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
+  const spinStartBalanceRef = useRef(0);
+  const spinStakeRef = useRef(0);
 
   useEffect(() => {
     fetchUserData();
