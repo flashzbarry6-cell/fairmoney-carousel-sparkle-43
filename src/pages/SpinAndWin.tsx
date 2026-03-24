@@ -94,41 +94,45 @@ const SpinAndWin = () => {
 
 
   const handleSpinComplete = async (result: "win" | "lose", prize: number) => {
+    const currentStake = spinStakeRef.current || stakeAmount;
+    const startingBalance = spinStartBalanceRef.current;
+    const finalBalance = result === "win"
+      ? startingBalance - currentStake + prize
+      : startingBalance - currentStake;
+
     setSpinResult(result);
     setPrizeAmount(prize);
-    setLostAmount(result === "lose" ? stakeAmount : 0);
+    setLostAmount(result === "lose" ? currentStake : 0);
     setIsSpinning(false);
+    setBalance(finalBalance);
 
     if (!userId) return;
 
     try {
-      // If won, credit the prize (stake already deducted, so add full prize)
-      if (result === "win" && prize > 0) {
-        const newBalance = balance + prize;
-        const { error: balanceError } = await supabase
-          .from("profiles")
-          .update({ balance: newBalance })
-          .eq("user_id", userId);
+      const { error: balanceError } = await supabase
+        .from("profiles")
+        .update({ balance: finalBalance })
+        .eq("user_id", userId);
 
-        if (balanceError) throw balanceError;
-        setBalance(newBalance);
-      }
+      if (balanceError) throw balanceError;
 
-      // Record spin in history
       const { error: historyError } = await supabase
         .from("spin_history")
         .insert({
           user_id: userId,
-          stake_amount: stakeAmount,
-          result: result,
+          stake_amount: currentStake,
+          result,
           prize_amount: result === "win" ? prize : 0,
         });
 
       if (historyError) throw historyError;
-      
+
       setHistoryRefresh((prev) => prev + 1);
     } catch (error) {
       console.error("Error recording spin:", error);
+      setBalance(startingBalance);
+      toast.error("Unable to complete spin result. Please try again.");
+      return;
     }
 
     setShowResultModal(true);

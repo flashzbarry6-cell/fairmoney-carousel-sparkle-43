@@ -29,39 +29,43 @@ const SpinWheel = ({ onSpinComplete, isSpinning, onSpin, stakeAmount, balance }:
   const segmentAngle = 360 / SEGMENTS.length;
 
   useEffect(() => {
-    if (isSpinning && !animating) {
-      setAnimating(true);
+    if (!isSpinning || animating) return;
 
-      const isWin = Math.random() < WIN_PROBABILITY;
+    setAnimating(true);
 
-      const targetSegments = SEGMENTS.map((seg, i) => ({ ...seg, index: i }))
-        .filter(seg => seg.isWin === isWin);
+    const isWin = Math.random() < WIN_PROBABILITY;
+    const targetSegments = SEGMENTS.map((seg, i) => ({ ...seg, index: i })).filter(
+      (seg) => seg.isWin === isWin
+    );
+    const targetSegment = targetSegments[Math.floor(Math.random() * targetSegments.length)];
+    const spins = 5 + Math.random() * 3;
+    const targetAngle = targetSegment.index * segmentAngle + segmentAngle / 2;
+    const finalRotation = rotation + spins * 360 + (360 - targetAngle);
+    const prizeAmount = isWin ? Math.floor(stakeAmount * targetSegment.multiplier) : 0;
 
-      const targetSegment = targetSegments[Math.floor(Math.random() * targetSegments.length)];
+    pendingResultRef.current = { result: isWin ? "win" : "lose", prize: prizeAmount };
 
-      const spins = 5 + Math.random() * 3;
-      const targetAngle = targetSegment.index * segmentAngle + segmentAngle / 2;
-      const finalRotation = rotation + spins * 360 + (360 - targetAngle);
-
-      const prizeAmount = isWin ? Math.floor(stakeAmount * targetSegment.multiplier) : 0;
-      pendingResultRef.current = { result: isWin ? "win" : "lose", prize: prizeAmount };
-
-      // Use requestAnimationFrame to ensure the browser paints the initial state first
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          setRotation(finalRotation);
-        });
+    const frameOne = requestAnimationFrame(() => {
+      const frameTwo = requestAnimationFrame(() => {
+        setRotation(finalRotation);
       });
 
-      setTimeout(() => {
+      const timeout = window.setTimeout(() => {
         setAnimating(false);
         if (pendingResultRef.current) {
           onSpinComplete(pendingResultRef.current.result, pendingResultRef.current.prize);
           pendingResultRef.current = null;
         }
-      }, 5200);
-    }
-  }, [isSpinning]);
+      }, 5000);
+
+      return () => {
+        cancelAnimationFrame(frameTwo);
+        window.clearTimeout(timeout);
+      };
+    });
+
+    return () => cancelAnimationFrame(frameOne);
+  }, [animating, isSpinning, onSpinComplete, rotation, segmentAngle, stakeAmount]);
 
   const handleSpinClick = () => {
     if (isSpinning || animating || balance < stakeAmount) return;
