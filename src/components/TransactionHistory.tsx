@@ -9,7 +9,7 @@ interface TransactionHistoryProps {
 
 interface Transaction {
   id: string;
-  type: 'bonus' | 'deduction' | 'reversal' | 'credit';
+  type: 'bonus' | 'deduction' | 'reversal' | 'credit' | 'check-in' | 'auto-bonus' | 'task';
   amount: number;
   description: string;
   time: string;
