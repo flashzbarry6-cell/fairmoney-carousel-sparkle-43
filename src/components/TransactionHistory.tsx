@@ -53,15 +53,15 @@ export const TransactionHistory = ({ isOpen, onClose }: TransactionHistoryProps)
           transaction_hash: d.transaction_hash
         }));
 
-        // Also check localStorage for bonuses
-        const localBonuses = JSON.parse(localStorage.getItem('activityHistory') || '[]');
-        const bonusTransactions: Transaction[] = localBonuses.map((b: any, index: number) => ({
-          id: `bonus-${index}`,
-          type: 'bonus' as const,
+        // Also check localStorage for all activity (bonuses, check-ins, tasks, auto-bonuses)
+        const localActivities = JSON.parse(localStorage.getItem('activityHistory') || '[]');
+        const activityTransactions: Transaction[] = localActivities.map((b: any, index: number) => ({
+          id: `activity-${index}`,
+          type: (b.type || 'bonus') as Transaction['type'],
           amount: b.amount,
-          description: b.description || 'Bonus',
+          description: b.description || 'Activity',
           time: new Date(b.timestamp).toLocaleString(),
-          status: 'claimed'
+          status: 'completed'
         }));
 
         // Combine and sort by time
