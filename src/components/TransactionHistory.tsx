@@ -94,6 +94,12 @@ export const TransactionHistory = ({ isOpen, onClose }: TransactionHistoryProps)
     switch (type) {
       case 'bonus':
         return <Gift className="w-5 h-5 text-primary" />;
+      case 'check-in':
+        return <ArrowUpCircle className="w-5 h-5 text-green-400" />;
+      case 'auto-bonus':
+        return <ArrowUpCircle className="w-5 h-5 text-purple-400" />;
+      case 'task':
+        return <Gift className="w-5 h-5 text-yellow-400" />;
       case 'deduction':
         return <Zap className="w-5 h-5 text-red-400" />;
       case 'reversal':
