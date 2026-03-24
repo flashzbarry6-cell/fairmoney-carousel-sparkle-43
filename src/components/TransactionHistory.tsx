@@ -65,7 +65,7 @@ export const TransactionHistory = ({ isOpen, onClose }: TransactionHistoryProps)
         }));
 
         // Combine and sort by time
-        const allTransactions = [...dbTransactions, ...bonusTransactions]
+        const allTransactions = [...dbTransactions, ...activityTransactions]
           .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
           .slice(0, 30);
 
