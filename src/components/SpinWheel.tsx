@@ -9,7 +9,6 @@ interface SpinWheelProps {
   balance: number;
 }
 
-// Wheel segments configuration - easily adjustable
 const SEGMENTS = [
   { label: "WIN 2X", multiplier: 2, isWin: true, color: "#7B3FE4" },
   { label: "LOSE", multiplier: 0, isWin: false, color: "#1A1A1A" },
@@ -21,48 +20,51 @@ const SEGMENTS = [
   { label: "LOSE", multiplier: 0, isWin: false, color: "#222222" },
 ];
 
-// Win probability (35% win chance) - adjustable for fairness
 const WIN_PROBABILITY = 0.35;
 
 const SpinWheel = ({ onSpinComplete, isSpinning, onSpin, stakeAmount, balance }: SpinWheelProps) => {
   const [rotation, setRotation] = useState(0);
-  const [hasStartedSpin, setHasStartedSpin] = useState(false);
-  const wheelRef = useRef<HTMLDivElement>(null);
+  const [animating, setAnimating] = useState(false);
+  const pendingResultRef = useRef<{ result: "win" | "lose"; prize: number } | null>(null);
   const segmentAngle = 360 / SEGMENTS.length;
 
-  // When isSpinning becomes true (from parent), start the wheel animation
   useEffect(() => {
-    if (isSpinning && !hasStartedSpin) {
-      setHasStartedSpin(true);
-      
-      // Determine win/lose based on probability
+    if (isSpinning && !animating) {
+      setAnimating(true);
+
       const isWin = Math.random() < WIN_PROBABILITY;
-      
-      // Get winning or losing segments
+
       const targetSegments = SEGMENTS.map((seg, i) => ({ ...seg, index: i }))
         .filter(seg => seg.isWin === isWin);
-      
-      // Pick random target segment
+
       const targetSegment = targetSegments[Math.floor(Math.random() * targetSegments.length)];
-      
-      // Calculate target rotation (multiple full spins + landing position)
-      const spins = 5 + Math.random() * 3; // 5-8 full rotations for 5 seconds
+
+      const spins = 5 + Math.random() * 3;
       const targetAngle = targetSegment.index * segmentAngle + segmentAngle / 2;
       const finalRotation = rotation + spins * 360 + (360 - targetAngle);
-      
-      setRotation(finalRotation);
-      
-      // Wait for 5 second animation to complete
+
+      const prizeAmount = isWin ? Math.floor(stakeAmount * targetSegment.multiplier) : 0;
+      pendingResultRef.current = { result: isWin ? "win" : "lose", prize: prizeAmount };
+
+      // Use requestAnimationFrame to ensure the browser paints the initial state first
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setRotation(finalRotation);
+        });
+      });
+
       setTimeout(() => {
-        const prizeAmount = isWin ? Math.floor(stakeAmount * targetSegment.multiplier) : 0;
-        onSpinComplete(isWin ? "win" : "lose", prizeAmount);
-        setHasStartedSpin(false);
-      }, 5000);
+        setAnimating(false);
+        if (pendingResultRef.current) {
+          onSpinComplete(pendingResultRef.current.result, pendingResultRef.current.prize);
+          pendingResultRef.current = null;
+        }
+      }, 5200);
     }
   }, [isSpinning]);
 
   const handleSpinClick = () => {
-    if (isSpinning || balance < stakeAmount) return;
+    if (isSpinning || animating || balance < stakeAmount) return;
     onSpin();
   };
 
@@ -80,49 +82,55 @@ const SpinWheel = ({ onSpinComplete, isSpinning, onSpin, stakeAmount, balance }:
         
         {/* Wheel */}
         <div 
-          ref={wheelRef}
           className="relative w-72 h-72 rounded-full border-4 border-purple-500/50 shadow-[0_0_30px_rgba(123,63,228,0.5)] overflow-hidden"
           style={{
             transform: `rotate(${rotation}deg)`,
-            transition: isSpinning ? "transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)" : "none",
+            transition: animating ? "transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)" : "none",
           }}
         >
-          {/* Segments */}
-          {SEGMENTS.map((segment, index) => {
-            const angle = index * segmentAngle;
-            return (
-              <div
-                key={index}
-                className="absolute w-full h-full origin-center"
-                style={{
-                  transform: `rotate(${angle}deg)`,
-                }}
-              >
-                <div
-                  className="absolute top-0 left-1/2 h-1/2 origin-bottom"
-                  style={{
-                    width: "100%",
-                    marginLeft: "-50%",
-                    clipPath: `polygon(50% 100%, ${50 - Math.tan((segmentAngle * Math.PI) / 360) * 50}% 0%, ${50 + Math.tan((segmentAngle * Math.PI) / 360) * 50}% 0%)`,
-                    backgroundColor: segment.color,
-                    borderRight: "1px solid rgba(255,255,255,0.1)",
-                  }}
-                >
-                  <div 
-                    className="absolute top-4 left-1/2 -translate-x-1/2 text-center"
-                    style={{ transform: "translateX(-50%) rotate(0deg)" }}
+          {/* SVG wheel for clean segments */}
+          <svg viewBox="0 0 200 200" className="absolute inset-0 w-full h-full">
+            {SEGMENTS.map((segment, index) => {
+              const startAngle = (index * segmentAngle - 90) * (Math.PI / 180);
+              const endAngle = ((index + 1) * segmentAngle - 90) * (Math.PI / 180);
+              const x1 = 100 + 100 * Math.cos(startAngle);
+              const y1 = 100 + 100 * Math.sin(startAngle);
+              const x2 = 100 + 100 * Math.cos(endAngle);
+              const y2 = 100 + 100 * Math.sin(endAngle);
+              const largeArc = segmentAngle > 180 ? 1 : 0;
+
+              const midAngle = ((index + 0.5) * segmentAngle - 90) * (Math.PI / 180);
+              const textX = 100 + 60 * Math.cos(midAngle);
+              const textY = 100 + 60 * Math.sin(midAngle);
+              const textRotation = (index + 0.5) * segmentAngle;
+
+              return (
+                <g key={index}>
+                  <path
+                    d={`M100,100 L${x1},${y1} A100,100 0 ${largeArc},1 ${x2},${y2} Z`}
+                    fill={segment.color}
+                    stroke="rgba(255,255,255,0.1)"
+                    strokeWidth="0.5"
+                  />
+                  <text
+                    x={textX}
+                    y={textY}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    transform={`rotate(${textRotation}, ${textX}, ${textY})`}
+                    className={segment.isWin ? "fill-yellow-400" : "fill-gray-400"}
+                    fontSize="8"
+                    fontWeight="bold"
                   >
-                    <span className={`text-xs font-bold ${segment.isWin ? "text-yellow-400" : "text-gray-400"}`}>
-                      {segment.label}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+                    {segment.label}
+                  </text>
+                </g>
+              );
+            })}
+          </svg>
           
           {/* Center circle */}
-          <div className="absolute inset-0 m-auto w-20 h-20 rounded-full bg-gradient-to-br from-purple-600 to-purple-900 border-2 border-purple-400/50 flex items-center justify-center shadow-lg">
+          <div className="absolute inset-0 m-auto w-20 h-20 rounded-full bg-gradient-to-br from-purple-600 to-purple-900 border-2 border-purple-400/50 flex items-center justify-center shadow-lg z-10">
             <Gift className="w-8 h-8 text-yellow-400" />
           </div>
         </div>
@@ -132,7 +140,7 @@ const SpinWheel = ({ onSpinComplete, isSpinning, onSpin, stakeAmount, balance }:
           {[...Array(12)].map((_, i) => (
             <div
               key={i}
-              className={`absolute w-3 h-3 rounded-full ${isSpinning ? "animate-pulse" : ""}`}
+              className={`absolute w-3 h-3 rounded-full ${animating ? "animate-pulse" : ""}`}
               style={{
                 top: `${50 - 48 * Math.cos((i * 30 * Math.PI) / 180)}%`,
                 left: `${50 + 48 * Math.sin((i * 30 * Math.PI) / 180)}%`,
@@ -147,14 +155,14 @@ const SpinWheel = ({ onSpinComplete, isSpinning, onSpin, stakeAmount, balance }:
       {/* Spin button */}
       <button
         onClick={handleSpinClick}
-        disabled={isSpinning || balance < stakeAmount}
+        disabled={isSpinning || animating || balance < stakeAmount}
         className={`mt-8 px-12 py-4 rounded-full font-bold text-lg transition-all duration-300 ${
-          isSpinning || balance < stakeAmount
+          isSpinning || animating || balance < stakeAmount
             ? "bg-gray-600 text-gray-400 cursor-not-allowed"
             : "bg-gradient-to-r from-purple-600 to-purple-800 text-white hover:from-purple-500 hover:to-purple-700 shadow-[0_0_20px_rgba(123,63,228,0.5)] hover:shadow-[0_0_30px_rgba(123,63,228,0.7)]"
         }`}
       >
-        {isSpinning ? (
+        {isSpinning || animating ? (
           <span className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 animate-spin" />
             Spinning...
