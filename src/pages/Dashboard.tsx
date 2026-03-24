@@ -496,7 +496,13 @@ useEffect(() => {
             <span className="text-sm opacity-90">Available Balance</span>
           </div>
           <div className="flex items-center space-x-2">
-            
+            <button
+              onClick={() => setShowTransactionHistory(true)}
+              className="hover:bg-white/20 rounded-full p-1.5 transition-colors flex items-center gap-1"
+            >
+              <History className="w-4 h-4 opacity-90" />
+              <span className="text-xs opacity-80">History</span>
+            </button>
             <button
               onClick={() => setShowBalance(!showBalance)}
               className="hover:bg-white/20 rounded-full p-1 transition-colors"
