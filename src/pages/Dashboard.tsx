@@ -218,7 +218,7 @@ useEffect(() => {
 
   // Countdown timer effect with auto-claim
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let timer: ReturnType<typeof setInterval>;
     if (timerActive && countdown > 0) {
       timer = setInterval(() => {
         setCountdown(prev => {
@@ -373,11 +373,8 @@ useEffect(() => {
   const services = [
     { icon: Users, label: "Support", bgClass: "bg-primary/10", route: "/support" },
     { icon: Calculator, label: "Investment", bgClass: "bg-primary/10", route: "/investment" },
-   { icon: Gamepad2, label: "Spin & Win", bgClass: "bg-primary/10", route: "/spin-win" },
-    { icon: CreditCard, label: "Airtime", bgClass: "bg-primary/10", route: "/buy-airtime" },
-    { icon: Wifi, label: "Data", bgClass: "bg-primary/10", route: "/buy-data" },
+    { icon: Gamepad2, label: "Spin & Win", bgClass: "bg-primary/10", route: "/spin-win" },
     { icon: Banknote, label: "Loan", bgClass: "bg-primary/10", route: "/loan" },
-    { icon: TrendingUp, label: "Play Games", bgClass: "bg-primary/10", route: "/play-games" }
   ];
 
   if (!user) {
@@ -499,7 +496,13 @@ useEffect(() => {
             <span className="text-sm opacity-90">Available Balance</span>
           </div>
           <div className="flex items-center space-x-2">
-            
+            <button
+              onClick={() => setShowTransactionHistory(true)}
+              className="hover:bg-white/20 rounded-full p-1.5 transition-colors flex items-center gap-1"
+            >
+              <History className="w-4 h-4 opacity-90" />
+              <span className="text-xs opacity-80">History</span>
+            </button>
             <button
               onClick={() => setShowBalance(!showBalance)}
               className="hover:bg-white/20 rounded-full p-1 transition-colors"
@@ -650,32 +653,17 @@ useEffect(() => {
       {/* Bottom Carousel */}
       <BottomCarousel />
 
-      {/* Task and Check-in Buttons */}
-      <div className="grid grid-cols-2 gap-2 mb-0 px-1 mt-3">
+      {/* Task Button */}
+      <div className="mb-0 px-1 mt-3">
         <Link to="/activity">
           <div className="bg-gradient-to-br from-service-button to-service-button-dark rounded-xl p-3 border border-service-button-light/30 hover:scale-105 transition-transform">
             <div className="flex items-center gap-2 mb-1">
               <Gift className="w-5 h-5 text-service-button-foreground animate-pulse" />
               <h3 className="text-service-button-foreground font-semibold text-sm">Task</h3>
             </div>
-            <p className="text-service-button-foreground/80 text-xs">Complete daily tasks</p>
+            <p className="text-service-button-foreground/80 text-xs">Complete daily tasks & earn rewards</p>
           </div>
         </Link>
-
-        <div 
-          onClick={handleCheckin}
-          className={`bg-gradient-to-br from-service-button to-service-button-dark rounded-xl p-3 border border-service-button-light/30 cursor-pointer hover:scale-105 transition-transform ${
-            !canCheckin ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
-        >
-          <div className="flex items-center gap-2 mb-1">
-            <TrendingUp className="w-5 h-5 text-service-button-foreground animate-pulse" />
-            <h3 className="text-service-button-foreground font-semibold text-sm">Check-in</h3>
-          </div>
-          <p className="text-service-button-foreground/80 text-xs">
-            {canCheckin ? 'Earn ₦1,500' : '24hrs cooldown'}
-          </p>
-        </div>
       </div>
 
       {/* Lumexzz Info Section - Premium Phoenix Design */}

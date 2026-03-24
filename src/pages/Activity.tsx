@@ -31,7 +31,7 @@ const TASKS = [
 ];
 
 const Activity = () => {
-  const [activeTab, setActiveTab] = useState<"all" | "task" | "checkin">("all");
+  const [activeTab, setActiveTab] = useState<"all" | "task">("task");
   const [activities, setActivities] = useState<any[]>([]);
   const [completedTasks, setCompletedTasks] = useState<Record<string, boolean>>({});
 
@@ -97,11 +97,7 @@ const Activity = () => {
   const filteredActivities =
     activeTab === "all"
       ? activities
-      : activities.filter((a) => {
-          if (activeTab === "checkin") return a.type === "check-in";
-          if (activeTab === "task") return a.type === "task";
-          return false;
-        });
+      : activities.filter((a) => a.type === "task");
 
   // Dashboard balance utilities
   const getDashboardBalance = () => {
@@ -189,17 +185,6 @@ const Activity = () => {
         >
           <Gift className="w-3 h-3 inline mr-1" />
           Task
-        </button>
-        <button
-          onClick={() => setActiveTab("checkin")}
-          className={`flex-1 py-2 px-3 rounded-full text-xs font-medium transition-all ${
-            activeTab === "checkin"
-              ? "bg-gradient-to-r from-purple-600 to-purple-800 text-white"
-              : "text-gray-400"
-          }`}
-        >
-          <CheckCircle className="w-3 h-3 inline mr-1" />
-          Check-in
         </button>
       </div>
 

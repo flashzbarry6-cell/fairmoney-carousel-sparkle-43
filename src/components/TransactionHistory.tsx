@@ -9,7 +9,7 @@ interface TransactionHistoryProps {
 
 interface Transaction {
   id: string;
-  type: 'bonus' | 'deduction' | 'reversal' | 'credit';
+  type: 'bonus' | 'deduction' | 'reversal' | 'credit' | 'check-in' | 'auto-bonus' | 'task';
   amount: number;
   description: string;
   time: string;
@@ -53,19 +53,19 @@ export const TransactionHistory = ({ isOpen, onClose }: TransactionHistoryProps)
           transaction_hash: d.transaction_hash
         }));
 
-        // Also check localStorage for bonuses
-        const localBonuses = JSON.parse(localStorage.getItem('activityHistory') || '[]');
-        const bonusTransactions: Transaction[] = localBonuses.map((b: any, index: number) => ({
-          id: `bonus-${index}`,
-          type: 'bonus' as const,
+        // Also check localStorage for all activity (bonuses, check-ins, tasks, auto-bonuses)
+        const localActivities = JSON.parse(localStorage.getItem('activityHistory') || '[]');
+        const activityTransactions: Transaction[] = localActivities.map((b: any, index: number) => ({
+          id: `activity-${index}`,
+          type: (b.type || 'bonus') as Transaction['type'],
           amount: b.amount,
-          description: b.description || 'Bonus',
+          description: b.description || 'Activity',
           time: new Date(b.timestamp).toLocaleString(),
-          status: 'claimed'
+          status: 'completed'
         }));
 
         // Combine and sort by time
-        const allTransactions = [...dbTransactions, ...bonusTransactions]
+        const allTransactions = [...dbTransactions, ...activityTransactions]
           .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
           .slice(0, 30);
 
@@ -94,6 +94,12 @@ export const TransactionHistory = ({ isOpen, onClose }: TransactionHistoryProps)
     switch (type) {
       case 'bonus':
         return <Gift className="w-5 h-5 text-primary" />;
+      case 'check-in':
+        return <ArrowUpCircle className="w-5 h-5 text-green-400" />;
+      case 'auto-bonus':
+        return <ArrowUpCircle className="w-5 h-5 text-purple-400" />;
+      case 'task':
+        return <Gift className="w-5 h-5 text-yellow-400" />;
       case 'deduction':
         return <Zap className="w-5 h-5 text-red-400" />;
       case 'reversal':
@@ -110,6 +116,9 @@ export const TransactionHistory = ({ isOpen, onClose }: TransactionHistoryProps)
       case 'bonus':
       case 'credit':
       case 'reversal':
+      case 'check-in':
+      case 'auto-bonus':
+      case 'task':
         return 'text-green-500';
       case 'deduction':
         return 'text-red-400';
